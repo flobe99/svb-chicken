@@ -3,7 +3,7 @@ import { provideIonicAngular } from '@ionic/angular/standalone';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: '**',
     redirectTo: 'mix',
     pathMatch: 'full',
   },
