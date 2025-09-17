@@ -1,0 +1,7 @@
+{
+  "name": "svb-chicken",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
