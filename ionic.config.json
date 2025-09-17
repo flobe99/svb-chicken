@@ -1,7 +1,5 @@
 {
-  "name": "svb-chicken",
-  "integrations": {
-    "capacitor": {}
-  },
+  "name": "cocktailmixer-app",
+  "integrations": {},
   "type": "angular"
 }

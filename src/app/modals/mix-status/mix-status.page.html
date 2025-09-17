@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Status</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Schließen</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="warning-image-container">
+    <ion-img src="assets/img/NotTouchMachine.png" alt="Nicht berühren Hinweis"></ion-img>
+  </div>
+
+  <ng-container *ngIf="currentStatus">
+    <ion-label>
+      <h2>{{ currentStatus.message }}</h2>
+      <p>Zutat: {{ currentStatus.current_ingredient || '–' }}</p>
+      <p>Fortschritt: {{ currentStatus.progress }}%</p>
+    </ion-label>
+    <ion-progress-bar [value]="currentStatus.progress / 100"></ion-progress-bar>
+  </ng-container>
+  <!--   
+  <ion-list *ngIf="statusList.length > 0">
+    <ion-item *ngFor="let status of statusList">
+      <ion-label>
+        <h2>{{ status.message }}</h2>
+        <p>Zutat: {{ status.current_ingredient || '–' }}</p>
+        <p>Fortschritt: {{ status.progress }}%</p>
+        <p *ngIf="status.finished">Fertig!</p>
+        <ion-progress-bar [value]="status.progress / 100"></ion-progress-bar>
+      </ion-label>
+    </ion-item>
+  </ion-list> -->
+</ion-content>

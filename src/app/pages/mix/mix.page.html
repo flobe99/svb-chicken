@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Cocktails</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-refresher slot="fixed" (ionRefresh)="handleGlobalRefresh($event)">
+    <ion-refresher-content pullingText="Zum Aktualisieren ziehen" refreshingSpinner="circles"
+      refreshingText="Aktualisiere...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Cocktails</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-segment value="normal">
+    <ion-segment-button value="mild">
+      <ion-label>Mild</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="normal">
+      <ion-label>Normal</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="stark">
+      <ion-label>Stark</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list>
+    <ion-item>
+      <ion-input label="Glas (ml)" type="number" [(ngModel)]="glas" (ionChange)="updateIngredients()"></ion-input>
+    </ion-item>
+
+    <!-- <ion-card appLongPress (longPress)="onItemLongPress($event)">
+      <ion-card-header>
+        <ion-card-title>Cocktail auswählen</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-select label="Cocktail" [(ngModel)]="cocktailIndex" (ionChange)="updateIngredients()">
+          <ion-select-option *ngFor="let cocktail of cocktails" [value]="cocktail.index">
+            {{ cocktail.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-card-content>
+    </ion-card> -->
+
+    <ion-card appLongPress (longPress)="onItemLongPress($event)">
+      <div class="image-label">{{ cocktailIndex }}</div>
+      <img alt="Cocktailbild"
+        src="https://images.pexels.com/photos/16845303/pexels-photo-16845303.jpeg?auto=compress&cs=tinysrgb&h=627&fit=crop&w=1200" />
+
+      <ion-card-header>
+        <ion-card-title>Cocktail auswählen</ion-card-title>
+        <ion-card-subtitle>{{ cocktailIndex }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p>Hier kannst du deinen Cocktail auswählen und die Zutaten werden automatisch angepasst.</p>
+
+        <ion-item>
+          <ion-select [(ngModel)]="cocktailIndex" (ionChange)="updateIngredients()">
+            <ion-select-option *ngFor="let cocktail of cocktails" [value]="cocktail.index">
+              {{ cocktail.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+
+    <ng-container *ngFor="let cocktail of cocktails">
+      <ng-container *ngIf="cocktail.index === cocktailIndex">
+        <ion-item *ngFor="let bottle of cocktail.bottles">
+          <ion-input [label]="bottle.name" type="number" [(ngModel)]="ingredients[bottle.index]"></ion-input>
+          ml
+        </ion-item>
+      </ng-container>
+    </ng-container>
+  </ion-list>
+
+  <ion-button (click)="onMixClick()">Mixen</ion-button>
+
+  <ion-toast [isOpen]="!cocktailFinished" [duration]="0" message="Cocktail in progress" [buttons]="toastButtons">
+  </ion-toast>
+
+  <!-- <ion-list>
+    <ion-item *ngFor="let msg of statusList">
+      <ion-label>{{ msg }}</ion-label>
+    </ion-item>
+  </ion-list> -->
+</ion-content>
