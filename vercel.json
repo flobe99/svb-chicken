@@ -1,11 +1,10 @@
 {
     "version": 2,
-    "buildCommand": "npm run build",
-    "outputDirectory": "www",
     "routes": [
         {
             "src": "/(.*)",
             "dest": "/index.html"
         }
     ]
+    "src": "package.json"
 }
