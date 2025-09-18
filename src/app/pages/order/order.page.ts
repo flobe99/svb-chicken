@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -14,7 +14,7 @@ import {
   IonButtons,
   IonMenuButton,
   IonDatetime,
-  IonTextarea
+  IonTextarea,
 } from '@ionic/angular/standalone'
 
 import { Router } from '@angular/router';
@@ -54,7 +54,6 @@ export class OrderPage implements OnInit {
   public nuggets: number = 0;
   public pommes: number = 0;
   public sonstiges: string = '';
-
 
   constructor(
     private router: Router

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { beer, settings, mail, add } from 'ionicons/icons';
+import { fastFood, settings, mail, add, fastFoodOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 import {
@@ -42,16 +42,11 @@ import {
 export class AppComponent {
 
   constructor() {
-    addIcons({
-      beer,
-      settings,
-      mail,
-      add
-    });
+    addIcons({fastFoodOutline,fastFood,settings,mail,add});
   }
 
   public appPages = [
-    { title: 'Bestellung', url: '/order', icon: 'beer' },
+    { title: 'Bestellung', url: '/order', icon: 'fast-food-outline' },
     { title: 'Settings', url: '/settings', icon: 'settings' },
   ];
 }
