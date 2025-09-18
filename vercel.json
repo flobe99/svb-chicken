@@ -5,6 +5,6 @@
             "src": "/(.*)",
             "dest": "/index.html"
         }
-    ]
+    ],
     "src": "package.json"
 }
