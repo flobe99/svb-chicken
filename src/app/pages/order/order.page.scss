@@ -1,0 +1,29 @@
+.required-label::after {
+    content: " *";
+    color: red;
+}
+
+ion-input.ng-invalid.ng-touched {
+    border: 1px solid red;
+}
+
+.info-icon {
+    font-size: 16px;
+    margin-left: 6px;
+    color: #3880ff;
+    cursor: pointer;
+}
+
+.tooltip {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    top: 60px;
+    /* je nach Layout anpassen */
+    left: 20px;
+    z-index: 1000;
+    white-space: nowrap;
+}

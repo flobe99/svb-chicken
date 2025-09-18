@@ -7,46 +7,60 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen class="ion-padding">
+<ion-content class="ion-padding-horizontal">
   <ion-item>
-    <ion-label position="floating">Vorname</ion-label>
-    <ion-input [(ngModel)]="order.firstname" name="firstname"></ion-input>
+    <ion-label position="floating" class="required-label">
+      Vorname
+    </ion-label>
+    <ion-input required [(ngModel)]="order.firstname" name="firstname"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-label position="floating">Nachname</ion-label>
-    <ion-input [(ngModel)]="order.lastname" name="lastname"></ion-input>
+    <ion-label position="floating" class="required-label">
+      Nachname
+    </ion-label>
+    <ion-input required [(ngModel)]="order.lastname" name="lastname"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-label position="floating">E-Mail</ion-label>
-    <ion-input type="mail" [(ngModel)]="order.mail" name="mail"></ion-input>
+    <ion-label position="floating" class="required-label">E-Mail</ion-label>
+    <ion-input required type="mail" [(ngModel)]="order.mail" name="mail"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-label position="floating">Telefonnummer</ion-label>
-    <ion-input type="email" [(ngModel)]="order.phonenumber" name="phonenumber"></ion-input>
+    <ion-label position="floating" class="required-label">Telefonnummer</ion-label>
+    <ion-input required type="email" [(ngModel)]="order.phonenumber" name="phonenumber"></ion-input>
+  </ion-item>
+
+  <ion-item lines="none">
+    <ion-label class="required-label">Datum & Uhrzeit</ion-label>
+  </ion-item>
+  <ion-item position="floating">
+    <ion-datetime-button datetime="datetime"></ion-datetime-button>
+  </ion-item>
+
+  <ion-modal [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="datetime" hourValues="10,11,12,13,14,15,16,17,18,19,20"
+        minuteValues="0,15,30,45"></ion-datetime>
+    </ng-template>
+  </ion-modal>
+
+  <ion-item>
+    <ion-label position="floating" class="required-label">Hähnchen</ion-label>
+    <ion-input required type="number" [(ngModel)]="order.chicken" name="haehnchen"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-label position="floating">Datum & Uhrzeit</ion-label>
-    <ion-datetime [(ngModel)]="order.date" name="datum" hourValues="10,11,12,13,14,15,16,17,18,19,20"
-      minuteValues="0,15,30,45" presentation="date-time" preferWheel="true"></ion-datetime>
+    <ion-label position="floating" class="required-label">Nuggets</ion-label>
+    <ion-input required type="number" [(ngModel)]="order.nuggets" name="nuggets"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-label position="floating">Hähnchen</ion-label>
-    <ion-input type="number" [(ngModel)]="order.chicken" name="haehnchen"></ion-input>
-  </ion-item>
-
-  <ion-item>
-    <ion-label position="floating">Nuggets</ion-label>
-    <ion-input type="number" [(ngModel)]="order.nuggets" name="nuggets"></ion-input>
-  </ion-item>
-
-  <ion-item>
-    <ion-label position="floating">Pommes</ion-label>
-    <ion-input type="number" [(ngModel)]="order.fries" name="pommes"></ion-input>
+    <ion-label position="floating" class="required-label">
+      Pommes
+    </ion-label>
+    <ion-input required type="number" [(ngModel)]="order.fries" name="pommes"></ion-input>
   </ion-item>
 
   <ion-item>

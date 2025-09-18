@@ -1,13 +1,33 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>dashboard</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>SV Baustetten 1923 e.V.</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">dashboard</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ event.name }}</ion-card-title>
+      <ion-card-subtitle>{{ event.date }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p><ion-icon name="location-outline"></ion-icon> {{ event.location }}</p>
+      <p><ion-icon name="time-outline"></ion-icon> {{ event.time }}</p>
+      <p>{{ event.description }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" (click)="onClickOrder()">
+    <ion-icon name="fast-food-outline" slot="start"></ion-icon>
+    Jetzt bestellen
+  </ion-button>
+
+  <ion-button expand="block" routerLink="/kontakt">
+    <ion-icon name="call-outline" slot="start"></ion-icon>
+    Kontakt & Fragen
+  </ion-button>
 </ion-content>
