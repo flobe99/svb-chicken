@@ -47,7 +47,6 @@
     "html2pdf.js": "^0.10.3",
     "ionicons": "^8.0.9",
     "moment": "^2.30.1",
-    "ng-recaptcha": "^13.2.1",
     "node-html-parser": "^7.0.1",
     "pdfjs-dist": "^5.3.31",
     "rxjs": "~7.8.2",
