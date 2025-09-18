@@ -1,11 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/mix",
-      "statusCode": 301
-    }
-  ],
   "rewrites": [
     {
       "source": "/(.*)",

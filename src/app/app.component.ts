@@ -51,10 +51,7 @@ export class AppComponent {
   }
 
   public appPages = [
-    { title: 'Mix', url: '/mix', icon: 'beer' },
-    { title: 'Add Recipe', url: '/add-recipes', icon: 'add' },
-    { title: 'Add Ingredients', url: '/add-ingredients', icon: 'add' },
+    { title: 'Bestellung', url: '/order', icon: 'beer' },
     { title: 'Settings', url: '/settings', icon: 'settings' },
   ];
-  public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 }

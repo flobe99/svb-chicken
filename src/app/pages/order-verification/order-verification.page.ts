@@ -50,7 +50,6 @@ export class OrderVerificationPage implements OnInit {
   ngOnInit() {
   }
 
-
   confirmCode() {
     this.router.navigate(['/order-feedback'], {
       state: {

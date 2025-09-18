@@ -48,6 +48,7 @@ export class OrderPage implements OnInit {
   public vorname: string = '';
   public nachname: string = '';
   public email: string = '';
+  public phonenumber: string = '';
   public datum: string = '';
   public haehnchen: number = 0;
   public nuggets: number = 0;
