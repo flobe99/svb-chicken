@@ -10,3 +10,11 @@ ion-card-subtitle {
 ion-content {
     --background: #f9f9f9;
 }
+
+.mobile-only {
+    display: block;
+
+    @media (min-width: 768px) {
+        display: none;
+    }
+}
