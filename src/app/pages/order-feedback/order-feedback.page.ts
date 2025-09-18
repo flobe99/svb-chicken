@@ -50,6 +50,10 @@ export class OrderFeedbackPage implements OnInit {
     })
   }
 
+  ionViewDidEnter() {
+    this.orderService.deleteOrder();
+  }
+
   backToOrder() {
     this.orderService.deleteOrder();
     this.router.navigate(['/order']).then();

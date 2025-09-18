@@ -46,5 +46,8 @@
     </ion-card-content>
   </ion-card>
 
+  <re-captcha siteKey="6LdS380rAAAAAK3wDbYrdWAq4yoFWe8aRuzY_euH" (resolved)="onCaptchaResolved($event)">
+  </re-captcha>
+
   <ion-button expand="block" (click)="submitOrder()">Bestellung abschicken</ion-button>
 </ion-content>

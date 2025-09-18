@@ -17,9 +17,22 @@ export interface MixResponse {
 })
 export class OrderService {
     private order = new BehaviorSubject<OrderChicken | null>(null);
+    private isLoaded = false;
+
     constructor(
         private storageService: StorageService
     ) { }
+
+    async loadOrderFromStorage(): Promise<OrderChicken | null> {
+        if (!this.isLoaded) {
+            const order = await this.storageService.get('order');
+            this.order.next(order);
+            this.isLoaded = true;
+            return order;
+        }
+        return this.order.getValue();
+    }
+
 
     setOrder(order: OrderChicken) {
         this.order.next(order);
@@ -28,11 +41,9 @@ export class OrderService {
     }
 
     getOrder(): Observable<OrderChicken | null> {
-        this.storageService.get('order').then((order) => {
-            this.order.next(order);
-        });
         return this.order.asObservable();
     }
+
 
     deleteOrder() {
         this.storageService.delete('order');

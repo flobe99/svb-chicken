@@ -87,19 +87,10 @@ export class OrderPage implements OnInit {
       fries: 2,
       miscellaneous: "Viel Gewürz",
     })
-    // this.order.firstname = "Florian";
-    // this.order.lastname = "Betz";
-    // this.order.mail = "betz.flori@gmail.com";
-    // this.order.phonenumber = "015254058901";
-    // this.order.date = new Date().toISOString();
-    // this.order.chicken = 1;
-    // this.order.nuggets = 1;
-    // this.order.fries = 2;
-    // this.order.miscellaneous = "Viel Gewürz";
   }
 
   async submitOrder() {
-    this.orderService.setOrder(this.order);
+    await this.orderService.setOrder(this.order);
     this.router.navigate(['/order-overview'], {});
   }
 

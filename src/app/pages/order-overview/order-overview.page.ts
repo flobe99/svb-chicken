@@ -16,6 +16,7 @@ import {
 import { OrderChicken } from 'src/app/models/order.model';
 import { TimePipe } from 'src/app/pipes/time.pipe';
 import { OrderService } from 'src/app/services/Order.Service';
+import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
 
 @Component({
   selector: 'app-order-overview',
@@ -34,23 +35,37 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonButton,
     IonButtons,
     IonMenuButton,
-    TimePipe
+    TimePipe,
+    RecaptchaModule,
+    RecaptchaFormsModule
   ]
 })
 export class OrderOverviewPage implements OnInit {
 
   public order: OrderChicken | null = null;
+  public captchaToken: string | null = null;
 
   constructor(private router: Router, private orderService: OrderService) { }
 
   ngOnInit() {
     this.orderService.getOrder().subscribe((order) => {
       this.order = order;
+      console.table(this.order)
     })
   }
 
   goBack() {
     this.router.navigate(['/']);
+  }
+
+
+
+  onCaptchaResolved(token: string | null) {
+    if (token) {
+      console.log('reCAPTCHA Token:', token);
+    } else {
+      console.warn('reCAPTCHA konnte nicht aufgelöst werden.');
+    }
   }
 
 
