@@ -1,13 +1,54 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>order</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Bestellung</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">order</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content fullscreen class="ion-padding">
+  <ion-item>
+    <ion-label position="floating">Vorname</ion-label>
+    <ion-input [(ngModel)]="vorname" name="vorname"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Nachname</ion-label>
+    <ion-input [(ngModel)]="nachname" name="nachname"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">E-Mail</ion-label>
+    <ion-input type="email" [(ngModel)]="email" name="email"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Datum & Uhrzeit</ion-label>
+    <ion-datetime [(ngModel)]="datum" name="datum"></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Hähnchen</ion-label>
+    <ion-input type="number" [(ngModel)]="haehnchen" name="haehnchen"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Nuggets</ion-label>
+    <ion-input type="number" [(ngModel)]="nuggets" name="nuggets"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Pommes</ion-label>
+    <ion-input type="number" [(ngModel)]="pommes" name="pommes"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Sonstiges</ion-label>
+    <ion-textarea [(ngModel)]="sonstiges" name="sonstiges"></ion-textarea>
+  </ion-item>
+
+  <div class="ion-padding">
+    <ion-button expand="block" (click)="submitOrder()">Bestellen</ion-button>
+  </div>
 </ion-content>

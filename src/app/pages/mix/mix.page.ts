@@ -92,7 +92,6 @@ export class LongPressDirective {
     IonButton,
     IonRefresher,
     IonRefresherContent,
-    IonIcon,
     LongPressDirective,
     IonToast,
     IonCard,

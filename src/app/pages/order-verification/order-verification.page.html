@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Bestätigung</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <p>An Ihre Email <strong>{{ data.email }}</strong> wurde ein Bestätigungscode gesendet.</p>
+  <p>Bitte geben Sie diesen Bestätigungscode ein:</p>
+
+  <ion-item>
+    <ion-label position="floating">Bestätigungscode</ion-label>
+    <ion-input [(ngModel)]="code" name="code"></ion-input>
+  </ion-item>
+
+  <ion-button expand="block" class="ion-margin-top" (click)="confirmCode()">Bestätigen</ion-button>
+</ion-content>

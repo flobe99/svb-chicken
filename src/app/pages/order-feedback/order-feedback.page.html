@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Bestätigung</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Bestellung erfolgreich</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p><strong>{{ data.email }}</strong></p>
+      <p>Ihre Bestellung ist erfolgreich eingegangen.</p>
+      <p>Bitte seien Sie am <strong>{{ data.datum }} um {{ data.uhrzeit }}</strong> pünktlich im <strong>DriveIn</strong>.</p>
+      <p>Euer SV Baustetten</p>
+      <p>Standort:</p>
+      <p>Sportheim Laupheimer Str.29</p>
+      <p>88471 Baustetten</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" (click)="backToOrder()">Zurück zur Startseite</ion-button>
+</ion-content>
