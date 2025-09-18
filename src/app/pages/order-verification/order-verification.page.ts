@@ -15,6 +15,8 @@ import {
   IonMenuButton
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
+import { OrderService } from 'src/app/services/Order.Service';
+import { OrderChicken } from 'src/app/models/order.model';
 
 @Component({
   selector: 'app-order-verification',
@@ -37,24 +39,19 @@ import { Router } from '@angular/router';
   ],
 })
 export class OrderVerificationPage implements OnInit {
-  data: any;
+  // data: any;
+  public order: OrderChicken | null = null;
   code = '';
 
-  constructor(private router: Router) {
-    const nav = this.router.getCurrentNavigation();
-    this.data = nav?.extras?.state || {};
-
-    console.log(this.data)
-  }
+  constructor(private router: Router, private orderService: OrderService) { }
 
   ngOnInit() {
+    this.orderService.getOrder().subscribe((order) => {
+      this.order = order;
+    })
   }
 
   confirmCode() {
-    this.router.navigate(['/order-feedback'], {
-      state: {
-        ...this.data
-      }
-    });
+    this.router.navigate(['/order-feedback'], {});
   }
 }

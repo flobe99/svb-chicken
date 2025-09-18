@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { 
+import {
   IonContent,
   IonHeader,
   IonTitle,
@@ -11,15 +11,19 @@ import {
   IonButton,
   IonButtons,
   IonMenuButton,
-  IonList, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonCardContent, IonNote } from '@ionic/angular/standalone';
+  IonList, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonCardContent, IonNote,
+} from '@ionic/angular/standalone';
+import { OrderChicken } from 'src/app/models/order.model';
+import { TimePipe } from 'src/app/pipes/time.pipe';
+import { OrderService } from 'src/app/services/Order.Service';
 
 @Component({
   selector: 'app-order-overview',
   templateUrl: './order-overview.page.html',
   styleUrls: ['./order-overview.page.scss'],
   standalone: true,
-  imports: [IonNote, IonCardContent, IonCardSubtitle, IonCardTitle, IonCard, IonCardHeader, 
-    IonList, 
+  imports: [IonNote, IonCardContent, IonCardSubtitle, IonCardTitle, IonCard, IonCardHeader,
+    IonList,
     IonContent,
     IonHeader,
     IonTitle,
@@ -30,20 +34,19 @@ import {
     IonButton,
     IonButtons,
     IonMenuButton,
+    TimePipe
   ]
 })
 export class OrderOverviewPage implements OnInit {
 
-  data: any;
+  public order: OrderChicken | null = null;
 
-  constructor(private router: Router) {
-    const nav = this.router.getCurrentNavigation();
-    this.data = nav?.extras?.state || {};
-
-    console.log(nav?.extras?.state)
-  }
+  constructor(private router: Router, private orderService: OrderService) { }
 
   ngOnInit() {
+    this.orderService.getOrder().subscribe((order) => {
+      this.order = order;
+    })
   }
 
   goBack() {
@@ -51,12 +54,8 @@ export class OrderOverviewPage implements OnInit {
   }
 
 
-  submitOrder(){
-    this.router.navigate(['/order-verification'], {
-      state: {
-        ...this.data
-      }
-    });
+  submitOrder() {
+    this.router.navigate(['/order-verification']);
   }
 
 }

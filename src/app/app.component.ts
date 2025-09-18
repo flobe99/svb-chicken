@@ -42,7 +42,7 @@ import {
 export class AppComponent {
 
   constructor() {
-    addIcons({fastFoodOutline,fastFood,settings,mail,add});
+    addIcons({ fastFoodOutline, fastFood, settings, mail, add });
   }
 
   public appPages = [

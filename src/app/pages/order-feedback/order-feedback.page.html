@@ -14,9 +14,14 @@
     </ion-card-header>
 
     <ion-card-content>
-      <p><strong>{{ data.email }}</strong></p>
+      <p>Hallo {{order?.firstname}} {{order?.lastname}}, </p>
+      <p><strong>{{ order?.mail }}</strong></p>
       <p>Ihre Bestellung ist erfolgreich eingegangen.</p>
-      <p>Bitte seien Sie am <strong>{{ data.datum }} um {{ data.uhrzeit }}</strong> pünktlich im <strong>DriveIn</strong>.</p>
+      <p>Bitte seien Sie am <strong>{{ (order?.date ?? '') | time: 'date' }} um {{ (order?.date ?? '') | time: 'time'
+          }}</strong>
+        pünktlich im
+        <strong>DriveIn</strong>.
+      </p>
       <p>Euer SV Baustetten</p>
       <p>Standort:</p>
       <p>Sportheim Laupheimer Str.29</p>

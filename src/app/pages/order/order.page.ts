@@ -18,6 +18,8 @@ import {
 } from '@ionic/angular/standalone'
 
 import { Router } from '@angular/router';
+import { OrderChicken } from 'src/app/models/order.model';
+import { OrderService } from 'src/app/services/Order.Service';
 
 @Component({
   selector: 'app-order',
@@ -44,46 +46,61 @@ import { Router } from '@angular/router';
 })
 export class OrderPage implements OnInit {
 
+  public order: OrderChicken = new OrderChicken({
+    firstname: "Florian",
+    lastname: "Betz",
+    mail: "betz.flori@gmail.com",
+    phonenumber: "015254058901",
+    date: new Date().toISOString(),
+    chicken: 1,
+    nuggets: 1,
+    fries: 2,
+    miscellaneous: "Viel Gewürz",
+  })
 
-  public vorname: string = '';
-  public nachname: string = '';
-  public email: string = '';
-  public phonenumber: string = '';
-  public datum: string = '';
-  public haehnchen: number = 0;
-  public nuggets: number = 0;
-  public pommes: number = 0;
-  public sonstiges: string = '';
+  // public firstname: string = '';
+  // public lastname: string = '';
+  // public mail: string = '';
+  // public phonenumber: string = '';
+  // public date: string = '';
+  // public chicken: number = 0;
+  // public nuggets: number = 0;
+  // public fries: number = 0;
+  // public miscellaneous: string = '';
 
   constructor(
-    private router: Router
+    private router: Router,
+    private orderService: OrderService
   ) { }
 
 
   ngOnInit() {
-    this.vorname = "Florian";
-    this.nachname = "Betz";
-    this.email = "betz.flori@gmail.com";
-    this.datum = "18.09.2025";
-    this.haehnchen = 1;
-    this.nuggets = 1;
-    this.pommes = 2;
-    this.sonstiges = "Viel Gewürz";
+    this.order = new OrderChicken({
+      id: '0',
+      firstname: "Florian",
+      lastname: "Betz",
+      mail: "betz.flori@gmail.com",
+      phonenumber: "015254058901",
+      date: new Date().toISOString(),
+      chicken: 1,
+      nuggets: 1,
+      fries: 2,
+      miscellaneous: "Viel Gewürz",
+    })
+    // this.order.firstname = "Florian";
+    // this.order.lastname = "Betz";
+    // this.order.mail = "betz.flori@gmail.com";
+    // this.order.phonenumber = "015254058901";
+    // this.order.date = new Date().toISOString();
+    // this.order.chicken = 1;
+    // this.order.nuggets = 1;
+    // this.order.fries = 2;
+    // this.order.miscellaneous = "Viel Gewürz";
   }
 
-  async submitOrder(){
-    this.router.navigate(['/order-overview'], {
-      state: {
-        vorname: this.vorname,
-        nachname: this.nachname,
-        email: this.email,
-        datum: this.datum,
-        haehnchen: this.haehnchen,
-        nuggets: this.nuggets,
-        pommes: this.pommes,
-        sonstiges: this.sonstiges,
-      }
-    });
+  async submitOrder() {
+    this.orderService.setOrder(this.order);
+    this.router.navigate(['/order-overview'], {});
   }
 
 }

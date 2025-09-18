@@ -11,15 +11,19 @@ import {
   IonInput,
   IonButton,
   IonButtons,
-  IonMenuButton, IonCardHeader, IonCard, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
+  IonMenuButton, IonCardHeader, IonCard, IonCardTitle, IonCardContent
+} from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
+import { TimePipe } from 'src/app/pipes/time.pipe';
+import { OrderService } from 'src/app/services/Order.Service';
+import { OrderChicken } from 'src/app/models/order.model';
 
 @Component({
   selector: 'app-order-feedback',
   templateUrl: './order-feedback.page.html',
   styleUrls: ['./order-feedback.page.scss'],
   standalone: true,
-  imports: [IonCardContent, IonCardTitle, IonCard, IonCardHeader, 
+  imports: [IonCardContent, IonCardTitle, IonCard, IonCardHeader,
     CommonModule,
     FormsModule,
     IonContent,
@@ -31,24 +35,24 @@ import { Router } from '@angular/router';
     IonInput,
     IonButton,
     IonButtons,
-    IonMenuButton
+    IonMenuButton,
+    TimePipe
   ],
 })
 export class OrderFeedbackPage implements OnInit {
-  data: any
+  public order: OrderChicken | null = null;
 
-  constructor(private router: Router) {
-    const nav = this.router.getCurrentNavigation();
-    this.data = nav?.extras?.state || {};
-
-    console.log(nav?.extras?.state)
-  }
+  constructor(private router: Router, private orderService: OrderService) { }
 
   ngOnInit() {
+    this.orderService.getOrder().subscribe((order) => {
+      this.order = order;
+    })
   }
 
-  backToOrder(){
-    this.router.navigate(['/order']).then()
+  backToOrder() {
+    this.orderService.deleteOrder();
+    this.router.navigate(['/order']).then();
   }
 
 }

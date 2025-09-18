@@ -23,8 +23,6 @@ import {
   IonRefresherContent,
   AlertController
 } from '@ionic/angular/standalone';
-import { Bottles } from 'src/app/models/bottles.model';
-import { CocktailService } from 'src/app/services/Cocktail.Service';
 
 @Component({
   selector: 'app-settings',
@@ -59,7 +57,6 @@ export class SettingsPage implements OnInit {
   constructor(
     private alertController: AlertController,
     private router: Router,
-    private cocktailService: CocktailService
   ) {
 
   }

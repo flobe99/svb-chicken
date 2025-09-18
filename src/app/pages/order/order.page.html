@@ -10,47 +10,48 @@
 <ion-content fullscreen class="ion-padding">
   <ion-item>
     <ion-label position="floating">Vorname</ion-label>
-    <ion-input [(ngModel)]="vorname" name="vorname"></ion-input>
+    <ion-input [(ngModel)]="order.firstname" name="firstname"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Nachname</ion-label>
-    <ion-input [(ngModel)]="nachname" name="nachname"></ion-input>
+    <ion-input [(ngModel)]="order.lastname" name="lastname"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">E-Mail</ion-label>
-    <ion-input type="email" [(ngModel)]="email" name="email"></ion-input>
+    <ion-input type="mail" [(ngModel)]="order.mail" name="mail"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Telefonnummer</ion-label>
-    <ion-input type="email" [(ngModel)]="phonenumber" name="phone"></ion-input>
+    <ion-input type="email" [(ngModel)]="order.phonenumber" name="phonenumber"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Datum & Uhrzeit</ion-label>
-    <ion-datetime [(ngModel)]="datum" name="datum"></ion-datetime>
+    <ion-datetime [(ngModel)]="order.date" name="datum" hourValues="10,11,12,13,14,15,16,17,18,19,20"
+      minuteValues="0,15,30,45" presentation="date-time" preferWheel="true"></ion-datetime>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Hähnchen</ion-label>
-    <ion-input type="number" [(ngModel)]="haehnchen" name="haehnchen"></ion-input>
+    <ion-input type="number" [(ngModel)]="order.chicken" name="haehnchen"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Nuggets</ion-label>
-    <ion-input type="number" [(ngModel)]="nuggets" name="nuggets"></ion-input>
+    <ion-input type="number" [(ngModel)]="order.nuggets" name="nuggets"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Pommes</ion-label>
-    <ion-input type="number" [(ngModel)]="pommes" name="pommes"></ion-input>
+    <ion-input type="number" [(ngModel)]="order.fries" name="pommes"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Sonstiges</ion-label>
-    <ion-textarea [(ngModel)]="sonstiges" name="sonstiges"></ion-textarea>
+    <ion-textarea [(ngModel)]="order.miscellaneous" name="sonstiges"></ion-textarea>
   </ion-item>
 
   <div class="ion-padding">
