@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { TimePipe } from 'src/app/pipes/time.pipe';
 import { OrderService } from 'src/app/services/Order.Service';
 import { OrderChicken } from 'src/app/models/order.model';
+import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 
 @Component({
   selector: 'app-order-feedback',
@@ -36,7 +37,8 @@ import { OrderChicken } from 'src/app/models/order.model';
     IonButton,
     IonButtons,
     IonMenuButton,
-    TimePipe
+    TimePipe,
+    RefreshComponent
   ],
 })
 export class OrderFeedbackPage implements OnInit {

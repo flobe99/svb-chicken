@@ -17,6 +17,7 @@ import {
 import { Router } from '@angular/router';
 import { OrderService } from 'src/app/services/Order.Service';
 import { OrderChicken } from 'src/app/models/order.model';
+import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 
 @Component({
   selector: 'app-order-verification',
@@ -35,7 +36,8 @@ import { OrderChicken } from 'src/app/models/order.model';
     IonInput,
     IonButton,
     IonButtons,
-    IonMenuButton
+    IonMenuButton,
+    RefreshComponent
   ],
 })
 export class OrderVerificationPage implements OnInit {

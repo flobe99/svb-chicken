@@ -26,6 +26,7 @@ import {
 
 } from '@ionic/angular/standalone'
 import { Router } from '@angular/router';
+import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -55,7 +56,8 @@ import { Router } from '@angular/router';
     IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
-    IonCardContent
+    IonCardContent,
+    RefreshComponent
   ]
 })
 export class DashboardPage implements OnInit {

@@ -13,6 +13,7 @@ import {
   IonMenuButton,
   IonList, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonCardContent, IonNote,
 } from '@ionic/angular/standalone';
+import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { OrderChicken } from 'src/app/models/order.model';
 import { TimePipe } from 'src/app/pipes/time.pipe';
 import { OrderService } from 'src/app/services/Order.Service';
@@ -34,7 +35,8 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonButton,
     IonButtons,
     IonMenuButton,
-    TimePipe
+    TimePipe,
+    RefreshComponent
   ]
 })
 export class OrderOverviewPage implements OnInit {

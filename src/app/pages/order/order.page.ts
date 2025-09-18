@@ -27,6 +27,7 @@ import { OrderService } from 'src/app/services/Order.Service';
 import { ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { fastFood, settings, mail, add, fastFoodOutline, informationCircleOutline } from 'ionicons/icons';
+import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 
 @Component({
   selector: 'app-order',
@@ -51,7 +52,8 @@ import { fastFood, settings, mail, add, fastFoodOutline, informationCircleOutlin
     IonPopover,
     IonModal,
     IonDatetimeButton,
-    IonIcon
+    IonIcon,
+    RefreshComponent
   ]
 })
 export class OrderPage implements OnInit {
