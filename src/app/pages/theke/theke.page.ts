@@ -140,6 +140,21 @@ export class ThekePage implements OnInit {
     select?.open();
   }
 
+  statusLabels: { [key: string]: string } = {
+    CREATED: 'Erstellt',
+    CHECKED_IN: 'DriveIn',
+    READY_FOR_PICKUP: 'Abholbereit',
+    COMPLETED: 'Fertig',
+    CANCELLED: 'Storniert',
+    PAID: 'Bezahlt',
+    PRINTED: 'Gedruckt',
+    PREPARING: 'In Vorbereitung'
+  };
+
+  getStatusLabel(status: string): string {
+    return this.statusLabels[status] || status;
+  }
+
   onStatusChange(event: any, order: OrderChicken) {
     const newStatus = event.detail.value;
     order.status = newStatus;
