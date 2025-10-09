@@ -10,7 +10,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 // export const SOCKET = `ws://${DOMAIN}/ws/orders`;
 
 export const API_URL = 'https://svb-chicken-backend.onrender.com'
-export const SOCKET = 'ws://svb-chicken-backend.onrender.com/ws/orders'
+export const SOCKET = 'wss://svb-chicken-backend.onrender.com/ws/orders'
 
 @Injectable({
     providedIn: 'root',
