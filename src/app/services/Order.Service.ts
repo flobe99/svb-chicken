@@ -41,7 +41,8 @@ export class OrderService {
         this.storageService.set('order', order);
     }
 
-    getOrder(): Observable<OrderChicken | null> {
+    async getOrder(): Promise<Observable<OrderChicken | null>> {
+        await this.loadOrderFromStorage()
         return this.order.asObservable();
     }
 

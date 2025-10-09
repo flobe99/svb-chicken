@@ -81,15 +81,15 @@ export class OrderPage implements OnInit {
 
   ngOnInit() {
     this.order = new OrderChicken({
-      firstname: "Florian",
-      lastname: "Betz",
-      mail: "betz.flori@gmail.com",
-      phonenumber: "015254058901",
+      firstname: "",
+      lastname: "",
+      mail: "",
+      phonenumber: "",
       date: new Date().toISOString(),
-      chicken: 1,
-      nuggets: 1,
-      fries: 2,
-      miscellaneous: "Viel Gewürz",
+      chicken: 0,
+      nuggets: 0,
+      fries: 0,
+      miscellaneous: "",
     })
   }
 
@@ -101,8 +101,7 @@ export class OrderPage implements OnInit {
       !this.order.phonenumber ||
       this.order.chicken == null ||
       this.order.nuggets == null ||
-      this.order.fries == null ||
-      !this.order.miscellaneous
+      this.order.fries == null
     ) {
       console.log('Bitte alle Felder ausfüllen.');
       this.presentToast('Bitte alle Pflichtfelder ausfüllen');

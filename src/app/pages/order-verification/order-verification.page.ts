@@ -47,8 +47,8 @@ export class OrderVerificationPage implements OnInit {
 
   constructor(private router: Router, private orderService: OrderService) { }
 
-  ngOnInit() {
-    this.orderService.getOrder().subscribe((order) => {
+  async ngOnInit() {
+    (await this.orderService.getOrder()).subscribe((order) => {
       this.order = order;
     })
   }

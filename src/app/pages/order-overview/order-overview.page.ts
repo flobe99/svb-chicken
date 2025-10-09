@@ -48,8 +48,8 @@ export class OrderOverviewPage implements OnInit {
     private orderService: OrderService,
     private toastController: ToastController) { }
 
-  ngOnInit() {
-    this.orderService.getOrder().subscribe((order) => {
+  async ngOnInit() {
+    (await this.orderService.getOrder()).subscribe((order) => {
       this.order = order;
       console.table(this.order)
     })
