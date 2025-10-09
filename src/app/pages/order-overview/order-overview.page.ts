@@ -65,6 +65,7 @@ export class OrderOverviewPage implements OnInit {
     console.table(this.order)
     if (this.order) {
       this.orderService.createOrder(this.order).subscribe(async (response) => {
+        console.table(response)
         const toast = await this.toastController.create({
           message: response.success
             ? 'Bestellung erfolgreich eingegeben.'
