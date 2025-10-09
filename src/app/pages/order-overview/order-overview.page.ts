@@ -13,6 +13,7 @@ import { ToastController } from '@ionic/angular'; import {
   IonMenuButton,
   IonList, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonCardContent, IonNote,
 } from '@ionic/angular/standalone';
+import { firstValueFrom } from 'rxjs';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { OrderChicken } from 'src/app/models/order.model';
 import { TimePipe } from 'src/app/pipes/time.pipe';
@@ -59,13 +60,13 @@ export class OrderOverviewPage implements OnInit {
     this.router.navigate(['/']);
   }
 
-
-  submitOrder() {
-    // this.router.navigate(['/order-verification']);
-    console.table(this.order)
+  async submitOrder() {
+    console.table(this.order);
     if (this.order) {
-      this.orderService.createOrder(this.order).subscribe(async (response) => {
-        console.table(response)
+      try {
+        const response = await firstValueFrom(this.orderService.createOrder(this.order));
+        console.table(response);
+
         const toast = await this.toastController.create({
           message: response.success
             ? 'Bestellung erfolgreich eingegeben.'
@@ -79,9 +80,12 @@ export class OrderOverviewPage implements OnInit {
         if (response.success) {
           this.router.navigate(['/dashboard']);
         }
-      });
+      } catch (error) {
+        console.error('Fehler beim Absenden:', error);
+      }
     }
   }
+
 
 
 }
