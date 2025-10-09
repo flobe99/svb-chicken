@@ -1,5 +1,16 @@
+export enum OrderStatus {
+    CREATED = "CREATED",
+    CHECKED_IN = "CHECKED_IN",
+    PAID = "PAID",
+    PRINTED = "PRINTED",
+    PREPARING = "PREPARING",
+    READY_FOR_PICKUP = "READY_FOR_PICKUP",
+    COMPLETED = "COMPLETED",
+    CANCELLED = "CANCELLED"
+}
+
 export class OrderChicken {
-    id: string;
+    id?: number;
     firstname: string;
     lastname: string;
     mail: string;
@@ -9,9 +20,10 @@ export class OrderChicken {
     nuggets: number;
     fries: number;
     miscellaneous: string;
+    status: OrderStatus;
 
     constructor(obj?: Partial<OrderChicken>) {
-        this.id = obj?.id || '';
+        this.id = obj?.id;
         this.firstname = obj?.firstname || '';
         this.lastname = obj?.lastname || '';
         this.mail = obj?.mail || '';
@@ -21,5 +33,6 @@ export class OrderChicken {
         this.nuggets = obj?.nuggets || 0;
         this.fries = obj?.fries || 0;
         this.miscellaneous = obj?.miscellaneous || '';
+        this.status = obj?.status ?? OrderStatus.CREATED;
     }
 }

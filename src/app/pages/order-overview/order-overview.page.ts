@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {
+import { ToastController } from '@ionic/angular'; import {
   IonContent,
   IonHeader,
   IonTitle,
@@ -43,7 +43,10 @@ export class OrderOverviewPage implements OnInit {
 
   public order: OrderChicken | null = null;
 
-  constructor(private router: Router, private orderService: OrderService) { }
+  constructor(
+    private router: Router,
+    private orderService: OrderService,
+    private toastController: ToastController) { }
 
   ngOnInit() {
     this.orderService.getOrder().subscribe((order) => {
@@ -58,7 +61,26 @@ export class OrderOverviewPage implements OnInit {
 
 
   submitOrder() {
-    this.router.navigate(['/order-verification']);
+    // this.router.navigate(['/order-verification']);
+    console.table(this.order)
+    if (this.order) {
+      this.orderService.createOrder(this.order).subscribe(async (response) => {
+        const toast = await this.toastController.create({
+          message: response.success
+            ? 'Bestellung erfolgreich eingegeben.'
+            : 'Fehler beim Absenden der Bestellung.',
+          duration: 2500,
+          color: response.success ? 'success' : 'danger',
+          position: 'top'
+        });
+        await toast.present();
+
+        if (response.success) {
+          this.router.navigate(['/dashboard']);
+        }
+      });
+    }
   }
+
 
 }

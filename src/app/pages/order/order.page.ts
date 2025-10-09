@@ -81,7 +81,6 @@ export class OrderPage implements OnInit {
 
   ngOnInit() {
     this.order = new OrderChicken({
-      id: '0',
       firstname: "Florian",
       lastname: "Betz",
       mail: "betz.flori@gmail.com",

@@ -1,0 +1,158 @@
+import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonButtons,
+  IonMenuButton,
+  IonDatetime,
+  IonTextarea,
+  IonPopover,
+  IonModal,
+  IonDatetimeButton,
+  IonIcon,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+  IonList,
+  IonActionSheet,
+  IonChip,
+  IonSelect,
+  IonSelectOption,
+  IonAccordion,
+  IonAccordionGroup
+} from '@ionic/angular/standalone'
+import { Router } from '@angular/router';
+import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
+import { OrderService } from 'src/app/services/Order.Service';
+import { OrderChicken } from 'src/app/models/order.model';
+import { StorageService } from 'src/app/services/storage.service';
+
+@Component({
+  selector: 'app-theke',
+  templateUrl: './theke.page.html',
+  styleUrls: ['./theke.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonButton,
+    IonButtons,
+    IonMenuButton,
+    IonDatetime,
+    IonTextarea,
+    IonPopover,
+    IonModal,
+    IonDatetimeButton,
+    IonIcon,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCardContent,
+    RefreshComponent,
+    IonList,
+    IonActionSheet,
+    IonChip,
+    IonSelect,
+    IonSelectOption,
+    IonAccordion,
+    IonAccordionGroup
+  ]
+})
+export class ThekePage implements OnInit {
+  @ViewChildren('selectRefs') selectRefs!: QueryList<IonSelect>;
+  // public status = "CREATED";
+  constructor(private orderService: OrderService, private storageService: StorageService) { }
+  public orders: OrderChicken[] = [];
+  public filteredOrders: OrderChicken[] = [];
+
+  public filter: Partial<Omit<OrderChicken, 'status'>> & { status?: string[] } = {};
+
+  ngOnInit() {
+    this.init()
+  }
+
+  async init() {
+    const savedFilter = await this.storageService.get('orderFilter');
+    if (savedFilter) {
+      this.filter = savedFilter;
+    }
+    await this.orderService.getOrders().subscribe((orders) => {
+      this.orders = orders;
+      this.applyFilter();
+      console.table(orders)
+    });
+
+    await this.orderService.connectToOrderWebSocket(() => {
+      this.orderService.getOrders().subscribe((orders) => {
+        this.orders = orders;
+        this.applyFilter();
+      });
+    });
+  }
+
+  trackByOrderId(index: number, order: OrderChicken): number {
+    return order.id!;
+  }
+
+
+  applyFilter() {
+    if (!Array.isArray(this.filter.status)) {
+      this.filter.status = [];
+    }
+    this.filteredOrders = this.orders.filter((order) => {
+      return (
+        (!this.filter.id || order.id === this.filter.id) &&
+        (!this.filter.firstname || order.firstname.toLowerCase().includes(this.filter.firstname.toLowerCase())) &&
+        (!this.filter.lastname || order.lastname.toLowerCase().includes(this.filter.lastname.toLowerCase())) &&
+        (!this.filter.mail || order.mail.toLowerCase().includes(this.filter.mail.toLowerCase())) &&
+        (!this.filter.phonenumber || order.phonenumber.includes(this.filter.phonenumber)) &&
+        (!this.filter.date || order.date.includes(this.filter.date)) &&
+        (!this.filter.miscellaneous || order.miscellaneous.toLowerCase().includes(this.filter.miscellaneous.toLowerCase())) &&
+        (!this.filter.chicken || order.chicken === this.filter.chicken) &&
+        (!this.filter.nuggets || order.nuggets === this.filter.nuggets) &&
+        (!this.filter.fries || order.fries === this.filter.fries) &&
+        (this.filter.status?.length === 0 || this.filter.status?.includes(order.status)));
+    });
+    this.storageService.set('orderFilter', this.filter);
+  }
+
+  openSelect(order: OrderChicken) {
+    const index = this.filteredOrders.indexOf(order);
+    const select = this.selectRefs.get(index);
+    select?.open();
+  }
+
+  onStatusChange(event: any, order: OrderChicken) {
+    const newStatus = event.detail.value;
+    order.status = newStatus;
+    console.log("id: " + order.id)
+    if (order.id) {
+      this.orderService.updateOrder(order.id, order).subscribe((response) => {
+        if (response.success) {
+          console.log(`Status für Bestellung ${order.id} erfolgreich aktualisiert: ${newStatus}`);
+        } else {
+          console.error(`Fehler beim Aktualisieren von Bestellung ${order.id}`, response.error);
+        }
+      });
+    }
+    this.applyFilter();
+  }
+}

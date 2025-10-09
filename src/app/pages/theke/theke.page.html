@@ -1,0 +1,97 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Theke</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <app-refresh (refreshed)="init()"></app-refresh>
+  <ion-accordion-group>
+    <ion-accordion value="filter">
+      <ion-item slot="header">
+        <ion-label>Filter anzeigen</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <!-- Dein Filterformular hier -->
+
+        <ion-list>
+          <ion-item>
+            <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ionChange)="applyFilter()"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ionChange)="applyFilter()"></ion-input>
+          </ion-item>
+          <!-- <ion-item>
+      <ion-input [(ngModel)]="filter.mail" placeholder="E-Mail" (ionChange)="applyFilter()"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input [(ngModel)]="filter.phonenumber" placeholder="Telefon" (ionChange)="applyFilter()"></ion-input>
+    </ion-item> -->
+
+          <ion-item>
+            <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()"></ion-input>
+          </ion-item>
+          <!-- <ion-item>
+      <ion-input [(ngModel)]="filter.miscellaneous" placeholder="Sonstiges" (ionChange)="applyFilter()"></ion-input>
+    </ion-item> -->
+
+          <ion-item>
+            <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen"
+              (ionChange)="applyFilter()"></ion-input>
+            <ion-input type="number" [(ngModel)]="filter.nuggets" placeholder="Nuggets"
+              (ionChange)="applyFilter()"></ion-input>
+            <ion-input type="number" [(ngModel)]="filter.fries" placeholder="Pommes"
+              (ionChange)="applyFilter()"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-select [(ngModel)]="filter.status" multiple="true" placeholder="Status" (ionChange)="applyFilter()">
+              <ion-select-option value="CREATED">CREATED</ion-select-option>
+              <ion-select-option value="CHECKED_IN">CHECKED_IN</ion-select-option>
+              <ion-select-option value="PAID">PAID</ion-select-option>
+              <ion-select-option value="PRINTED">PRINTED</ion-select-option>
+              <ion-select-option value="PREPARING">PREPARING</ion-select-option>
+              <ion-select-option value="READY_FOR_PICKUP">READY_FOR_PICKUP</ion-select-option>
+              <ion-select-option value="COMPLETED">COMPLETED</ion-select-option>
+              <ion-select-option value="CANCELLED">CANCELLED</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+        </ion-list>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+
+  <ion-list>
+    <ion-card *ngFor="let order of filteredOrders; trackBy: trackByOrderId">
+      <ion-card-header>
+        <ion-card-title>{{order.firstname}} {{order.lastname}}</ion-card-title>
+        <ion-card-subtitle>{{order.date}}</ion-card-subtitle>
+        <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">{{order.status}}</ion-button>
+      </ion-card-header>
+
+      <!-- Verstecktes Select -->
+      <ion-select [value]="order.status" #selectRefs interface="popover" style="display: none;"
+        (ionChange)="onStatusChange($event, order)">
+        <ion-select-option value="CREATED">CREATED</ion-select-option>
+        <ion-select-option value="CHECKED_IN">CHECKED_IN</ion-select-option>
+        <ion-select-option value="PAID">PAID</ion-select-option>
+        <ion-select-option value="PRINTED">PRINTED</ion-select-option>
+        <ion-select-option value="PREPARING">PREPARING</ion-select-option>
+        <ion-select-option value="READY_FOR_PICKUP">READY_FOR_PICKUP</ion-select-option>
+        <ion-select-option value="COMPLETED">COMPLETED</ion-select-option>
+        <ion-select-option value="CANCELLED">CANCELLED</ion-select-option>
+      </ion-select>
+
+      <ion-card-content>
+        <ion-item><strong>Hähnchen: </strong> 2</ion-item>
+        <ion-item><strong>Nuggets: </strong> 1</ion-item>
+        <ion-item><strong>Pommes:</strong> 3</ion-item>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>

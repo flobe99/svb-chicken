@@ -32,6 +32,10 @@ export const routes: Routes = [
     canActivate: [OrderGuard]
   },
   {
+    path: 'theke',
+    loadComponent: () => import('./pages/theke/theke.page').then(m => m.ThekePage)
+  },
+  {
     path: 'settings',
     loadComponent: () => import('./pages/settings/settings.page').then(m => m.SettingsPage)
   },

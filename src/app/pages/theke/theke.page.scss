@@ -1,0 +1,10 @@
+.card-with-chip {
+    position: relative;
+}
+
+.chip-top-right {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}

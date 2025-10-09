@@ -63,10 +63,10 @@ import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 export class DashboardPage implements OnInit {
   event = {
     name: 'Hähnchenwochenende',
-    date: '21. – 22. September 2025',
+    date: '21. - 22. September 2025',
     location: 'Sportgelände SV Baustetten',
     time: 'ab 11:00 Uhr',
-    description: 'Knusprige Hähnchen, kühle Getränke und gute Stimmung – das traditionelle Fest für die ganze Familie!'
+    description: 'Knusprige Hähnchen, kühle Getränke und gute Stimmung - das traditionelle Fest für die ganze Familie!'
   };
   constructor(private router: Router) { }
 
