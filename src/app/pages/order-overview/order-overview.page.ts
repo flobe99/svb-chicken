@@ -49,11 +49,20 @@ export class OrderOverviewPage implements OnInit {
     private toastController: ToastController) { }
 
   async ngOnInit() {
-    (await this.orderService.getOrder()).subscribe((order) => {
-      this.order = order;
-      console.table(this.order)
-    })
+    const orderObservable = await this.orderService.getOrder();
+
+    orderObservable.subscribe(order => {
+      if (order) {
+        this.order = order;
+        console.table(this.order);
+
+        this.orderService.getOrderPrice(order).subscribe(price => {
+          this.order!.price = price;
+        });
+      }
+    });
   }
+
 
   goBack() {
     this.router.navigate(['/']);

@@ -40,6 +40,10 @@
           <ion-note slot="end">{{ order?.fries }}</ion-note>
         </ion-item>
         <ion-item>
+          <ion-label>Preis</ion-label>
+          <ion-note slot="end">{{ order?.price?.toFixed(2) }}€</ion-note>
+        </ion-item>
+        <ion-item>
           <ion-label>Sonstiges</ion-label>
           <ion-note slot="end">{{ order?.miscellaneous }}</ion-note>
         </ion-item>

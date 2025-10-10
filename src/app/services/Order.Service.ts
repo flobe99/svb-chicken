@@ -92,6 +92,16 @@ export class OrderService {
         );
     }
 
+    // POST /order/price
+    getOrderPrice(order: OrderChicken): Observable<number> {
+        return this.http.post<{ price: number }>(`${API_URL}/order/price`, order).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Berechnen des Preises:', error);
+                return of({ price: 0 });
+            }),
+            map((response) => response.price)
+        );
+    }
 
 
     connectToOrderWebSocket(onMessage: () => void) {
