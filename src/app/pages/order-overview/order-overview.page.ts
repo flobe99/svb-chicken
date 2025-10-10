@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular'; import {
+import { IonicModule, ToastController } from '@ionic/angular'; import {
   IonContent,
   IonHeader,
   IonTitle,
@@ -37,7 +37,8 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonButtons,
     IonMenuButton,
     TimePipe,
-    RefreshComponent
+    RefreshComponent,
+    IonicModule
   ]
 })
 export class OrderOverviewPage implements OnInit {

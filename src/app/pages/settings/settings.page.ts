@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import {
   IonContent,
   IonHeader,
@@ -62,7 +62,8 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonText,
     IonGrid,
     IonRow,
-    IonCol
+    IonCol,
+    IonicModule
   ],
 })
 
