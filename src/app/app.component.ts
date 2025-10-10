@@ -15,7 +15,9 @@ import {
   IonIcon,
   IonLabel,
   IonRouterOutlet,
-  IonListHeader
+  IonListHeader,
+  ToastController,
+  IonButton
 } from '@ionic/angular/standalone';
 
 @Component({
@@ -36,13 +38,24 @@ import {
     IonIcon,
     IonLabel,
     IonRouterOutlet,
-    IonListHeader
+    IonListHeader,
+    IonButton
   ],
 })
 export class AppComponent {
 
-  constructor() {
+  constructor(private toastController: ToastController) {
     addIcons({ fastFoodOutline, fastFood, settings, mail, add, homeOutline, addCircleOutline });
+  }
+
+  async showToast() {
+    const toast = await this.toastController.create({
+      message: 'Hallo von Ionic!',
+      duration: 2000,
+      position: 'top',
+      color: 'success'
+    });
+    await toast.present();
   }
 
   public appPages = [

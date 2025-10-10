@@ -5,7 +5,7 @@
         <ion-list id="inbox-list">
           <ion-list-header>Hähnchenwochenende</ion-list-header>
           <ion-note>florian&#64;betz-group.de</ion-note>
-
+          <ion-button (click)="showToast()">Toast anzeigen</ion-button>
           @for (p of appPages; track p; let i = $index) {
           <ion-menu-toggle auto-hide="false">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false"
