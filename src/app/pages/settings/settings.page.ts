@@ -77,13 +77,19 @@ export class SettingsPage implements OnInit {
     private orderService: OrderService,
     private toastController: ToastController
   ) {
-
+    console.log('ToastController:', this.toastController);
   }
 
   async ngOnInit() {
     this.orderService.getProducts().subscribe((data) => {
       this.products = data;
     });
+    const toast = await this.toastController.create({
+      message: 'Test-Toast',
+      duration: 2000,
+      color: 'primary'
+    });
+    await toast.present();
   }
 
   formatPrice(product: Product) {
@@ -131,5 +137,4 @@ export class SettingsPage implements OnInit {
   cancel() {
     this.router.navigate(['/order'])
   }
-
 }
