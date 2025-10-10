@@ -13,36 +13,30 @@ export class TimePipe implements PipeTransform {
     constructor() {
     }
 
-    public static get(value: string | Date, attribute?: string): any {
+    public static get(value: string | Date, attribute?: string): string {
         value = typeof value === "string" ? value : value.toISOString();
-
-
         const date = moment(value);
-        const d = moment.duration(moment().diff(date));
-        const minDiff = Math.floor(d.asMinutes());
-        const hourDiff = d.asHours();
-        const nowHour = Number.parseInt(moment().local().format("HH"));
 
-        if (attribute && attribute === "plain") {
-            return date.local().format("DD.MM.YYYY, HH:mm");
-        }
+        if (!date.isValid()) return '';
 
-        if (attribute && attribute === "date") {
-            return date.local().format("DD.MM.YYYY");
-        }
-
-        if (attribute && attribute === "iso-date") {
-            return date.local().format("YYYY-MM-DD");
-        }
-
-        if (attribute && attribute === "time") {
-            return date.local().format("HH:mm");
-        }
-
-        if (attribute && attribute === "time-seconds") {
-            return date.local().format("HH:mm:ss");
+        switch (attribute) {
+            case 'plain':
+                return date.local().format("DD.MM.YYYY, HH:mm");
+            case 'date':
+                return date.local().format("DD.MM.YYYY");
+            case 'iso-date':
+                return date.local().format("YYYY-MM-DD");
+            case 'time':
+                return date.local().format("HH:mm");
+            case 'time-seconds':
+                return date.local().format("HH:mm:ss");
+            case 'dayOfWeek':
+                return date.local().day().toString();
+            default:
+                return date.fromNow();
         }
     }
+
 
     /**
      * Transform a given string to a locale translated string
