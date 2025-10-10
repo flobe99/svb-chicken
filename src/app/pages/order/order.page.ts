@@ -81,15 +81,15 @@ export class OrderPage implements OnInit {
 
   ngOnInit() {
     this.order = new OrderChicken({
-      firstname: "Florian",
-      lastname: "Betz",
-      mail: "florian@betz.de",
-      phonenumber: "015256987563",
+      firstname: "",
+      lastname: "",
+      mail: "",
+      phonenumber: "",
       date: new Date().toISOString(),
-      chicken: 3,
-      nuggets: 2,
-      fries: 1,
-      miscellaneous: "nix",
+      chicken: 0,
+      nuggets: 0,
+      fries: 0,
+      miscellaneous: "",
     })
   }
 
