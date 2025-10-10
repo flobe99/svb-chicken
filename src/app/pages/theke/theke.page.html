@@ -65,7 +65,6 @@
               <ion-select-option value="CANCELLED">CANCELLED</ion-select-option>
             </ion-select>
           </ion-item>
-
         </ion-list>
       </div>
     </ion-accordion>
@@ -79,6 +78,8 @@
         <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">{{ getStatusLabel(order.status)
           }}</ion-button>
       </ion-card-header>
+
+      <ion-item>{{ order.price.toFixed(2) }}€</ion-item>
 
       <!-- Verstecktes Select -->
       <ion-select [value]="order.status" #selectRefs interface="popover" style="display: none;"
