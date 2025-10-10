@@ -83,6 +83,7 @@ export class OrderOverviewPage implements OnInit {
       console.log("response-start");
       console.table(response);
       console.log("response-stop");
+
       const toast = await this.toastController.create({
         message: response.success
           ? 'Bestellung erfolgreich eingegeben.'
@@ -91,20 +92,30 @@ export class OrderOverviewPage implements OnInit {
         color: response.success ? 'success' : 'danger',
         position: 'top'
       });
-      await toast.present();
 
+      await toast.present();
+      console.log('Toast wurde angezeigt');
+
+      // Navigation erst nach Toast-Dismissal
       if (response.success) {
-        await this.router.navigate(['/dashboard']);
+        toast.onDidDismiss().then(() => {
+          console.log('Navigiere zum Dashboard');
+          this.router.navigate(['/dashboard']);
+        });
       }
+
     } catch (error) {
       console.error('Fehler beim Absenden der Bestellung:', error);
+
       const toast = await this.toastController.create({
         message: 'Fehler beim Absenden der Bestellung.',
         duration: 2500,
         color: 'danger',
         position: 'top'
       });
+
       await toast.present();
     }
   }
+
 }
