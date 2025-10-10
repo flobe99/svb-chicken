@@ -86,17 +86,6 @@ export class SettingsPage implements OnInit {
     });
   }
 
-
-  async ionViewDidEnter() {
-    const toast = await this.toastController.create({
-      message: 'Test-Toast',
-      duration: 2000,
-      color: 'primary'
-    });
-    await toast.present();
-  }
-
-
   formatPrice(product: Product) {
     if (product.price !== null && product.price !== undefined) {
       product.price = parseFloat(product.price.toFixed(2));

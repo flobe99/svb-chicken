@@ -102,9 +102,6 @@ export class OrderOverviewPage implements OnInit {
       await toast.present();
       console.log('Toast wurde angezeigt');
 
-      // Navigation erst nach Toast-Dismissal
-
-
     } catch (error) {
       console.error('Fehler beim Absenden der Bestellung:', error);
 

@@ -48,16 +48,6 @@ export class AppComponent {
     addIcons({ fastFoodOutline, fastFood, settings, mail, add, homeOutline, addCircleOutline });
   }
 
-  async showToast() {
-    const toast = await this.toastController.create({
-      message: 'Hallo von Ionic!',
-      duration: 2000,
-      position: 'top',
-      color: 'success'
-    });
-    await toast.present();
-  }
-
   public appPages = [
     { title: 'Dashboard', url: '/dashboard', icon: 'home-outline' },
     { title: 'Bestellung', url: '/order', icon: 'fast-food-outline' },
