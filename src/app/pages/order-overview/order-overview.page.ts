@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonicModule, ToastController } from '@ionic/angular'; import {
+// import { IonicModule, ToastController } from '@ionic/angular';
+import {
   IonContent,
   IonHeader,
   IonTitle,
@@ -12,6 +13,7 @@ import { IonicModule, ToastController } from '@ionic/angular'; import {
   IonButtons,
   IonMenuButton,
   IonList, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonCardContent, IonNote,
+  ToastController
 } from '@ionic/angular/standalone';
 import { firstValueFrom } from 'rxjs';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
@@ -38,7 +40,6 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonMenuButton,
     TimePipe,
     RefreshComponent,
-    IonicModule
   ]
 })
 export class OrderOverviewPage implements OnInit {
