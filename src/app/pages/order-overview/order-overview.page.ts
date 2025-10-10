@@ -80,8 +80,9 @@ export class OrderOverviewPage implements OnInit {
       console.table(this.order);
 
       const response = await firstValueFrom(this.orderService.createOrder(this.order));
+      console.log("response-start");
       console.table(response);
-
+      console.log("response-stop");
       const toast = await this.toastController.create({
         message: response.success
           ? 'Bestellung erfolgreich eingegeben.'
@@ -93,7 +94,7 @@ export class OrderOverviewPage implements OnInit {
       await toast.present();
 
       if (response.success) {
-        this.router.navigate(['/dashboard']);
+        await this.router.navigate(['/dashboard']);
       }
     } catch (error) {
       console.error('Fehler beim Absenden der Bestellung:', error);
