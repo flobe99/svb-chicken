@@ -13,6 +13,7 @@ import { ToastController } from '@ionic/angular'; import {
   IonMenuButton,
   IonList, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonCardContent, IonNote,
 } from '@ionic/angular/standalone';
+import { firstValueFrom } from 'rxjs';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { OrderChicken } from 'src/app/models/order.model';
 import { TimePipe } from 'src/app/pipes/time.pipe';
@@ -51,18 +52,21 @@ export class OrderOverviewPage implements OnInit {
   async ngOnInit() {
     const orderObservable = await this.orderService.getOrder();
 
-    orderObservable.subscribe(order => {
+    orderObservable.subscribe(async order => {
       if (order) {
         this.order = order;
         console.table(this.order);
 
-        this.orderService.getOrderPrice(order).subscribe(price => {
-          this.order!.price = price;
-        });
+        try {
+          const price = await firstValueFrom(this.orderService.getOrderPrice(order));
+          console.table(price);
+          this.order.price = price;
+        } catch (error) {
+          console.error('Fehler beim Preisabruf:', error);
+        }
       }
     });
   }
-
 
   goBack() {
     this.router.navigate(['/']);
