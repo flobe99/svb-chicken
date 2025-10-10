@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
+import { Toast } from '@capacitor/toast';
+
 import {
   IonContent,
   IonHeader,
@@ -84,12 +86,9 @@ export class SettingsPage implements OnInit {
     this.orderService.getProducts().subscribe((data) => {
       this.products = data;
     });
-    const toast = await this.toastController.create({
-      message: 'Test-Toast',
-      duration: 2000,
-      color: 'primary'
+    await Toast.show({
+      text: 'Hello!',
     });
-    await toast.present();
   }
 
   formatPrice(product: Product) {
