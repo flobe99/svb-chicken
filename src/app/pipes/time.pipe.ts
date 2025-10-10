@@ -37,7 +37,6 @@ export class TimePipe implements PipeTransform {
         }
     }
 
-
     /**
      * Transform a given string to a locale translated string
      * @param value the string identifier that should be translated
