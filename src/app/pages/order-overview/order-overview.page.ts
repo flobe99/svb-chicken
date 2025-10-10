@@ -84,6 +84,11 @@ export class OrderOverviewPage implements OnInit {
       console.table(response);
       console.log("response-stop");
 
+      if (response.success) {
+        console.log('Navigiere zum Dashboard');
+        this.router.navigate(['/dashboard']);
+      }
+
       const toast = await this.toastController.create({
         message: response.success
           ? 'Bestellung erfolgreich eingegeben.'
@@ -97,12 +102,7 @@ export class OrderOverviewPage implements OnInit {
       console.log('Toast wurde angezeigt');
 
       // Navigation erst nach Toast-Dismissal
-      if (response.success) {
-        toast.onDidDismiss().then(() => {
-          console.log('Navigiere zum Dashboard');
-          this.router.navigate(['/dashboard']);
-        });
-      }
+
 
     } catch (error) {
       console.error('Fehler beim Absenden der Bestellung:', error);
