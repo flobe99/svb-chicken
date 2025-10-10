@@ -20,20 +20,20 @@
 
         <ion-list>
           <ion-item>
-            <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ionChange)="applyFilter()"></ion-input>
+            <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ionChange)="applyFilter()"></ion-input>
+            <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
           </ion-item>
           <!-- <ion-item>
-      <ion-input [(ngModel)]="filter.mail" placeholder="E-Mail" (ionChange)="applyFilter()"></ion-input>
+      <ion-input [(ngModel)]="filter.mail" placeholder="E-Mail" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-input [(ngModel)]="filter.phonenumber" placeholder="Telefon" (ionChange)="applyFilter()"></ion-input>
+      <ion-input [(ngModel)]="filter.phonenumber" placeholder="Telefon" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
     </ion-item> -->
 
           <ion-item>
-            <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()"></ion-input>
+            <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
           </ion-item>
           <!-- <ion-item>
       <ion-input [(ngModel)]="filter.miscellaneous" placeholder="Sonstiges" (ionChange)="applyFilter()"></ion-input>
@@ -41,11 +41,11 @@
 
           <ion-item>
             <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen"
-              (ionChange)="applyFilter()"></ion-input>
+              (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
             <ion-input type="number" [(ngModel)]="filter.nuggets" placeholder="Nuggets"
-              (ionChange)="applyFilter()"></ion-input>
+              (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
             <ion-input type="number" [(ngModel)]="filter.fries" placeholder="Pommes"
-              (ionChange)="applyFilter()"></ion-input>
+              (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
           </ion-item>
 
           <ion-item>

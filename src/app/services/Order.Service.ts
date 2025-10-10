@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OrderChicken, OrderStatus } from '../models/order.model';
+import { Product } from '../models/product.model';
 import { StorageService } from './storage.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -103,6 +104,30 @@ export class OrderService {
         );
     }
 
+    getProducts(): Observable<Product[]> {
+        // return this.http.get<Product[]>(`${API_URL}/products`);
+        return this.http.get<Partial<Product>[]>(`${API_URL}/products`).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Abrufen des Products:', error);
+                return of([]);
+            }),
+            map((data) => data.map((item) => new Product(item)))
+        );
+    }
+
+    updateProduct(product: Product): Observable<any> {
+    if (!product.id || !product.product || product.price == null) {
+        console.warn('Ungültiges Produkt:', product);
+        return of({ success: false, error: 'Ungültige Produktdaten' });
+    }
+
+    return this.http.put(`${API_URL}/product/${product.id}`, product).pipe(
+        catchError((error: HttpErrorResponse) => {
+        console.error('Fehler beim Aktualisieren des Produktes:', error);
+        return of({ success: false, error });
+        })
+    );
+    }
 
     connectToOrderWebSocket(onMessage: () => void) {
         this.socket = new WebSocket(`${SOCKET}`);

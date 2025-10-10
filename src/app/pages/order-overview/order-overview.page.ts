@@ -73,30 +73,37 @@ export class OrderOverviewPage implements OnInit {
   }
 
 
-  submitOrder() {
-    // this.router.navigate(['/order-verification']);
-    console.table(this.order)
-    if (this.order) {
-      this.orderService.createOrder(this.order).subscribe(async (response) => {
-        setTimeout(async () => {
-          console.table(response)
-          const toast = await this.toastController.create({
-            message: response.success
-              ? 'Bestellung erfolgreich eingegeben.'
-              : 'Fehler beim Absenden der Bestellung.',
-            duration: 2500,
-            color: response.success ? 'success' : 'danger',
-            position: 'top'
-          });
-          await toast.present();
-        }, 100);
+  async submitOrder() {
+    if (!this.order) return;
 
-        if (response.success) {
-          this.router.navigate(['/dashboard']);
-        }
+    try {
+      console.table(this.order);
+
+      const response = await firstValueFrom(this.orderService.createOrder(this.order));
+      console.table(response);
+
+      const toast = await this.toastController.create({
+        message: response.success
+          ? 'Bestellung erfolgreich eingegeben.'
+          : 'Fehler beim Absenden der Bestellung.',
+        duration: 2500,
+        color: response.success ? 'success' : 'danger',
+        position: 'top'
       });
+      await toast.present();
+
+      if (response.success) {
+        this.router.navigate(['/dashboard']);
+      }
+    } catch (error) {
+      console.error('Fehler beim Absenden der Bestellung:', error);
+      const toast = await this.toastController.create({
+        message: 'Fehler beim Absenden der Bestellung.',
+        duration: 2500,
+        color: 'danger',
+        position: 'top'
+      });
+      await toast.present();
     }
   }
-
-
 }
