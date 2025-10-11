@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OrderChicken, OrderStatus, OrderSummaryResponse } from '../models/order.model';
-import { Product } from '../models/product.model';
+import { ConfigChicken, Product } from '../models/product.model';
 import { StorageService } from './storage.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -146,6 +146,26 @@ export class OrderService {
             catchError((error: HttpErrorResponse) => {
                 console.error('Fehler beim Aktualisieren des Produktes:', error);
                 return of({ success: false, error });
+            })
+        );
+    }
+
+    getConfig(): Observable<ConfigChicken | null> {
+        return this.http.get<Partial<ConfigChicken>>(`${API_URL}/config/0`).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Abrufen der Konfiguration mit ID 0:', error);
+                return of(null);
+            }),
+            map((data) => data ? new ConfigChicken(data) : null)
+        );
+    }
+
+
+    updateConfig(configId: number, config: ConfigChicken): Observable<any> {
+        return this.http.put(`${API_URL}/config/${configId}`, config).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Aktualisieren der Konfiguration:', error);
+                return of({ success: false });
             })
         );
     }

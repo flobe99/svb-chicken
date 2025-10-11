@@ -36,3 +36,19 @@
 .hoverable:hover {
     background-color: var(--ion-color-light); // or use a custom shade
 }
+
+.green-cell {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 4px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.red-cell {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 4px;
+    border-radius: 4px;
+    text-align: center;
+}

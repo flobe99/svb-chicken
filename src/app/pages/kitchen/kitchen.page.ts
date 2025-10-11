@@ -41,6 +41,7 @@ import { OrderChicken, OrderSummaryResponse, OrderSummarySlot } from 'src/app/mo
 import { OrderService } from 'src/app/services/Order.Service';
 import { Router } from '@angular/router';
 import { StorageService } from 'src/app/services/storage.service';
+import { ConfigChicken } from 'src/app/models/product.model';
 
 @Component({
   selector: 'app-kitchen',
@@ -89,6 +90,7 @@ import { StorageService } from 'src/app/services/storage.service';
 
 export class KitchenPage implements OnInit {
   timeSlots: TimeSlotConfig[] = [];
+  config: ConfigChicken = new ConfigChicken();
 
   constructor(private orderService: OrderService, private router: Router, private storageService: StorageService) { }
 
@@ -122,6 +124,12 @@ export class KitchenPage implements OnInit {
           }
         };
       });
+    });
+
+    this.orderService.getConfig().subscribe((config) => {
+      if (config) {
+        this.config = config;
+      }
     });
 
     await this.orderService.connectToOrderWebSocket(() => {

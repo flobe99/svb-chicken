@@ -27,26 +27,38 @@
               {{ time.time }}
             </div>
           </ion-col>
-
-
-
           <ion-col>Summe</ion-col>
         </ion-row>
         <ion-row>
           <ion-col>Hähnchen</ion-col>
-          <ion-col *ngFor="let value of slot.slots">{{ value.chicken }}</ion-col>
+          <ion-col *ngFor="let value of slot.slots">
+            <div [ngClass]="value.chicken <= config.chicken ? 'green-cell' : 'red-cell'">
+              {{ value.chicken }}
+            </div>
+          </ion-col>
           <ion-col>{{ slot.total.chicken }}</ion-col>
         </ion-row>
+
         <ion-row>
           <ion-col>Nuggets</ion-col>
-          <ion-col *ngFor="let value of slot.slots">{{ value.nuggets }}</ion-col>
+          <ion-col *ngFor="let value of slot.slots">
+            <div [ngClass]="value.nuggets <= config.nuggets ? 'green-cell' : 'red-cell'">
+              {{ value.nuggets }}
+            </div>
+          </ion-col>
           <ion-col>{{ slot.total.nuggets }}</ion-col>
         </ion-row>
+
         <ion-row>
           <ion-col>Pommes</ion-col>
-          <ion-col *ngFor="let value of slot.slots">{{ value.fries }}</ion-col>
+          <ion-col *ngFor="let value of slot.slots">
+            <div [ngClass]="value.fries <= config.fries ? 'green-cell' : 'red-cell'">
+              {{ value.fries }}
+            </div>
+          </ion-col>
           <ion-col>{{ slot.total.fries }}</ion-col>
         </ion-row>
+
       </ion-grid>
     </ion-card-content>
   </ion-card>

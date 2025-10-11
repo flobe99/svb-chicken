@@ -21,7 +21,8 @@ export class OrderChicken {
     fries: number;
     miscellaneous: string;
     status: OrderStatus;
-    price: number
+    price: number;
+    checked_in_at: string;
 
     constructor(obj?: Partial<OrderChicken>) {
         this.id = obj?.id;
@@ -36,6 +37,7 @@ export class OrderChicken {
         this.miscellaneous = obj?.miscellaneous || '';
         this.status = obj?.status ?? OrderStatus.CREATED;
         this.price = obj?.price || 0;
+        this.checked_in_at = obj?.checked_in_at || '';
     }
 }
 

@@ -111,7 +111,7 @@ export class OrderPage implements OnInit {
       this.presentToast('Bitte alle Pflichtfelder ausfüllen');
       return;
     }
-
+    console.table(this.order)
     if (this.order.id) {
       this.orderService.updateOrder(this.order.id, this.order).subscribe((response) => {
         if (response.success) {
