@@ -13,7 +13,7 @@ export class TimePipe implements PipeTransform {
     constructor() {
     }
 
-    public static get(value: string | Date, attribute?: string): string {
+    public get(value: string | Date, attribute?: string): string {
         value = typeof value === "string" ? value : value.toISOString();
         const date = moment(value);
 
@@ -47,8 +47,6 @@ export class TimePipe implements PipeTransform {
      * @returns time piped string
      */
     transform(value: string | Date, attribute?: string): string {
-        return TimePipe.get(value, attribute);
+        return this.get(value, attribute);
     }
-
-
 }
