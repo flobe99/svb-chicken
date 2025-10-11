@@ -57,33 +57,33 @@
 
 
   <div *ngIf="hasActiveFilters()" class="filter-batch ion-padding-start ion-padding-bottom">
-    <ion-chip *ngIf="filter.firstname" (click)="removeFilter('firstname')">
+    <ion-chip *ngIf="filter.firstname">
       <ion-label>Vorname: {{ filter.firstname }}</ion-label>
-      <ion-icon name="close"></ion-icon>
+      <ion-icon name="close" (click)="removeFilter('firstname')"></ion-icon>
     </ion-chip>
-    <ion-chip *ngIf="filter.lastname" (click)="removeFilter('lastname')">
+    <ion-chip *ngIf="filter.lastname">
       <ion-label>Nachname: {{ filter.lastname }}</ion-label>
-      <ion-icon name="close"></ion-icon>
+      <ion-icon name="close" (click)="removeFilter('lastname')"></ion-icon>
     </ion-chip>
-    <ion-chip *ngIf="filter.date" (click)="removeFilter('date')">
+    <ion-chip *ngIf="filter.date">
       <ion-label>Datum: {{ filter.date }}</ion-label>
-      <ion-icon name="close"></ion-icon>
+      <ion-icon name="close" (click)="removeFilter('date')"></ion-icon>
     </ion-chip>
-    <ion-chip *ngIf="filter.chicken" (click)="removeFilter('chicken')">
+    <ion-chip *ngIf="filter.chicken">
       <ion-label>Hähnchen: {{ filter.chicken }}</ion-label>
-      <ion-icon name="close"></ion-icon>
+      <ion-icon name="close" (click)="removeFilter('chicken')"></ion-icon>
     </ion-chip>
-    <ion-chip *ngIf="filter.nuggets" (click)="removeFilter('nuggets')">
+    <ion-chip *ngIf="filter.nuggets">
       <ion-label>Nuggets: {{ filter.nuggets }}</ion-label>
-      <ion-icon name="close"></ion-icon>
+      <ion-icon name="close" (click)="removeFilter('nuggets')"></ion-icon>
     </ion-chip>
-    <ion-chip *ngIf="filter.fries" (click)="removeFilter('fries')">
+    <ion-chip *ngIf="filter.fries">
       <ion-label>Pommes: {{ filter.fries }}</ion-label>
-      <ion-icon name="close"></ion-icon>
+      <ion-icon name="close" (click)="removeFilter('fries')"></ion-icon>
     </ion-chip>
-    <ion-chip *ngFor="let status of filter.status; let i = index" (click)="removeStatusFilter(i)">
+    <ion-chip *ngFor="let status of filter.status; let i = index">
       <ion-label>Status: {{ getStatusLabel(status) }}</ion-label>
-      <ion-icon name="close"></ion-icon>
+      <ion-icon name="close" (click)="removeStatusFilter(i)"></ion-icon>
     </ion-chip>
   </div>
 
