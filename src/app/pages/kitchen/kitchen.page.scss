@@ -1,0 +1,26 @@
+.table-grid {
+    ion-row {
+        border-bottom: 1px solid #ccc;
+    }
+
+    ion-col {
+        border-right: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    ion-row:first-child ion-col {
+        font-weight: bold;
+        background-color: #f4f4f4;
+    }
+
+    ion-row:last-child ion-col {
+        border-bottom: 1px solid #ccc;
+    }
+
+    ion-col:last-child {
+        border-right: none;
+    }
+}

@@ -89,6 +89,7 @@ export class OrderOverviewPage implements OnInit {
       if (response.success) {
         console.log('Navigiere zum Dashboard');
         this.router.navigate(['/dashboard']);
+        this.orderService.deleteOrder();
       }
 
       const toast = await this.toastController.create({

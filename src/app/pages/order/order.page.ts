@@ -80,17 +80,22 @@ export class OrderPage implements OnInit {
 
 
   ngOnInit() {
-    this.order = new OrderChicken({
-      firstname: "",
-      lastname: "",
-      mail: "",
-      phonenumber: "",
-      date: new Date().toISOString(),
-      chicken: 0,
-      nuggets: 0,
-      fries: 0,
-      miscellaneous: "",
-    })
+    const nav = this.router.getCurrentNavigation();
+    const stateOrder = nav?.extras?.state?.['order'];
+
+    this.order = stateOrder
+      ? new OrderChicken(stateOrder)
+      : new OrderChicken({
+        firstname: "",
+        lastname: "",
+        mail: "",
+        phonenumber: "",
+        date: new Date().toISOString(),
+        chicken: 0,
+        nuggets: 0,
+        fries: 0,
+        miscellaneous: "",
+      });
   }
 
   async submitOrder() {
@@ -103,13 +108,25 @@ export class OrderPage implements OnInit {
       this.order.nuggets == null ||
       this.order.fries == null
     ) {
-      console.log('Bitte alle Felder ausfüllen.');
       this.presentToast('Bitte alle Pflichtfelder ausfüllen');
       return;
     }
-    await this.orderService.setOrder(this.order);
-    this.router.navigate(['/order-overview'], {});
+
+    if (this.order.id) {
+      this.orderService.updateOrder(this.order.id, this.order).subscribe((response) => {
+        if (response.success) {
+          this.presentToast('Bestellung aktualisiert', 'success');
+          this.router.navigate(['/theke']);
+        } else {
+          this.presentToast('Fehler beim Aktualisieren', 'danger');
+        }
+      });
+    } else {
+      await this.orderService.setOrder(this.order);
+      this.router.navigate(['/order-overview']);
+    }
   }
+
 
   async presentToast(message: string, color: string = 'danger') {
     const toast = await this.toastController.create({

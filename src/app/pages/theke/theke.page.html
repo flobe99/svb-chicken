@@ -76,8 +76,24 @@
   <ion-list>
     <ion-card *ngFor="let order of filteredOrders; trackBy: trackByOrderId">
       <ion-card-header>
-        <ion-card-title>{{order.firstname}} {{order.lastname}}</ion-card-title>
-        <ion-card-subtitle>{{ (order?.date ?? '') | time: 'date' }}</ion-card-subtitle>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: inline-flex; align-items: center; gap: 6px;">
+            <ion-card-title>
+              {{ order.firstname }} {{ order.lastname }}
+            </ion-card-title>
+            <ion-button fill="clear" size="small" (click)="editOrder(order)">
+              bearbeiten
+            </ion-button>
+          </div>
+
+          <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">
+            {{ getStatusLabel(order.status) }}
+          </ion-button>
+        </div>
+        <ion-card-subtitle>
+          {{ (order?.date ?? '') | time: 'date' }}
+        </ion-card-subtitle>
+
         <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">{{ getStatusLabel(order.status)
           }}</ion-button>
       </ion-card-header>

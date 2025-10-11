@@ -81,7 +81,12 @@ import { TimePipe } from 'src/app/pipes/time.pipe';
 export class ThekePage implements OnInit {
   @ViewChildren('selectRefs') selectRefs!: QueryList<IonSelect>;
   // public status = "CREATED";
-  constructor(private orderService: OrderService, private storageService: StorageService) { }
+  constructor(
+    private orderService: OrderService,
+    private storageService: StorageService,
+    private router: Router
+  ) { }
+
   public orders: OrderChicken[] = [];
   public filteredOrders: OrderChicken[] = [];
 
@@ -135,6 +140,13 @@ export class ThekePage implements OnInit {
     });
     this.storageService.set('orderFilter', this.filter);
   }
+
+  editOrder(order: OrderChicken) {
+    this.router.navigate(['/order'], {
+      state: { order }
+    });
+  }
+
 
   openSelect(order: OrderChicken) {
     const index = this.filteredOrders.indexOf(order);

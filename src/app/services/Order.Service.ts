@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OrderChicken, OrderStatus } from '../models/order.model';
+import { OrderChicken, OrderStatus, OrderSummaryResponse } from '../models/order.model';
 import { Product } from '../models/product.model';
 import { StorageService } from './storage.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -63,6 +63,27 @@ export class OrderService {
         );
     }
 
+    // GET /orders/summary
+    getOrderSummary(date: string, interval: string): Observable<OrderSummaryResponse> {
+        const url = `${API_URL}/orders/summary?date=${date}&interval=${encodeURIComponent(interval)}`;
+        return this.http.get<Partial<OrderSummaryResponse>>(url).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Abrufen der Zusammenfassung:', error);
+                return of({
+                    date,
+                    interval,
+                    slots: [],
+                    total: {
+                        chicken: 0,
+                        nuggets: 0,
+                        fries: 0
+                    }
+                });
+            }),
+            map((data) => new OrderSummaryResponse(data))
+        );
+    }
+
     // POST /order
     createOrder(order: OrderChicken): Observable<any> {
         return this.http.post(`${API_URL}/order`, order).pipe(
@@ -116,17 +137,17 @@ export class OrderService {
     }
 
     updateProduct(product: Product): Observable<any> {
-    if (!product.id || !product.product || product.price == null) {
-        console.warn('Ungültiges Produkt:', product);
-        return of({ success: false, error: 'Ungültige Produktdaten' });
-    }
+        if (!product.id || !product.product || product.price == null) {
+            console.warn('Ungültiges Produkt:', product);
+            return of({ success: false, error: 'Ungültige Produktdaten' });
+        }
 
-    return this.http.put(`${API_URL}/product/${product.id}`, product).pipe(
-        catchError((error: HttpErrorResponse) => {
-        console.error('Fehler beim Aktualisieren des Produktes:', error);
-        return of({ success: false, error });
-        })
-    );
+        return this.http.put(`${API_URL}/product/${product.id}`, product).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Aktualisieren des Produktes:', error);
+                return of({ success: false, error });
+            })
+        );
     }
 
     connectToOrderWebSocket(onMessage: () => void) {

@@ -1,0 +1,214 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Küche</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">kitchen</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-card *ngFor="let slot of timeSlots">
+    <ion-card-header>
+      <ion-card-title>{{ slot.date | time: 'date' }}: {{ slot.label }} </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid class="table-grid">
+        <ion-row>
+          <ion-col></ion-col>
+          <ion-col *ngFor="let time of slot.slots">{{ time.time }}</ion-col>
+          <ion-col>Summe</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Hähnchen</ion-col>
+          <ion-col *ngFor="let value of slot.slots">{{ value.chicken }}</ion-col>
+          <ion-col>{{ slot.total.chicken }}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Nuggets</ion-col>
+          <ion-col *ngFor="let value of slot.slots">{{ value.nuggets }}</ion-col>
+          <ion-col>{{ slot.total.nuggets }}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Pommes</ion-col>
+          <ion-col *ngFor="let value of slot.slots">{{ value.fries }}</ion-col>
+          <ion-col>{{ slot.total.fries }}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Zusammenfassung</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item><strong>Hähnchen: </strong>5</ion-item>
+        <ion-item><strong>Nuggets: </strong>6</ion-item>
+        <ion-item><strong>Pommes: </strong>7</ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- <ion-card>
+    <ion-card-header>
+      <ion-card-title>Sonntag – 10:30 bis 13:30</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid class="table-grid">
+        <ion-row>
+          <ion-col></ion-col>
+          <ion-col>10:30</ion-col>
+          <ion-col>10:45</ion-col>
+          <ion-col>11:00</ion-col>
+          <ion-col>11:15</ion-col>
+          <ion-col>11:30</ion-col>
+          <ion-col>11:45</ion-col>
+          <ion-col>12:00</ion-col>
+          <ion-col>12:15</ion-col>
+          <ion-col>12:30</ion-col>
+          <ion-col>12:45</ion-col>
+          <ion-col>13:00</ion-col>
+          <ion-col>13:15</ion-col>
+          <ion-col>13:30</ion-col>
+          <ion-col>Summe</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Hähnchen</ion-col>
+          <ion-col>10</ion-col>
+          <ion-col>11</ion-col>
+          <ion-col>20</ion-col>
+          <ion-col>25</ion-col>
+          <ion-col>45</ion-col>
+          <ion-col>50</ion-col>
+          <ion-col>47</ion-col>
+          <ion-col>40</ion-col>
+          <ion-col>25</ion-col>
+          <ion-col>37</ion-col>
+          <ion-col>21</ion-col>
+          <ion-col>05</ion-col>
+          <ion-col>02</ion-col>
+          <ion-col>338</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Nuggets</ion-col>
+          <ion-col>7</ion-col>
+          <ion-col>8</ion-col>
+          <ion-col>5</ion-col>
+          <ion-col>4</ion-col>
+          <ion-col>2</ion-col>
+          <ion-col>6</ion-col>
+          <ion-col>5</ion-col>
+          <ion-col>4</ion-col>
+          <ion-col>2</ion-col>
+          <ion-col>3</ion-col>
+          <ion-col>4</ion-col>
+          <ion-col>5</ion-col>
+          <ion-col>8</ion-col>
+          <ion-col>63</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Pommes</ion-col>
+          <ion-col>17</ion-col>
+          <ion-col>50</ion-col>
+          <ion-col>60</ion-col>
+          <ion-col>65</ion-col>
+          <ion-col>45</ion-col>
+          <ion-col>50</ion-col>
+          <ion-col>60</ion-col>
+          <ion-col>35</ion-col>
+          <ion-col>45</ion-col>
+          <ion-col>12</ion-col>
+          <ion-col>07</ion-col>
+          <ion-col>25</ion-col>
+          <ion-col>10</ion-col>
+          <ion-col>481</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card> -->
+
+  <!-- <ion-card>
+    <ion-card-header>
+      <ion-card-title>Sonntag – 17:00 bis 20:00</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid class="table-grid">
+        <ion-row>
+          <ion-col></ion-col>
+          <ion-col>17:00</ion-col>
+          <ion-col>17:15</ion-col>
+          <ion-col>17:30</ion-col>
+          <ion-col>17:45</ion-col>
+          <ion-col>18:00</ion-col>
+          <ion-col>18:15</ion-col>
+          <ion-col>18:30</ion-col>
+          <ion-col>18:45</ion-col>
+          <ion-col>19:00</ion-col>
+          <ion-col>19:15</ion-col>
+          <ion-col>19:30</ion-col>
+          <ion-col>19:45</ion-col>
+          <ion-col>20:00</ion-col>
+          <ion-col>Summe</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Hähnchen</ion-col>
+          <ion-col>10</ion-col>
+          <ion-col>11</ion-col>
+          <ion-col>20</ion-col>
+          <ion-col>25</ion-col>
+          <ion-col>45</ion-col>
+          <ion-col>50</ion-col>
+          <ion-col>47</ion-col>
+          <ion-col>40</ion-col>
+          <ion-col>25</ion-col>
+          <ion-col>37</ion-col>
+          <ion-col>21</ion-col>
+          <ion-col>05</ion-col>
+          <ion-col>02</ion-col>
+          <ion-col>338</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Nuggets</ion-col>
+          <ion-col>7</ion-col>
+          <ion-col>8</ion-col>
+          <ion-col>5</ion-col>
+          <ion-col>4</ion-col>
+          <ion-col>2</ion-col>
+          <ion-col>6</ion-col>
+          <ion-col>5</ion-col>
+          <ion-col>4</ion-col>
+          <ion-col>2</ion-col>
+          <ion-col>3</ion-col>
+          <ion-col>4</ion-col>
+          <ion-col>5</ion-col>
+          <ion-col>8</ion-col>
+          <ion-col>63</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Pommes</ion-col>
+          <ion-col>17</ion-col>
+          <ion-col>50</ion-col>
+          <ion-col>60</ion-col>
+          <ion-col>65</ion-col>
+          <ion-col>45</ion-col>
+          <ion-col>50</ion-col>
+          <ion-col>60</ion-col>
+          <ion-col>35</ion-col>
+          <ion-col>45</ion-col>
+          <ion-col>12</ion-col>
+          <ion-col>07</ion-col>
+          <ion-col>25</ion-col>
+          <ion-col>10</ion-col>
+          <ion-col>481</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card> -->
+</ion-content>
