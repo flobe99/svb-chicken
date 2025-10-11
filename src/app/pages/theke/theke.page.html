@@ -20,10 +20,12 @@
 
         <ion-list>
           <ion-item>
-            <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
+            <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ionChange)="applyFilter()"
+              [clearInput]="true"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
+            <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ionChange)="applyFilter()"
+              [clearInput]="true"></ion-input>
           </ion-item>
           <!-- <ion-item>
       <ion-input [(ngModel)]="filter.mail" placeholder="E-Mail" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
@@ -33,19 +35,20 @@
     </ion-item> -->
 
           <ion-item>
-            <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
+            <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()"
+              [clearInput]="true"></ion-input>
           </ion-item>
           <!-- <ion-item>
       <ion-input [(ngModel)]="filter.miscellaneous" placeholder="Sonstiges" (ionChange)="applyFilter()"></ion-input>
     </ion-item> -->
 
           <ion-item>
-            <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen"
-              (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
-            <ion-input type="number" [(ngModel)]="filter.nuggets" placeholder="Nuggets"
-              (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
-            <ion-input type="number" [(ngModel)]="filter.fries" placeholder="Pommes"
-              (ionChange)="applyFilter()" [clearInput]="true"></ion-input>
+            <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen" (ionChange)="applyFilter()"
+              [clearInput]="true"></ion-input>
+            <ion-input type="number" [(ngModel)]="filter.nuggets" placeholder="Nuggets" (ionChange)="applyFilter()"
+              [clearInput]="true"></ion-input>
+            <ion-input type="number" [(ngModel)]="filter.fries" placeholder="Pommes" (ionChange)="applyFilter()"
+              [clearInput]="true"></ion-input>
           </ion-item>
 
           <ion-item>
@@ -100,9 +103,9 @@
       </ion-select>
 
       <ion-card-content>
-        <ion-item><strong>Hähnchen: </strong> 2</ion-item>
-        <ion-item><strong>Nuggets: </strong> 1</ion-item>
-        <ion-item><strong>Pommes:</strong> 3</ion-item>
+        <ion-item><strong>Hähnchen: </strong> {{ order.chicken }}</ion-item>
+        <ion-item><strong>Nuggets: </strong> {{ order.nuggets }}</ion-item>
+        <ion-item><strong>Pommes:</strong> {{ order.fries }}</ion-item>
       </ion-card-content>
     </ion-card>
   </ion-list>
