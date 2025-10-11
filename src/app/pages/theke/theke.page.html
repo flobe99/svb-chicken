@@ -77,24 +77,15 @@
     <ion-card *ngFor="let order of filteredOrders; trackBy: trackByOrderId">
       <ion-card-header>
         <ion-card-title>{{order.firstname}} {{order.lastname}}</ion-card-title>
-        <ion-card-subtitle>{{order.date}}</ion-card-subtitle>
+        <ion-card-subtitle>{{ (order?.date ?? '') | time: 'date' }}</ion-card-subtitle>
         <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">{{ getStatusLabel(order.status)
           }}</ion-button>
       </ion-card-header>
 
       <ion-item>{{ order.price.toFixed(2) }}€</ion-item>
 
-      <!-- Verstecktes Select -->
       <ion-select [value]="order.status" #selectRefs interface="popover" style="display: none;"
         (ionChange)="onStatusChange($event, order)">
-        <!-- <ion-select-option value="CREATED">CREATED</ion-select-option>
-        <ion-select-option value="CHECKED_IN">CHECKED_IN</ion-select-option>
-        <ion-select-option value="PAID">PAID</ion-select-option>
-        <ion-select-option value="PRINTED">PRINTED</ion-select-option>
-        <ion-select-option value="PREPARING">PREPARING</ion-select-option>
-        <ion-select-option value="READY_FOR_PICKUP">READY_FOR_PICKUP</ion-select-option>
-        <ion-select-option value="COMPLETED">COMPLETED</ion-select-option>
-        <ion-select-option value="CANCELLED">CANCELLED</ion-select-option> -->
         <ion-select-option value="CREATED">Erstellt</ion-select-option>
         <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
         <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>

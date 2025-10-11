@@ -36,6 +36,7 @@ import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { OrderService } from 'src/app/services/Order.Service';
 import { OrderChicken } from 'src/app/models/order.model';
 import { StorageService } from 'src/app/services/storage.service';
+import { TimePipe } from 'src/app/pipes/time.pipe';
 
 @Component({
   selector: 'app-theke',
@@ -73,7 +74,8 @@ import { StorageService } from 'src/app/services/storage.service';
     IonSelect,
     IonSelectOption,
     IonAccordion,
-    IonAccordionGroup
+    IonAccordionGroup,
+    TimePipe
   ]
 })
 export class ThekePage implements OnInit {

@@ -1,9 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import * as moment from 'moment';
-/**
- * @author Chris Michel
- * Represents the pipe taking care of the translations in html code
- */
+// import moment from 'moment';
+
 @Pipe({
     name: 'time',
     standalone: true,
@@ -15,26 +12,56 @@ export class TimePipe implements PipeTransform {
 
     public get(value: string | Date, attribute?: string): string {
         value = typeof value === "string" ? value : value.toISOString();
-        const date = moment(value);
+        const date = new Date(value);
 
-        if (!date.isValid()) return '';
+        if (isNaN(date.getTime())) return '';
 
         switch (attribute) {
             case 'plain':
-                return date.local().format("DD.MM.YYYY, HH:mm");
+                return `${this.formatDate(date)}, ${this.formatTime(date)}`;
             case 'date':
-                return date.local().format("DD.MM.YYYY");
+                return this.formatDate(date);
             case 'iso-date':
-                return date.local().format("YYYY-MM-DD");
+                return date.toISOString().split('T')[0];
             case 'time':
-                return date.local().format("HH:mm");
+                return this.formatTime(date);
             case 'time-seconds':
-                return date.local().format("HH:mm:ss");
+                return this.formatTime(date, true);
             case 'dayOfWeek':
-                return date.local().day().toString();
+                return date.getDay().toString(); // 0 = Sonntag, 1 = Montag, ...
             default:
-                return date.fromNow();
+                return this.timeAgo(date);
         }
+    }
+    private formatDate(date: Date): string {
+        return date.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+
+    private formatTime(date: Date, withSeconds = false): string {
+        return date.toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: withSeconds ? '2-digit' : undefined
+        });
+    }
+
+    private timeAgo(date: Date): string {
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffSec = Math.floor(diffMs / 1000);
+        const diffMin = Math.floor(diffSec / 60);
+        const diffHour = Math.floor(diffMin / 60);
+        const diffDay = Math.floor(diffHour / 24);
+
+        if (diffSec < 60) return 'gerade eben';
+        if (diffMin < 60) return `${diffMin} Minuten her`;
+        if (diffHour < 24) return `${diffHour} Stunden her`;
+        if (diffDay === 1) return `gestern um ${this.formatTime(date)}`;
+        return `${diffDay} Tage her`;
     }
 
     /**
