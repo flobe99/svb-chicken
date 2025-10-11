@@ -28,7 +28,8 @@ export class TimePipe implements PipeTransform {
             case 'time-seconds':
                 return this.formatTime(date, true);
             case 'dayOfWeek':
-                return date.getDay().toString(); // 0 = Sonntag, 1 = Montag, ...
+                const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+                return days[date.getDay()]; // 0 = Sonntag, 1 = Montag, ...
             default:
                 return this.timeAgo(date);
         }

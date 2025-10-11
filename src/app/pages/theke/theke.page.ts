@@ -29,7 +29,8 @@ import {
   IonSelect,
   IonSelectOption,
   IonAccordion,
-  IonAccordionGroup
+  IonAccordionGroup,
+  IonText
 } from '@ionic/angular/standalone'
 import { Router } from '@angular/router';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
@@ -37,6 +38,8 @@ import { OrderService } from 'src/app/services/Order.Service';
 import { OrderChicken } from 'src/app/models/order.model';
 import { StorageService } from 'src/app/services/storage.service';
 import { TimePipe } from 'src/app/pipes/time.pipe';
+import { addIcons } from 'ionicons';
+import { close, filter } from 'ionicons/icons';
 
 @Component({
   selector: 'app-theke',
@@ -58,6 +61,7 @@ import { TimePipe } from 'src/app/pipes/time.pipe';
     IonMenuButton,
     IonDatetime,
     IonTextarea,
+    IonText,
     IonPopover,
     IonModal,
     IonDatetimeButton,
@@ -85,7 +89,10 @@ export class ThekePage implements OnInit {
     private orderService: OrderService,
     private storageService: StorageService,
     private router: Router
-  ) { }
+  ) {
+    addIcons({ filter, close });
+
+  }
 
   public orders: OrderChicken[] = [];
   public filteredOrders: OrderChicken[] = [];
@@ -96,15 +103,20 @@ export class ThekePage implements OnInit {
     this.init()
   }
 
-  async init() {
+  ionViewDidEnter() {
+    this.init()
+  }
+
+  async init(stateFilter?: any) {
     const savedFilter = await this.storageService.get('orderFilter');
-    if (savedFilter) {
-      this.filter = savedFilter;
-    }
+    console.table(savedFilter)
+
+    // Priorität: Navigation > Storage
+    this.filter = stateFilter ?? savedFilter ?? {};
+
     await this.orderService.getOrders().subscribe((orders) => {
       this.orders = orders;
       this.applyFilter();
-      console.table(orders)
     });
 
     await this.orderService.connectToOrderWebSocket(() => {
@@ -139,6 +151,32 @@ export class ThekePage implements OnInit {
         (this.filter.status?.length === 0 || this.filter.status?.includes(order.status)));
     });
     this.storageService.set('orderFilter', this.filter);
+  }
+
+  hasActiveFilters(): boolean {
+    return !!(
+      this.filter.firstname ||
+      this.filter.lastname ||
+      this.filter.date ||
+      this.filter.chicken ||
+      this.filter.nuggets ||
+      this.filter.fries ||
+      (Array.isArray(this.filter.status) && this.filter.status.length > 0)
+    );
+  }
+
+  removeFilter(key: keyof typeof this.filter) {
+    this.filter[key] = undefined;
+    this.applyFilter();
+  }
+
+  removeStatusFilter(index: number) {
+    if (Array.isArray(this.filter.status)) {
+      const updated = [...this.filter.status];
+      updated.splice(index, 1);
+      this.filter.status = updated;
+      this.applyFilter();
+    }
   }
 
   editOrder(order: OrderChicken) {

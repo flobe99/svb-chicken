@@ -24,3 +24,15 @@
         border-right: none;
     }
 }
+
+.hoverable {
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: inherit; // keeps original text color
+}
+
+.hoverable:hover {
+    background-color: var(--ion-color-light); // or use a custom shade
+}

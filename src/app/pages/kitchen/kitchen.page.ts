@@ -32,12 +32,15 @@ import {
   IonAccordionGroup,
   IonGrid,
   IonCol,
-  IonRow
+  IonRow,
+  IonText
 } from '@ionic/angular/standalone'
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { TimePipe } from 'src/app/pipes/time.pipe';
 import { OrderChicken, OrderSummaryResponse, OrderSummarySlot } from 'src/app/models/order.model';
 import { OrderService } from 'src/app/services/Order.Service';
+import { Router } from '@angular/router';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-kitchen',
@@ -80,14 +83,14 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonGrid,
     IonRow,
     IonCol,
-
+    IonText
   ]
 })
 
 export class KitchenPage implements OnInit {
   timeSlots: TimeSlotConfig[] = [];
 
-  constructor(private orderService: OrderService) { }
+  constructor(private orderService: OrderService, private router: Router, private storageService: StorageService) { }
 
   async ngOnInit() {
     const configs: { label: string; date: string; range: string }[] = [
@@ -144,6 +147,18 @@ export class KitchenPage implements OnInit {
 
   }
 
+  async goToTheke(date: string, time: string) {
+    console.log(date)
+    console.log(time)
+    const filter = {
+      // date: date.slice(0, 10)
+      date: date + time
+    };
+    await this.storageService.set('orderFilter', { date: date + "T" + time });
+    this.router.navigate(['/theke'], {
+      state: { filter }
+    });
+  }
 }
 
 interface TimeSlotConfig {
