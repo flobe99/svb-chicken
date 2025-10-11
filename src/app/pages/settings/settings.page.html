@@ -30,15 +30,21 @@
         </ion-item-divider>
         <ion-item>
           <ion-label>Max. Hähnchen</ion-label>
-          <ion-input type="number" [(ngModel)]="config.chicken" min="0" step="1"></ion-input>
+          <ion-text>
+            <ion-input type="number" [(ngModel)]="config.chicken" min="0" step="1"></ion-input>
+          </ion-text>
         </ion-item>
         <ion-item>
           <ion-label>Max. Nuggets</ion-label>
-          <ion-input type="number" [(ngModel)]="config.nuggets" min="0" step="1"></ion-input>
+          <ion-text>
+            <ion-input type="number" [(ngModel)]="config.nuggets" min="0" step="1"></ion-input>
+          </ion-text>
         </ion-item>
         <ion-item>
           <ion-label>Max. Pommes</ion-label>
-          <ion-input type="number" [(ngModel)]="config.fries" min="0" step="1"></ion-input>
+          <ion-text>
+            <ion-input type="number" [(ngModel)]="config.fries" min="0" step="1"></ion-input>
+          </ion-text>
         </ion-item>
       </ion-item-group>
       <ion-button color="primary" (click)="saveConfig()">Save</ion-button>
