@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Location } from '@angular/common';
 import {
   IonContent,
   IonHeader,
@@ -58,6 +58,8 @@ import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 })
 export class OrderPage implements OnInit {
 
+  public edit = false
+
   public order: OrderChicken = new OrderChicken({
     firstname: "Florian",
     lastname: "Betz",
@@ -73,15 +75,27 @@ export class OrderPage implements OnInit {
   constructor(
     private router: Router,
     private orderService: OrderService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private location: Location,
   ) {
     addIcons({ fastFoodOutline, fastFood, settings, mail, add, informationCircleOutline });
   }
 
-
   ngOnInit() {
+    this.init()
+  }
+
+  ionViewWillEnter() {
+    this.init
+  }
+
+  init() {
     const nav = this.router.getCurrentNavigation();
     const stateOrder = nav?.extras?.state?.['order'];
+
+    if (stateOrder) {
+      this.edit = true
+    }
 
     this.order = stateOrder
       ? new OrderChicken(stateOrder)
@@ -96,6 +110,18 @@ export class OrderPage implements OnInit {
         fries: 0,
         miscellaneous: "",
       });
+  }
+
+
+
+  async deleteOrder(order: OrderChicken) {
+    console.table(order)
+    this.orderService.deleteOrderById(order.id!).subscribe((response) => {
+      console.table(response)
+      if (response.success) {
+        this.location.back();
+      }
+    });
   }
 
   async submitOrder() {

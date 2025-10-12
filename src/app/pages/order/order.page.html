@@ -71,5 +71,6 @@
 
   <div class="ion-padding">
     <ion-button expand="block" (click)="submitOrder()">Bestellen</ion-button>
+    <ion-button *ngIf="edit" expand="block" color="danger" (click)="deleteOrder(order)">Löschen</ion-button>
   </div>
 </ion-content>
