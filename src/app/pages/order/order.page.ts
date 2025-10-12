@@ -117,6 +117,7 @@ export class OrderPage implements OnInit {
         if (response.success) {
           this.presentToast('Bestellung aktualisiert', 'success');
           this.router.navigate(['/theke']);
+          this.orderService.deleteOrder();
         } else {
           this.presentToast('Fehler beim Aktualisieren', 'danger');
         }
