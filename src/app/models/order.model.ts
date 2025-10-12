@@ -37,7 +37,7 @@ export class OrderChicken {
         this.miscellaneous = obj?.miscellaneous || '';
         this.status = obj?.status ?? OrderStatus.CREATED;
         this.price = obj?.price || 0;
-        this.checked_in_at = obj?.checked_in_at || '';
+        this.checked_in_at = obj?.checked_in_at || null as any;;
     }
 }
 
