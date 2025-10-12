@@ -116,6 +116,7 @@ export class OrderService {
 
     // POST /order/price
     getOrderPrice(order: OrderChicken): Observable<number> {
+        order.checked_in_at = null as any;
         return this.http.post<{ price: number }>(`${API_URL}/order/price`, order).pipe(
             catchError((error: HttpErrorResponse) => {
                 console.error('Fehler beim Berechnen des Preises:', error);

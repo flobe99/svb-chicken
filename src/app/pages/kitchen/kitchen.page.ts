@@ -95,6 +95,14 @@ export class KitchenPage implements OnInit {
   constructor(private orderService: OrderService, private router: Router, private storageService: StorageService) { }
 
   async ngOnInit() {
+    this.init()
+  }
+
+  ionViewWillEnter() {
+    this.init();
+  }
+
+  async init() {
     const configs: { label: string; date: string; range: string }[] = [
       { label: 'Samstag – 17:00 bis 20:00', date: '2025-10-11', range: '17:00-20:00' },
       { label: 'Sonntag – 10:30 bis 13:30', date: '2025-10-12', range: '10:30-13:30' },
@@ -149,10 +157,6 @@ export class KitchenPage implements OnInit {
         });
       });
     });
-  }
-
-  async init() {
-
   }
 
   async goToTheke(date: string, time: string) {
