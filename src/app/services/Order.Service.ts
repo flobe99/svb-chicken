@@ -89,7 +89,7 @@ export class OrderService {
         return this.http.post(`${API_URL}/order`, order).pipe(
             catchError((error: HttpErrorResponse) => {
                 console.error('Fehler beim Erstellen der Bestellung:', error);
-                return of({ success: false, error });
+                return of({ success: false, error, status: error.status });
             })
         );
     }

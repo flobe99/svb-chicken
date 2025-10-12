@@ -71,9 +71,12 @@ export class OrderOverviewPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/']);
+    this.router.navigate(['/order'],
+      {
+        state: { "order": this.order }
+      }
+    );
   }
-
 
   async submitOrder() {
     if (!this.order) return;
@@ -90,25 +93,46 @@ export class OrderOverviewPage implements OnInit {
         console.log('Navigiere zum Dashboard');
         this.router.navigate(['/dashboard']);
         this.orderService.deleteOrder();
+
+
+        const toast = await this.toastController.create({
+          message: 'Bestellung erfolgreich eingegeben.',
+          duration: 2500,
+          color: 'success',
+          position: 'top'
+        });
+        await toast.present();
+      }
+      else {
+        let errorMessage = 'Die Bestellung in diesem Zeitfenster ist nicht möglich.';
+
+        // Prüfe auf Fehlercode 400 und zeige die Backend-Fehlermeldung
+        if (response.status === 400 && response.error?.detail) {
+          errorMessage = response.error.detail;
+        }
+
+        const toast = await this.toastController.create({
+          message: errorMessage,
+          duration: 2500,
+          color: 'danger',
+          position: 'top'
+        });
+
+        await toast.present();
+      }
+
+    } catch (error: any) {
+      // console.error('Fehler beim Absenden der Bestellung:', error);
+
+      let errorMessage = 'Die Bestellung in diesem Zeitfenster ist nicht möglich.';
+
+      // Prüfe auf Fehlercode 400 und zeige die Backend-Fehlermeldung
+      if (error.status === 400 && error.error?.detail) {
+        errorMessage = error.error.detail;
       }
 
       const toast = await this.toastController.create({
-        message: response.success
-          ? 'Bestellung erfolgreich eingegeben.'
-          : 'Fehler beim Absenden der Bestellung.',
-        duration: 2500,
-        color: response.success ? 'success' : 'danger',
-        position: 'top'
-      });
-
-      await toast.present();
-      console.log('Toast wurde angezeigt');
-
-    } catch (error) {
-      console.error('Fehler beim Absenden der Bestellung:', error);
-
-      const toast = await this.toastController.create({
-        message: 'Fehler beim Absenden der Bestellung.',
+        message: errorMessage,
         duration: 2500,
         color: 'danger',
         position: 'top'
@@ -117,5 +141,6 @@ export class OrderOverviewPage implements OnInit {
       await toast.present();
     }
   }
+
 
 }
