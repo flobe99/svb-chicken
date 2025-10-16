@@ -36,6 +36,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/theke/theke.page').then(m => m.ThekePage)
   },
   {
+    path: 'kitchen',
+    loadComponent: () => import('./pages/kitchen/kitchen.page').then(m => m.KitchenPage)
+  },
+
+  {
     path: 'settings',
     loadComponent: () => import('./pages/settings/settings.page').then(m => m.SettingsPage)
   },

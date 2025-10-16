@@ -21,7 +21,8 @@ export class OrderChicken {
     fries: number;
     miscellaneous: string;
     status: OrderStatus;
-    price: number
+    price: number;
+    checked_in_at: string;
 
     constructor(obj?: Partial<OrderChicken>) {
         this.id = obj?.id;
@@ -36,5 +37,44 @@ export class OrderChicken {
         this.miscellaneous = obj?.miscellaneous || '';
         this.status = obj?.status ?? OrderStatus.CREATED;
         this.price = obj?.price || 0;
+        this.checked_in_at = obj?.checked_in_at || null as any;;
     }
 }
+
+export class OrderSummarySlot {
+    time: string;
+    chicken: number;
+    nuggets: number;
+    fries: number;
+
+    constructor(obj?: Partial<OrderSummarySlot>) {
+        this.time = obj?.time || '';
+        this.chicken = obj?.chicken || 0;
+        this.nuggets = obj?.nuggets || 0;
+        this.fries = obj?.fries || 0;
+    }
+}
+
+
+export class OrderSummaryResponse {
+    date: string;
+    interval: string;
+    slots: OrderSummarySlot[];
+    total: {
+        chicken: number;
+        nuggets: number;
+        fries: number;
+    };
+
+    constructor(obj?: Partial<OrderSummaryResponse>) {
+        this.date = obj?.date || '';
+        this.interval = obj?.interval || '';
+        this.slots = (obj?.slots || []).map(s => new OrderSummarySlot(s));
+        this.total = {
+            chicken: obj?.total?.chicken || 0,
+            nuggets: obj?.total?.nuggets || 0,
+            fries: obj?.total?.fries || 0
+        };
+    }
+}
+

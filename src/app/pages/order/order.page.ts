@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Location } from '@angular/common';
 import {
   IonContent,
   IonHeader,
@@ -58,6 +58,8 @@ import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 })
 export class OrderPage implements OnInit {
 
+  public edit = false
+
   public order: OrderChicken = new OrderChicken({
     firstname: "Florian",
     lastname: "Betz",
@@ -73,24 +75,53 @@ export class OrderPage implements OnInit {
   constructor(
     private router: Router,
     private orderService: OrderService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private location: Location,
   ) {
     addIcons({ fastFoodOutline, fastFood, settings, mail, add, informationCircleOutline });
   }
 
-
   ngOnInit() {
-    this.order = new OrderChicken({
-      firstname: "",
-      lastname: "",
-      mail: "",
-      phonenumber: "",
-      date: new Date().toISOString(),
-      chicken: 0,
-      nuggets: 0,
-      fries: 0,
-      miscellaneous: "",
-    })
+    this.init()
+  }
+
+  ionViewWillEnter() {
+    this.init
+  }
+
+  init() {
+    const nav = this.router.getCurrentNavigation();
+    const stateOrder = nav?.extras?.state?.['order'];
+
+    if (stateOrder) {
+      this.edit = true
+    }
+
+    this.order = stateOrder
+      ? new OrderChicken(stateOrder)
+      : new OrderChicken({
+        firstname: "",
+        lastname: "",
+        mail: "",
+        phonenumber: "",
+        date: new Date().toISOString(),
+        chicken: 0,
+        nuggets: 0,
+        fries: 0,
+        miscellaneous: "",
+      });
+  }
+
+
+
+  async deleteOrder(order: OrderChicken) {
+    console.table(order)
+    this.orderService.deleteOrderById(order.id!).subscribe((response) => {
+      console.table(response)
+      if (response.success) {
+        this.location.back();
+      }
+    });
   }
 
   async submitOrder() {
@@ -103,13 +134,26 @@ export class OrderPage implements OnInit {
       this.order.nuggets == null ||
       this.order.fries == null
     ) {
-      console.log('Bitte alle Felder ausfüllen.');
       this.presentToast('Bitte alle Pflichtfelder ausfüllen');
       return;
     }
-    await this.orderService.setOrder(this.order);
-    this.router.navigate(['/order-overview'], {});
+    console.table(this.order)
+    if (this.order.id) {
+      this.orderService.updateOrder(this.order.id, this.order).subscribe((response) => {
+        if (response.success) {
+          this.presentToast('Bestellung aktualisiert', 'success');
+          this.router.navigate(['/theke']);
+          this.orderService.deleteOrder();
+        } else {
+          this.presentToast('Fehler beim Aktualisieren', 'danger');
+        }
+      });
+    } else {
+      await this.orderService.setOrder(this.order);
+      this.router.navigate(['/order-overview']);
+    }
   }
+
 
   async presentToast(message: string, color: string = 'danger') {
     const toast = await this.toastController.create({

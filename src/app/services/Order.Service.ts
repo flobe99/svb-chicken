@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { OrderChicken, OrderStatus } from '../models/order.model';
-import { Product } from '../models/product.model';
+import { OrderChicken, OrderStatus, OrderSummaryResponse } from '../models/order.model';
+import { ConfigChicken, Product } from '../models/product.model';
 import { StorageService } from './storage.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -63,12 +63,33 @@ export class OrderService {
         );
     }
 
+    // GET /orders/summary
+    getOrderSummary(date: string, interval: string): Observable<OrderSummaryResponse> {
+        const url = `${API_URL}/orders/summary?date=${date}&interval=${encodeURIComponent(interval)}`;
+        return this.http.get<Partial<OrderSummaryResponse>>(url).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Abrufen der Zusammenfassung:', error);
+                return of({
+                    date,
+                    interval,
+                    slots: [],
+                    total: {
+                        chicken: 0,
+                        nuggets: 0,
+                        fries: 0
+                    }
+                });
+            }),
+            map((data) => new OrderSummaryResponse(data))
+        );
+    }
+
     // POST /order
     createOrder(order: OrderChicken): Observable<any> {
         return this.http.post(`${API_URL}/order`, order).pipe(
             catchError((error: HttpErrorResponse) => {
                 console.error('Fehler beim Erstellen der Bestellung:', error);
-                return of({ success: false, error });
+                return of({ success: false, error, status: error.status });
             })
         );
     }
@@ -95,6 +116,7 @@ export class OrderService {
 
     // POST /order/price
     getOrderPrice(order: OrderChicken): Observable<number> {
+        order.checked_in_at = null as any;
         return this.http.post<{ price: number }>(`${API_URL}/order/price`, order).pipe(
             catchError((error: HttpErrorResponse) => {
                 console.error('Fehler beim Berechnen des Preises:', error);
@@ -116,17 +138,37 @@ export class OrderService {
     }
 
     updateProduct(product: Product): Observable<any> {
-    if (!product.id || !product.product || product.price == null) {
-        console.warn('Ungültiges Produkt:', product);
-        return of({ success: false, error: 'Ungültige Produktdaten' });
+        if (!product.id || !product.product || product.price == null) {
+            console.warn('Ungültiges Produkt:', product);
+            return of({ success: false, error: 'Ungültige Produktdaten' });
+        }
+
+        return this.http.put(`${API_URL}/product/${product.id}`, product).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Aktualisieren des Produktes:', error);
+                return of({ success: false, error });
+            })
+        );
     }
 
-    return this.http.put(`${API_URL}/product/${product.id}`, product).pipe(
-        catchError((error: HttpErrorResponse) => {
-        console.error('Fehler beim Aktualisieren des Produktes:', error);
-        return of({ success: false, error });
-        })
-    );
+    getConfig(): Observable<ConfigChicken | null> {
+        return this.http.get<Partial<ConfigChicken>>(`${API_URL}/config/0`).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Abrufen der Konfiguration mit ID 0:', error);
+                return of(null);
+            }),
+            map((data) => data ? new ConfigChicken(data) : null)
+        );
+    }
+
+
+    updateConfig(configId: number, config: ConfigChicken): Observable<any> {
+        return this.http.put(`${API_URL}/config/${configId}`, config).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Aktualisieren der Konfiguration:', error);
+                return of({ success: false });
+            })
+        );
     }
 
     connectToOrderWebSocket(onMessage: () => void) {

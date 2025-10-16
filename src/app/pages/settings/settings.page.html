@@ -8,18 +8,52 @@
 </ion-header>
 
 <ion-content fullscreen>
+  <ion-list>
+    <ion-card>
+      <ion-item-group>
+        <ion-item-divider>
+          <ion-label> Kosten </ion-label>
+        </ion-item-divider>
+        <ion-item *ngFor="let product of products">
+          <ion-label>{{ product.product }}:</ion-label>
+          <ion-text>
+            <ion-input type="number" [(ngModel)]="product.price" min="0" step="0.01" (ionBlur)="formatPrice(product)">
+              <ion-text slot="end" aria-hidden="true">€</ion-text>
+            </ion-input>
+          </ion-text>
+        </ion-item>
+      </ion-item-group>
+      <ion-button color="primary" (click)="saveProduct()">Save</ion-button>
+    </ion-card>
+    <ion-card>
+      <ion-item-group>
+        <ion-item-divider>
+          <ion-label>Konfiguration</ion-label>
+        </ion-item-divider>
+        <ion-item>
+          <ion-label>Max. Hähnchen</ion-label>
+          <ion-text>
+            <ion-input type="number" [(ngModel)]="config.chicken" min="0" step="1"></ion-input>
+          </ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>Max. Nuggets</ion-label>
+          <ion-text>
+            <ion-input type="number" [(ngModel)]="config.nuggets" min="0" step="1"></ion-input>
+          </ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>Max. Pommes</ion-label>
+          <ion-text>
+            <ion-input type="number" [(ngModel)]="config.fries" min="0" step="1"></ion-input>
+          </ion-text>
+        </ion-item>
+      </ion-item-group>
+      <ion-button color="primary" (click)="saveConfig()">Save</ion-button>
+    </ion-card>
 
-<ion-list>
-  <ion-item *ngFor="let product of products">
+  </ion-list>
 
-    <ion-label>{{ product.product }}:</ion-label>
-    <ion-input type="number" [(ngModel)]="product.price" min="0" step="0.01" (ionBlur)="formatPrice(product)">
-      <ion-text slot="end" aria-hidden="true">€</ion-text>
-    </ion-input>
-  </ion-item>
-</ion-list>
-
-
-  <ion-button color="primary" (click)="save()">Save</ion-button>
+  <!-- <ion-button color="primary" (click)="save()">Save</ion-button> -->
   <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
 </ion-content>

@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
 import {
   IonContent,
   IonHeader,
@@ -27,11 +26,18 @@ import {
   IonText,
   IonGrid,
   IonRow,
-  IonCol
+  IonCol,
+  ToastController,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonItemGroup,
+  IonItemDivider,
 } from '@ionic/angular/standalone';
 import { firstValueFrom } from 'rxjs';
-import { Product } from 'src/app/models/product.model';
+import { ConfigChicken, Product } from 'src/app/models/product.model';
 import { OrderService } from 'src/app/services/Order.Service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-settings',
@@ -62,26 +68,42 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonText,
     IonGrid,
     IonRow,
-    IonCol
+    IonCol,
+    IonCard,
+    IonCardHeader,
+    IonCardContent,
+    IonItemGroup,
+    IonItemDivider
   ],
 })
 
 export class SettingsPage implements OnInit {
 
   public products: Product[] = [];
+  config: ConfigChicken = {
+    id: 0,
+    chicken: 0,
+    nuggets: 0,
+    fries: 0
+  };
 
   constructor(
     private alertController: AlertController,
     private router: Router,
     private orderService: OrderService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private location: Location
   ) {
-
+    console.log('ToastController:', this.toastController);
   }
 
   async ngOnInit() {
     this.orderService.getProducts().subscribe((data) => {
       this.products = data;
+    });
+
+    this.orderService.getConfig().subscribe((config) => {
+      this.config = config!;
     });
   }
 
@@ -91,7 +113,7 @@ export class SettingsPage implements OnInit {
     }
   }
 
-  async save() {
+  async saveProduct() {
     try {
       const updatePromises = this.products.map(product =>
         firstValueFrom(this.orderService.updateProduct(product))
@@ -127,8 +149,28 @@ export class SettingsPage implements OnInit {
     }
   }
 
-  cancel() {
-    this.router.navigate(['/order'])
+  async saveConfig() {
+    this.orderService.updateConfig(this.config.id, this.config).subscribe({
+      next: async (res) => {
+        if (res.success) {
+          console.log('Konfiguration gespeichert');
+          const toast = await this.toastController.create({
+            message: 'Settings erfolgreich gespeichert.',
+            duration: 2500,
+            color: 'success',
+            position: 'top'
+          });
+          await toast.present();
+          this.location.back();
+        } else {
+          console.warn('Speichern fehlgeschlagen');
+        }
+      },
+      error: (err) => console.error('Fehler beim Speichern:', err)
+    });
   }
 
+  cancel() {
+    this.location.back();
+  }
 }

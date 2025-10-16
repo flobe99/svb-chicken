@@ -1,9 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import * as moment from 'moment';
-/**
- * @author Chris Michel
- * Represents the pipe taking care of the translations in html code
- */
+// import moment from 'moment';
+
 @Pipe({
     name: 'time',
     standalone: true,
@@ -13,35 +10,59 @@ export class TimePipe implements PipeTransform {
     constructor() {
     }
 
-    public static get(value: string | Date, attribute?: string): any {
+    public get(value: string | Date, attribute?: string): string {
         value = typeof value === "string" ? value : value.toISOString();
+        const date = new Date(value);
 
+        if (isNaN(date.getTime())) return '';
 
-        const date = moment(value);
-        const d = moment.duration(moment().diff(date));
-        const minDiff = Math.floor(d.asMinutes());
-        const hourDiff = d.asHours();
-        const nowHour = Number.parseInt(moment().local().format("HH"));
-
-        if (attribute && attribute === "plain") {
-            return date.local().format("DD.MM.YYYY, HH:mm");
+        switch (attribute) {
+            case 'plain':
+                return `${this.formatDate(date)}, ${this.formatTime(date)}`;
+            case 'date':
+                return this.formatDate(date);
+            case 'iso-date':
+                return date.toISOString().split('T')[0];
+            case 'time':
+                return this.formatTime(date);
+            case 'time-seconds':
+                return this.formatTime(date, true);
+            case 'dayOfWeek':
+                const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+                return days[date.getDay()]; // 0 = Sonntag, 1 = Montag, ...
+            default:
+                return this.timeAgo(date);
         }
+    }
+    private formatDate(date: Date): string {
+        return date.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
 
-        if (attribute && attribute === "date") {
-            return date.local().format("DD.MM.YYYY");
-        }
+    private formatTime(date: Date, withSeconds = false): string {
+        return date.toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: withSeconds ? '2-digit' : undefined
+        });
+    }
 
-        if (attribute && attribute === "iso-date") {
-            return date.local().format("YYYY-MM-DD");
-        }
+    private timeAgo(date: Date): string {
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffSec = Math.floor(diffMs / 1000);
+        const diffMin = Math.floor(diffSec / 60);
+        const diffHour = Math.floor(diffMin / 60);
+        const diffDay = Math.floor(diffHour / 24);
 
-        if (attribute && attribute === "time") {
-            return date.local().format("HH:mm");
-        }
-
-        if (attribute && attribute === "time-seconds") {
-            return date.local().format("HH:mm:ss");
-        }
+        if (diffSec < 60) return 'gerade eben';
+        if (diffMin < 60) return `${diffMin} Minuten her`;
+        if (diffHour < 24) return `${diffHour} Stunden her`;
+        if (diffDay === 1) return `gestern um ${this.formatTime(date)}`;
+        return `${diffDay} Tage her`;
     }
 
     /**
@@ -54,8 +75,6 @@ export class TimePipe implements PipeTransform {
      * @returns time piped string
      */
     transform(value: string | Date, attribute?: string): string {
-        return TimePipe.get(value, attribute);
+        return this.get(value, attribute);
     }
-
-
 }

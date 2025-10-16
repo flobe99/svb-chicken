@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular'; import {
+// import { IonicModule, ToastController } from '@ionic/angular';
+import {
   IonContent,
   IonHeader,
   IonTitle,
@@ -12,6 +13,7 @@ import { ToastController } from '@ionic/angular'; import {
   IonButtons,
   IonMenuButton,
   IonList, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonCardContent, IonNote,
+  ToastController
 } from '@ionic/angular/standalone';
 import { firstValueFrom } from 'rxjs';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
@@ -37,7 +39,7 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonButtons,
     IonMenuButton,
     TimePipe,
-    RefreshComponent
+    RefreshComponent,
   ]
 })
 export class OrderOverviewPage implements OnInit {
@@ -69,9 +71,12 @@ export class OrderOverviewPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/']);
+    this.router.navigate(['/order'],
+      {
+        state: { "order": this.order }
+      }
+    );
   }
-
 
   async submitOrder() {
     if (!this.order) return;
@@ -80,30 +85,62 @@ export class OrderOverviewPage implements OnInit {
       console.table(this.order);
 
       const response = await firstValueFrom(this.orderService.createOrder(this.order));
+      console.log("response-start");
       console.table(response);
-
-      const toast = await this.toastController.create({
-        message: response.success
-          ? 'Bestellung erfolgreich eingegeben.'
-          : 'Fehler beim Absenden der Bestellung.',
-        duration: 2500,
-        color: response.success ? 'success' : 'danger',
-        position: 'top'
-      });
-      await toast.present();
+      console.log("response-stop");
 
       if (response.success) {
+        console.log('Navigiere zum Dashboard');
         this.router.navigate(['/dashboard']);
+        this.orderService.deleteOrder();
+
+
+        const toast = await this.toastController.create({
+          message: 'Bestellung erfolgreich eingegeben.',
+          duration: 2500,
+          color: 'success',
+          position: 'top'
+        });
+        await toast.present();
       }
-    } catch (error) {
-      console.error('Fehler beim Absenden der Bestellung:', error);
+      else {
+        let errorMessage = 'Die Bestellung in diesem Zeitfenster ist nicht möglich.';
+
+        // Prüfe auf Fehlercode 400 und zeige die Backend-Fehlermeldung
+        if (response.status === 400 && response.error?.detail) {
+          errorMessage = response.error.detail;
+        }
+
+        const toast = await this.toastController.create({
+          message: errorMessage,
+          duration: 2500,
+          color: 'danger',
+          position: 'top'
+        });
+
+        await toast.present();
+      }
+
+    } catch (error: any) {
+      // console.error('Fehler beim Absenden der Bestellung:', error);
+
+      let errorMessage = 'Die Bestellung in diesem Zeitfenster ist nicht möglich.';
+
+      // Prüfe auf Fehlercode 400 und zeige die Backend-Fehlermeldung
+      if (error.status === 400 && error.error?.detail) {
+        errorMessage = error.error.detail;
+      }
+
       const toast = await this.toastController.create({
-        message: 'Fehler beim Absenden der Bestellung.',
+        message: errorMessage,
         duration: 2500,
         color: 'danger',
         position: 'top'
       });
+
       await toast.present();
     }
   }
+
+
 }

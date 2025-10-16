@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Küche</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">kitchen</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-card *ngFor="let slot of timeSlots">
+    <ion-card-header>
+      <ion-card-title>{{ slot.date | time: 'date' }}: {{ slot.label }} </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid class="table-grid">
+        <ion-row>
+          <ion-col></ion-col>
+          <!-- <ion-col *ngFor="let time of slot.slots">{{ time.time }}</ion-col> -->
+          <ion-col *ngFor="let time of slot.slots">
+            <div class="hoverable" (click)="goToTheke(slot.date,time.time)">
+              {{ time.time }}
+            </div>
+          </ion-col>
+          <ion-col>Summe</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Hähnchen</ion-col>
+          <ion-col *ngFor="let value of slot.slots">
+            <div [ngClass]="value.chicken <= config.chicken ? 'green-cell' : 'red-cell'">
+              {{ value.chicken }}
+            </div>
+          </ion-col>
+          <ion-col>{{ slot.total.chicken }}</ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>Nuggets</ion-col>
+          <ion-col *ngFor="let value of slot.slots">
+            <div [ngClass]="value.nuggets <= config.nuggets ? 'green-cell' : 'red-cell'">
+              {{ value.nuggets }}
+            </div>
+          </ion-col>
+          <ion-col>{{ slot.total.nuggets }}</ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>Pommes</ion-col>
+          <ion-col *ngFor="let value of slot.slots">
+            <div [ngClass]="value.fries <= config.fries ? 'green-cell' : 'red-cell'">
+              {{ value.fries }}
+            </div>
+          </ion-col>
+          <ion-col>{{ slot.total.fries }}</ion-col>
+        </ion-row>
+
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Zusammenfassung</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label><strong>Hähnchen:</strong></ion-label>
+          <ion-text>{{ timeSlots[0].total.chicken }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>Nuggets:</strong></ion-label>
+          <ion-text>{{ timeSlots[0].total.nuggets }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>Pommes:</strong></ion-label>
+          <ion-text>{{ timeSlots[0].total.fries }}</ion-text>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
