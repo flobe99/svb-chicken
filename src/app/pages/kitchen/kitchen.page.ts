@@ -43,6 +43,7 @@ import { Router } from '@angular/router';
 import { StorageService } from 'src/app/services/storage.service';
 import { ConfigChicken } from 'src/app/models/product.model';
 import { Slot } from 'src/app/models/slot.model';
+import { TimeSlotConfig } from 'src/app/models/TimeSlotConfig.model';
 
 @Component({
   selector: 'app-kitchen',
@@ -190,14 +191,3 @@ export class KitchenPage implements OnInit {
   }
 }
 
-interface TimeSlotConfig {
-  date: string;
-  range_start: string;
-  range_end: string;
-  slots: OrderSummarySlot[];
-  total: {
-    chicken: number;
-    nuggets: number;
-    fries: number;
-  };
-}
