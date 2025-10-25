@@ -8,6 +8,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <app-refresh (refreshed)="init()"></app-refresh>
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">kitchen</ion-title>
@@ -31,8 +32,9 @@
         </ion-row>
         <ion-row>
           <ion-col>Hähnchen</ion-col>
-          <ion-col *ngFor="let value of slot.slots">
-            <div [ngClass]="value.chicken <= config.chicken ? 'green-cell' : 'red-cell'">
+          <ion-col *ngFor="let value of slot.slots; let i = index">
+            <div class="hoverable" [ngClass]="value.chicken <= config.chicken ? 'green-cell' : 'red-cell'"
+              (click)="goToTheke(slot.date, slot.slots[i].time)">
               {{ value.chicken }}
             </div>
           </ion-col>
@@ -41,8 +43,9 @@
 
         <ion-row>
           <ion-col>Nuggets</ion-col>
-          <ion-col *ngFor="let value of slot.slots">
-            <div [ngClass]="value.nuggets <= config.nuggets ? 'green-cell' : 'red-cell'">
+          <ion-col *ngFor="let value of slot.slots; let i = index">
+            <div class="hoverable" [ngClass]="value.nuggets <= config.nuggets ? 'green-cell' : 'red-cell'"
+              (click)="goToTheke(slot.date, slot.slots[i].time)">
               {{ value.nuggets }}
             </div>
           </ion-col>
@@ -51,8 +54,9 @@
 
         <ion-row>
           <ion-col>Pommes</ion-col>
-          <ion-col *ngFor="let value of slot.slots">
-            <div [ngClass]="value.fries <= config.fries ? 'green-cell' : 'red-cell'">
+          <ion-col *ngFor="let value of slot.slots; let i = index">
+            <div class="hoverable" [ngClass]="value.fries <= config.fries ? 'green-cell' : 'red-cell'"
+              (click)="goToTheke(slot.date, slot.slots[i].time)">
               {{ value.fries }}
             </div>
           </ion-col>

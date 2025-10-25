@@ -5,6 +5,7 @@ import { StorageService } from './storage.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Slot } from '../models/slot.model';
 
 // export const DOMAIN = '192.168.199.133:8000';
 // export const API_URL = `http://${DOMAIN}`;
@@ -196,5 +197,48 @@ export class OrderService {
         };
     }
 
+    getSlots(): Observable<Slot[]> {
+        return this.http.get<Slot[]>(`${API_URL}/slots`).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Abrufen der Slots:', error);
+                return of([]);
+            })
+        );
+    }
 
+    getSlotById(id: number): Observable<Slot | null> {
+        return this.http.get<Slot>(`${API_URL}/slots/${id}`).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error(`Fehler beim Abrufen des Slots mit ID ${id}:`, error);
+                return of(null);
+            })
+        );
+    }
+
+    createSlot(slot: Slot): Observable<any> {
+        return this.http.post(`${API_URL}/slots`, slot).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler beim Erstellen des Slots:', error);
+                return of({ success: false, error });
+            })
+        );
+    }
+
+    updateSlot(id: number, slot: Slot): Observable<any> {
+        return this.http.put(`${API_URL}/slots/${id}`, slot).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error(`Fehler beim Aktualisieren des Slots mit ID ${id}:`, error);
+                return of({ success: false, error });
+            })
+        );
+    }
+
+    deleteSlot(id: number): Observable<any> {
+        return this.http.delete(`${API_URL}/slots/${id}`).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error(`Fehler beim Löschen des Slots mit ID ${id}:`, error);
+                return of({ success: false, error });
+            })
+        );
+    }
 }

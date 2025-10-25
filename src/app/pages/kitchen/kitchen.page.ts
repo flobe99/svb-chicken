@@ -42,6 +42,7 @@ import { OrderService } from 'src/app/services/Order.Service';
 import { Router } from '@angular/router';
 import { StorageService } from 'src/app/services/storage.service';
 import { ConfigChicken } from 'src/app/models/product.model';
+import { Slot } from 'src/app/models/slot.model';
 
 @Component({
   selector: 'app-kitchen',
@@ -91,6 +92,7 @@ import { ConfigChicken } from 'src/app/models/product.model';
 export class KitchenPage implements OnInit {
   timeSlots: TimeSlotConfig[] = [];
   config: ConfigChicken = new ConfigChicken();
+  slots: Slot[] = [];
 
   constructor(private orderService: OrderService, private router: Router, private storageService: StorageService) { }
 
@@ -103,50 +105,25 @@ export class KitchenPage implements OnInit {
   }
 
   async init() {
-    const configs: { label: string; date: string; range: string }[] = [
-      { label: 'Samstag – 17:00 bis 20:00', date: '2025-10-11', range: '17:00-20:00' },
-      { label: 'Sonntag – 10:30 bis 13:30', date: '2025-10-12', range: '10:30-13:30' },
-      { label: 'Sonntag – 17:00 bis 20:00', date: '2025-10-12', range: '17:00-20:00' }
-    ];
+    // Lade Slot-Konfigurationen dynamisch vom Backend
+    this.orderService.getSlots().subscribe((slots) => {
+      this.slots = slots;
+      // Initialisiere Platzhalter für jedes Slot-Objekt
+      this.timeSlots = slots.map(() => ({
+        label: '',
+        date: '',
+        range: '',
+        slots: [],
+        total: { chicken: 0, nuggets: 0, fries: 0 }
+      }));
 
-    // Initialisiere leeres Array mit Platzhaltern
-    this.timeSlots = configs.map(() => ({
-      label: '',
-      date: '',
-      range: '',
-      slots: [],
-      total: { chicken: 0, nuggets: 0, fries: 0 }
-    }));
-
-    configs.forEach((config, index) => {
-      this.orderService.getOrderSummary(config.date, config.range).subscribe(summary => {
-        this.timeSlots[index] = {
-          label: config.label,
-          date: config.date,
-          range: config.range,
-          slots: summary.slots.map(s => new OrderSummarySlot(s)),
-          total: {
-            chicken: summary.total.chicken,
-            nuggets: summary.total.nuggets,
-            fries: summary.total.fries
-          }
-        };
-      });
-    });
-
-    this.orderService.getConfig().subscribe((config) => {
-      if (config) {
-        this.config = config;
-      }
-    });
-
-    await this.orderService.connectToOrderWebSocket(() => {
-      configs.forEach((config, index) => {
-        this.orderService.getOrderSummary(config.date, config.range).subscribe(summary => {
+      slots.forEach((slot, index) => {
+        const range = this.formatRange(slot.range_start, slot.range_end);
+        this.orderService.getOrderSummary(slot.date, range).subscribe(summary => {
           this.timeSlots[index] = {
-            label: config.label,
-            date: config.date,
-            range: config.range,
+            label: slot.label,
+            date: slot.date,
+            range: range,
             slots: summary.slots.map(s => new OrderSummarySlot(s)),
             total: {
               chicken: summary.total.chicken,
@@ -156,8 +133,43 @@ export class KitchenPage implements OnInit {
           };
         });
       });
+
+      // Konfiguration laden
+      this.orderService.getConfig().subscribe((config) => {
+        if (config) {
+          this.config = config;
+        }
+      });
+
+      // WebSocket verbinden und bei Änderungen aktualisieren
+      this.orderService.connectToOrderWebSocket(() => {
+        slots.forEach((slot, index) => {
+          const range = this.formatRange(slot.range_start, slot.range_end);
+          this.orderService.getOrderSummary(slot.date, range).subscribe(summary => {
+            this.timeSlots[index] = {
+              label: slot.label,
+              date: slot.date,
+              range: range,
+              slots: summary.slots.map(s => new OrderSummarySlot(s)),
+              total: {
+                chicken: summary.total.chicken,
+                nuggets: summary.total.nuggets,
+                fries: summary.total.fries
+              }
+            };
+          });
+        });
+      });
     });
   }
+
+  formatRange(start: string, end: string): string {
+    const startTime = new Date(start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const endTime = new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return `${startTime}-${endTime}`;
+  }
+
+
 
   async goToTheke(date: string, time: string) {
     console.log(date)
