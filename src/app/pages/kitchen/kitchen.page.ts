@@ -94,7 +94,11 @@ export class KitchenPage implements OnInit {
   config: ConfigChicken = new ConfigChicken();
   slots: Slot[] = [];
 
-  constructor(private orderService: OrderService, private router: Router, private storageService: StorageService) { }
+  constructor(
+    private orderService: OrderService,
+    private router: Router,
+    private storageService: StorageService,
+  ) { }
 
   async ngOnInit() {
     this.init()
@@ -110,20 +114,21 @@ export class KitchenPage implements OnInit {
       this.slots = slots;
       // Initialisiere Platzhalter für jedes Slot-Objekt
       this.timeSlots = slots.map(() => ({
-        label: '',
         date: '',
-        range: '',
+        range_start: '',
+        range_end: '',
         slots: [],
         total: { chicken: 0, nuggets: 0, fries: 0 }
       }));
 
+      const _timepipe = new TimePipe();
+
       slots.forEach((slot, index) => {
-        const range = this.formatRange(slot.range_start, slot.range_end);
-        this.orderService.getOrderSummary(slot.date, range).subscribe(summary => {
+        this.orderService.getOrderSummary(slot.date, (_timepipe.get(slot.range_start, 'time') + "-" + _timepipe.get(slot.range_end, 'time'))).subscribe(summary => {
           this.timeSlots[index] = {
-            label: slot.label,
             date: slot.date,
-            range: range,
+            range_start: slot.range_start,
+            range_end: slot.range_end,
             slots: summary.slots.map(s => new OrderSummarySlot(s)),
             total: {
               chicken: summary.total.chicken,
@@ -147,9 +152,9 @@ export class KitchenPage implements OnInit {
           const range = this.formatRange(slot.range_start, slot.range_end);
           this.orderService.getOrderSummary(slot.date, range).subscribe(summary => {
             this.timeSlots[index] = {
-              label: slot.label,
               date: slot.date,
-              range: range,
+              range_start: slot.range_start,
+              range_end: slot.range_end,
               slots: summary.slots.map(s => new OrderSummarySlot(s)),
               total: {
                 chicken: summary.total.chicken,
@@ -186,9 +191,9 @@ export class KitchenPage implements OnInit {
 }
 
 interface TimeSlotConfig {
-  label: string;
   date: string;
-  range: string;
+  range_start: string;
+  range_end: string;
   slots: OrderSummarySlot[];
   total: {
     chicken: number;

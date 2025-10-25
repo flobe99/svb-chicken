@@ -10,6 +10,58 @@
 <ion-content fullscreen>
   <ion-list>
     <ion-card>
+      <ion-card-header>Verkaufszeiten</ion-card-header>
+      <ion-item-group>
+        <div *ngFor="let slot of slots;; let i = index">
+          <ion-card>
+            <ion-card-header>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <ion-card-title>Slot {{i+1}}</ion-card-title>
+                <!-- <ion-icon color="danger" name="trash-outline" slot="start"></ion-icon> -->
+                <!-- <ion-button color="success" fill="clear" size="small" (click)="deleteSlot()">
+                  löschen
+                </ion-button> -->
+              </div>
+            </ion-card-header>
+            <ion-item>
+              <ion-label position="stacked">Datum</ion-label>
+              <ion-datetime-button datetime="date-{{i}}"></ion-datetime-button>
+
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime locale="de-DE" id="date-{{i}}" presentation="date"
+                    [(ngModel)]="slot.date"></ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Startzeit</ion-label>
+              <ion-datetime-button datetime="start-{{i}}"></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime locale="de-DE" id="start-{{i}}" presentation="time"
+                    [(ngModel)]="slot.range_start"></ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Endzeit</ion-label>
+              <ion-datetime-button datetime="end-{{i}}"></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime locale="de-DE" id="end-{{i}}" presentation="time"
+                    [(ngModel)]="slot.range_end"></ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+          </ion-card>
+        </div>
+      </ion-item-group>
+
+      <ion-button color="primary" (click)="saveSlots()">Speichern</ion-button>
+    </ion-card>
+
+    <ion-card>
       <ion-item-group>
         <ion-item-divider>
           <ion-label> Kosten </ion-label>
@@ -23,8 +75,9 @@
           </ion-text>
         </ion-item>
       </ion-item-group>
-      <ion-button color="primary" (click)="saveProduct()">Save</ion-button>
+      <ion-button color="primary" (click)="saveProduct()">Speichern</ion-button>
     </ion-card>
+
     <ion-card>
       <ion-item-group>
         <ion-item-divider>
@@ -49,7 +102,7 @@
           </ion-text>
         </ion-item>
       </ion-item-group>
-      <ion-button color="primary" (click)="saveConfig()">Save</ion-button>
+      <ion-button color="primary" (click)="saveConfig()">Speichern</ion-button>
     </ion-card>
 
   </ion-list>

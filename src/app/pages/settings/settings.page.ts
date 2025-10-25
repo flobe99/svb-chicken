@@ -33,11 +33,18 @@ import {
   IonCardContent,
   IonItemGroup,
   IonItemDivider,
+  IonDatetimeButton,
+  IonModal,
+  IonDatetime,
+  IonCardTitle
 } from '@ionic/angular/standalone';
 import { firstValueFrom } from 'rxjs';
 import { ConfigChicken, Product } from 'src/app/models/product.model';
 import { OrderService } from 'src/app/services/Order.Service';
 import { Location } from '@angular/common';
+import { Slot } from 'src/app/models/slot.model';
+import { trashOutline } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
 
 @Component({
   selector: 'app-settings',
@@ -73,13 +80,18 @@ import { Location } from '@angular/common';
     IonCardHeader,
     IonCardContent,
     IonItemGroup,
-    IonItemDivider
+    IonItemDivider,
+    IonDatetimeButton,
+    IonModal,
+    IonDatetime,
+    IonCardTitle
   ],
 })
 
 export class SettingsPage implements OnInit {
 
   public products: Product[] = [];
+  public slots: Slot[] = [];
   config: ConfigChicken = {
     id: 0,
     chicken: 0,
@@ -95,9 +107,14 @@ export class SettingsPage implements OnInit {
     private location: Location
   ) {
     console.log('ToastController:', this.toastController);
+    addIcons({ trashOutline });
   }
 
   async ngOnInit() {
+    this.orderService.getSlots().subscribe((slots) => {
+      this.slots = slots;
+    });
+
     this.orderService.getProducts().subscribe((data) => {
       this.products = data;
     });
@@ -112,6 +129,81 @@ export class SettingsPage implements OnInit {
       product.price = parseFloat(product.price.toFixed(2));
     }
   }
+
+  addSlot() {
+    this.slots.push({
+      date: '',
+      range_start: '',
+      range_end: ''
+    });
+  }
+
+  deleteSlot() {
+    // this.slots = this.slots.filter(slot => slot.id !== id);
+  }
+
+  extractTime(datetime: string): string {
+    const d = new Date(datetime);
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    const seconds = d.getSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }
+
+
+
+  async saveSlots() {
+    const results: boolean[] = [];
+    console.table(this.slots)
+
+    for (const slot of this.slots) {
+      console.table("\n######################")
+      const dateOnly = slot.date.split('T')[0]; // z. B. "2025-10-12"
+      const startTime = this.extractTime(slot.range_start); // z. B. "17:00:00"
+      const endTime = this.extractTime(slot.range_end);     // z. B. "20:00:00"
+
+      const payload = {
+        date: dateOnly,
+        range_start: `${dateOnly}T${startTime}`,
+        range_end: `${dateOnly}T${endTime}`
+      };
+
+
+      try {
+        if (slot.id) {
+          const res = await firstValueFrom(this.orderService.updateSlot(slot.id, payload));
+          console.log(`Slot ${slot.id} aktualisiert`, res);
+          results.push(true);
+        } else {
+          const res = await firstValueFrom(this.orderService.createSlot(payload));
+          console.log('Neuer Slot erstellt', res);
+          results.push(true);
+        }
+      } catch (err) {
+        console.error('Fehler beim Speichern des Slots', err);
+        results.push(false);
+      }
+    }
+
+    const allSuccessful = results.every(r => r === true);
+
+    const toast = await this.toastController.create({
+      message: allSuccessful
+        ? 'Settings erfolgreich gespeichert.'
+        : 'Fehler beim Absenden der Settings.',
+      duration: 2500,
+      color: allSuccessful ? 'success' : 'danger',
+      position: 'top'
+    });
+    await toast.present();
+
+    if (allSuccessful) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
+
+
 
   async saveProduct() {
     try {
