@@ -64,6 +64,19 @@ export class OrderService {
         );
     }
 
+    validateOrder(order: OrderChicken): Observable<{ valid: boolean; message: string; slot_id?: number }> {
+        return this.http.post<{ valid: boolean; message: string; slot_id?: number }>(
+            `${API_URL}/validate-order`,
+            order
+        ).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error('Fehler bei der Validierung der Bestellung:', error);
+                return of({ valid: false, message: error.error?.detail || 'Unbekannter Fehler' });
+            })
+        );
+    }
+
+
     // GET /orders/summary
     getOrderSummary(date: string, interval: string): Observable<OrderSummaryResponse> {
         const url = `${API_URL}/orders/summary?date=${date}&interval=${encodeURIComponent(interval)}`;

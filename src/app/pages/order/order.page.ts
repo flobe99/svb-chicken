@@ -18,7 +18,8 @@ import {
   IonPopover,
   IonModal,
   IonDatetimeButton,
-  IonIcon
+  IonIcon,
+  IonNote
 } from '@ionic/angular/standalone'
 
 import { Router } from '@angular/router';
@@ -28,6 +29,7 @@ import { ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { fastFood, settings, mail, add, fastFoodOutline, informationCircleOutline } from 'ionicons/icons';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-order',
@@ -53,12 +55,14 @@ import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
     IonModal,
     IonDatetimeButton,
     IonIcon,
-    RefreshComponent
+    RefreshComponent,
+    IonNote
   ]
 })
 export class OrderPage implements OnInit {
 
-  public edit = false
+  public edit = false;
+  public dateValid: boolean = true;
 
   public order: OrderChicken = new OrderChicken({
     firstname: "Florian",
@@ -110,6 +114,8 @@ export class OrderPage implements OnInit {
         fries: 0,
         miscellaneous: "",
       });
+
+    this.validateDate();
   }
 
 
@@ -125,6 +131,11 @@ export class OrderPage implements OnInit {
   }
 
   async submitOrder() {
+    await this.validateDate();
+    if (!this.dateValid) {
+      this.presentToast('Datum bzw. Uhrzeit ist ungültig', 'danger');
+      return;
+    }
     if (
       !this.order.firstname ||
       !this.order.lastname ||
@@ -153,6 +164,18 @@ export class OrderPage implements OnInit {
       this.router.navigate(['/order-overview']);
     }
   }
+
+  async validateDate() {
+    try {
+      const response = await this.orderService.validateOrder(this.order).toPromise();
+      this.dateValid = response?.valid!;
+    } catch (error: unknown) {
+      this.dateValid = false;
+      const err = error as HttpErrorResponse;
+      this.presentToast(err.error?.detail || 'Fehler bei der Validierung', 'danger');
+    }
+  }
+
 
 
   async presentToast(message: string, color: string = 'danger') {

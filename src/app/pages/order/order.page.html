@@ -37,10 +37,15 @@
     <ion-label class="required-label">Datum & Uhrzeit</ion-label>
   </ion-item>
   <ion-item position="floating">
-    <ion-datetime-button datetime="datetime"></ion-datetime-button>
+    <ion-datetime-button datetime="datetime">
+    </ion-datetime-button>
   </ion-item>
 
-  <ion-modal [keepContentsMounted]="true">
+  <ion-note *ngIf="!dateValid" color="danger" class="ion-margin-horizontal">
+    Datum bzw. Uhrzeit nicht möglich
+  </ion-note>
+
+  <ion-modal [keepContentsMounted]="true" (didDismiss)="validateDate()">
     <ng-template>
       <ion-datetime id="datetime" hourValues="10,11,12,13,14,15,16,17,18,19,20" minuteValues="0,15,30,45"
         presentation="date-time" [(ngModel)]="order.date"></ion-datetime>
