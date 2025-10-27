@@ -29,7 +29,7 @@
 
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
-                  <ion-datetime locale="de-DE" id="date-{{i}}" presentation="date"
+                  <ion-datetime firstDayOfWeek="1" locale="de-DE" id="date-{{i}}" presentation="date"
                     [(ngModel)]="slot.date"></ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -39,7 +39,7 @@
               <ion-datetime-button datetime="start-{{i}}"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
-                  <ion-datetime locale="de-DE" id="start-{{i}}" presentation="time"
+                  <ion-datetime firstDayOfWeek="1" locale="de-DE" id="start-{{i}}" presentation="time"
                     [(ngModel)]="slot.range_start"></ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -49,7 +49,7 @@
               <ion-datetime-button datetime="end-{{i}}"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
-                  <ion-datetime locale="de-DE" id="end-{{i}}" presentation="time"
+                  <ion-datetime firstDayOfWeek="1" locale="de-DE" id="end-{{i}}" presentation="time"
                     [(ngModel)]="slot.range_end"></ion-datetime>
                 </ng-template>
               </ion-modal>
