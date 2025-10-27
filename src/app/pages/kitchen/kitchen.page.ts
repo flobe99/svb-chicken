@@ -48,6 +48,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { ConfigChicken } from 'src/app/models/product.model';
 import { Slot } from 'src/app/models/slot.model';
 import { TimeSlotConfig } from 'src/app/models/TimeSlotConfig.model';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-kitchen',
@@ -98,10 +99,16 @@ export class KitchenPage implements OnInit {
   config: ConfigChicken = new ConfigChicken();
   slots: Slot[] = [];
 
+  totalChicken: number = 0;
+  totalNuggets: number = 0;
+  totalFries: number = 0;
+
+
   constructor(
     private orderService: OrderService,
     private router: Router,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private alertController: AlertController
   ) { }
 
   async ngOnInit() {
@@ -147,7 +154,9 @@ export class KitchenPage implements OnInit {
                 fries: summary.total.fries,
               },
             };
-
+            this.totalChicken = this.timeSlots.reduce((sum, slot) => sum + slot.total.chicken, 0);
+            this.totalNuggets = this.timeSlots.reduce((sum, slot) => sum + slot.total.nuggets, 0);
+            this.totalFries = this.timeSlots.reduce((sum, slot) => sum + slot.total.fries, 0);
           });
       });
 
@@ -181,6 +190,39 @@ export class KitchenPage implements OnInit {
       });
     });
   }
+
+  async openContextMenu(event: MouseEvent, date: string, time: string) {
+    event.preventDefault();
+
+    const datetime = `${date}T${time}`
+    const _pipe = new TimePipe();
+
+    const alert = await this.alertController.create({
+      header: 'Neue Bestellung',
+      subHeader: _pipe.get(datetime, "plain"),
+      message: 'Möchtest du eine neue Bestellung für diesen Zeitpunkt erstellen?',
+      buttons: [
+        {
+          text: 'Abbrechen',
+          role: 'cancel',
+        },
+        {
+          text: 'Bestellen',
+          handler: () => {
+            this.router.navigate(['/order'], {
+              state: {
+                date: datetime
+              }
+            });
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+
 
   formatRange(start: string, end: string): string {
     const startTime = new Date(start).toLocaleTimeString([], {

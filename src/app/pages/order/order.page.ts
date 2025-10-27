@@ -97,25 +97,27 @@ export class OrderPage implements OnInit {
 
   init() {
     const nav = this.router.getCurrentNavigation();
-    const stateOrder = nav?.extras?.state?.['order'];
+    const state = nav?.extras?.state;
+    const stateOrder = state?.['order'];
+    const stateDate = state?.['date'];
 
     if (stateOrder) {
-      this.edit = true
-    }
-
-    this.order = stateOrder
-      ? new OrderChicken(stateOrder)
-      : new OrderChicken({
+      this.edit = true;
+      this.order = new OrderChicken(stateOrder);
+    } else {
+      this.order = new OrderChicken({
         firstname: "",
         lastname: "",
         mail: "",
         phonenumber: "",
-        date: new Date().toISOString(),
+        date: stateDate || new Date().toISOString(),
         chicken: 0,
         nuggets: 0,
         fries: 0,
         miscellaneous: "",
       });
+    }
+
 
     this.validateDate();
   }

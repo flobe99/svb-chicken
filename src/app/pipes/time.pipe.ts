@@ -18,7 +18,7 @@ export class TimePipe implements PipeTransform {
 
         switch (attribute) {
             case 'plain':
-                return `${this.formatDate(date)}, ${this.formatTime(date)}`;
+                return `${this.formatDate(date)}, ${this.formatTime(date)} Uhr`;
             case 'date':
                 return this.formatDate(date);
             case 'iso-date':
