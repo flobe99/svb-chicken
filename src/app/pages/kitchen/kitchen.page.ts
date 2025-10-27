@@ -102,7 +102,7 @@ export class KitchenPage implements OnInit {
     private orderService: OrderService,
     private router: Router,
     private storageService: StorageService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.init();
@@ -128,12 +128,13 @@ export class KitchenPage implements OnInit {
       const _timepipe = new TimePipe();
 
       slots.forEach((slot, index) => {
+        console.log(slot.date)
         this.orderService
           .getOrderSummary(
             slot.date,
             _timepipe.get(slot.range_start, 'time') +
-              '-' +
-              _timepipe.get(slot.range_end, 'time')
+            '-' +
+            _timepipe.get(slot.range_end, 'time')
           )
           .subscribe((summary) => {
             this.timeSlots[index] = {
@@ -147,6 +148,7 @@ export class KitchenPage implements OnInit {
                 fries: summary.total.fries,
               },
             };
+
           });
       });
 
@@ -194,9 +196,8 @@ export class KitchenPage implements OnInit {
   }
 
   getCurrentTimeIndex(slot: OrderSummarySlot[], slotDate: string): number {
-    console.table(slot);
     const now = new Date();
-    // const now = new Date('2025-10-11T18:59:00');
+    // const now = new Date('2025-10-11T19:59:00');
 
     return slot.findIndex((s) => {
       const start = new Date(`${slotDate}T${s.time}`);

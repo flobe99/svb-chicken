@@ -9,86 +9,43 @@
 
 <ion-content [fullscreen]="true">
   <app-refresh (refreshed)="init()"></app-refresh>
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">kitchen</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-list>
-  <ion-card *ngFor="let slot of timeSlots">
-    <ion-card-header>
-      <ion-card-title>{{ slot.date | time: 'date' }}: {{ slot.date | time: 'dayOfWeek' }} - {{ slot.range_start | time:
-        'time' }} bis {{ slot.range_end | time: 'time' }} Uhr
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-grid class="table-grid">
-        <ion-row>
-          <ion-col></ion-col>
-          <ion-col *ngFor="let time of slot.slots; let i = index">
-            <div class="hoverable" [ngClass]="i === getCurrentTimeIndex(slot.slots, slot.date) ? 'highlight-column' : ''" (click)="goToTheke(slot.date,time.time)">
-              {{ time.time }}
-            </div>
-          </ion-col>
-          <ion-col>Summe</ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>Hähnchen</ion-col>
-          <ion-col *ngFor="let value of slot.slots; let i = index">
-            <div class="hoverable" [ngClass]="[value.chicken <= config.chicken ? 'green-cell' : 'red-cell',i === getCurrentTimeIndex(slot.slots, slot.date) ? 'highlight-column' : '']"
-              (click)="goToTheke(slot.date, slot.slots[i].time)">
-              {{ value.chicken }}
-            </div>
-          </ion-col>
-          <ion-col>{{ slot.total.chicken }}</ion-col>
-        </ion-row>
+  <ion-accordion-group [multiple]="true" [value]="['0', '1', '2']">
+    <!-- <ion-label>{{i}}</ion-label> -->
+    <ion-accordion *ngFor="let slot of timeSlots; let i = index" [value]="i.toString()">
+      <ion-item slot="header" color="light">
+        <ion-label>{{ slot.date | time: 'date' }}: {{ slot.date | time: 'dayOfWeek' }} - {{ slot.range_start |
+          time:'time' }} bis {{ slot.range_end | time: 'time' }} Uhr</ion-label>
+      </ion-item>
+      <ion-card slot="content">
+        <ion-card-content>
+          <ion-grid class="table-grid">
+            <ion-row>
+              <ion-col>Uhr</ion-col>
+              <ion-col>Hähnchen</ion-col>
+              <ion-col>Nuggets</ion-col>
+              <ion-col>Pommes</ion-col>
+            </ion-row>
+            <ion-row *ngFor="let value of slot.slots; let i = index"
+              [ngClass]="i === getCurrentTimeIndex(slot.slots, slot.date) ? 'highlight-column' : ''">
+              <ion-col class=" hoverable" (click)="goToTheke(slot.date, slot.slots[i].time)">{{ value.time }}</ion-col>
+              <ion-col class="hoverable" [ngClass]="value.chicken <= config.chicken ? 'green-cell' : 'red-cell'"
+                (click)="goToTheke(slot.date, slot.slots[i].time)">{{ value.chicken }}</ion-col>
+              <ion-col class="hoverable" [ngClass]="value.nuggets <= config.nuggets ? 'green-cell' : 'red-cell'"
+                (click)="goToTheke(slot.date, slot.slots[i].time)">{{ value.nuggets }}</ion-col>
+              <ion-col class="hoverable" [ngClass]="value.fries <= config.fries ? 'green-cell' : 'red-cell'"
+                (click)="goToTheke(slot.date, slot.slots[i].time)">{{ value.fries }}</ion-col>
+            </ion-row>
+            <ion-row></ion-row>
+            <ion-row>
+              <ion-col>Summe</ion-col>
+              <ion-col>{{ slot.total.chicken }}</ion-col>
+              <ion-col>{{ slot.total.nuggets }}</ion-col>
+              <ion-col>{{ slot.total.fries }}</ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-accordion>
+  </ion-accordion-group>
 
-        <ion-row>
-          <ion-col>Nuggets</ion-col>
-          <ion-col *ngFor="let value of slot.slots; let i = index">
-            <div class="hoverable" [ngClass]="[value.nuggets <= config.nuggets ? 'green-cell' : 'red-cell',i === getCurrentTimeIndex(slot.slots, slot.date) ? 'highlight-column' : '']"
-              (click)="goToTheke(slot.date, slot.slots[i].time)">
-              {{ value.nuggets }}
-            </div>
-          </ion-col>
-          <ion-col>{{ slot.total.nuggets }}</ion-col>
-        </ion-row>
-
-        <ion-row>
-          <ion-col>Pommes</ion-col>
-          <ion-col *ngFor="let value of slot.slots; let i = index">
-            <div class="hoverable" [ngClass]="[value.fries <= config.fries ? 'green-cell' : 'red-cell',i === getCurrentTimeIndex(slot.slots, slot.date) ? 'highlight-column' : '']"
-              (click)="goToTheke(slot.date, slot.slots[i].time)">
-              {{ value.fries }}
-            </div>
-          </ion-col>
-          <ion-col>{{ slot.total.fries }}</ion-col>
-        </ion-row>
-
-      </ion-grid>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Zusammenfassung</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item>
-          <ion-label><strong>Hähnchen:</strong></ion-label>
-          <ion-text>{{ timeSlots[0].total.chicken }}</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>Nuggets:</strong></ion-label>
-          <ion-text>{{ timeSlots[0].total.nuggets }}</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>Pommes:</strong></ion-label>
-          <ion-text>{{ timeSlots[0].total.fries }}</ion-text>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
-  </ion-list>
 </ion-content>
