@@ -128,7 +128,6 @@ export class KitchenPage implements OnInit {
       const _timepipe = new TimePipe();
 
       slots.forEach((slot, index) => {
-        console.log(slot.date)
         this.orderService
           .getOrderSummary(
             slot.date,
@@ -208,8 +207,6 @@ export class KitchenPage implements OnInit {
   }
 
   async goToTheke(date: string, time: string) {
-    console.log(date);
-    console.log(time);
     const filter = {
       // date: date.slice(0, 10)
       date: date + time,

@@ -10,7 +10,6 @@
 <ion-content [fullscreen]="true">
   <app-refresh (refreshed)="init()"></app-refresh>
   <ion-accordion-group [multiple]="true" [value]="['0', '1', '2']">
-    <!-- <ion-label>{{i}}</ion-label> -->
     <ion-accordion *ngFor="let slot of timeSlots; let i = index" [value]="i.toString()">
       <ion-item slot="header" color="light">
         <ion-label>{{ slot.date | time: 'date' }}: {{ slot.date | time: 'dayOfWeek' }} - {{ slot.range_start |
