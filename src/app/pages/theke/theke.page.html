@@ -8,147 +8,148 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <div class="order-center">
+    <app-refresh (refreshed)="init()"></app-refresh>
+    <ion-accordion-group>
+      <ion-accordion value="filter">
+        <ion-item slot="header">
+          <ion-icon name="filter"></ion-icon>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-list>
+            <ion-item>
+              <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ionChange)="applyFilter()"
+                [clearInput]="true"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ionChange)="applyFilter()"
+                [clearInput]="true"></ion-input>
+            </ion-item>
 
-  <app-refresh (refreshed)="init()"></app-refresh>
-  <ion-accordion-group>
-    <ion-accordion value="filter">
-      <ion-item slot="header">
-        <ion-icon name="filter"></ion-icon>
-      </ion-item>
-      <div class="ion-padding" slot="content">
-        <ion-list>
-          <ion-item>
-            <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ionChange)="applyFilter()"
-              [clearInput]="true"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ionChange)="applyFilter()"
-              [clearInput]="true"></ion-input>
-          </ion-item>
+            <ion-item>
+              <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()"
+                [clearInput]="true"></ion-input>
+            </ion-item>
 
-          <ion-item>
-            <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()"
-              [clearInput]="true"></ion-input>
-          </ion-item>
+            <ion-item>
+              <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen" (ionChange)="applyFilter()"
+                [clearInput]="true"></ion-input>
+              <ion-input type="number" [(ngModel)]="filter.nuggets" placeholder="Nuggets" (ionChange)="applyFilter()"
+                [clearInput]="true"></ion-input>
+              <ion-input type="number" [(ngModel)]="filter.fries" placeholder="Pommes" (ionChange)="applyFilter()"
+                [clearInput]="true"></ion-input>
+            </ion-item>
 
-          <ion-item>
-            <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen" (ionChange)="applyFilter()"
-              [clearInput]="true"></ion-input>
-            <ion-input type="number" [(ngModel)]="filter.nuggets" placeholder="Nuggets" (ionChange)="applyFilter()"
-              [clearInput]="true"></ion-input>
-            <ion-input type="number" [(ngModel)]="filter.fries" placeholder="Pommes" (ionChange)="applyFilter()"
-              [clearInput]="true"></ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-select [(ngModel)]="filter.status" multiple="true" placeholder="Status" (ionChange)="applyFilter()">
-              <ion-select-option value="CREATED">Erstellt</ion-select-option>
-              <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
-              <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
-              <ion-select-option value="COMPLETED">Fertig</ion-select-option>
-              <ion-select-option value="CANCELLED">CANCELLED</ion-select-option>
-            </ion-select>
-          </ion-item>
-        </ion-list>
-      </div>
-    </ion-accordion>
-  </ion-accordion-group>
-
-
-  <div *ngIf="hasActiveFilters()" class="filter-batch ion-padding-start ion-padding-bottom">
-    <ion-chip *ngIf="filter.firstname">
-      <ion-label>Vorname: {{ filter.firstname }}</ion-label>
-      <ion-icon name="close" (click)="removeFilter('firstname')"></ion-icon>
-    </ion-chip>
-    <ion-chip *ngIf="filter.lastname">
-      <ion-label>Nachname: {{ filter.lastname }}</ion-label>
-      <ion-icon name="close" (click)="removeFilter('lastname')"></ion-icon>
-    </ion-chip>
-    <ion-chip *ngIf="filter.date">
-      <ion-label>Datum: {{ filter.date }}</ion-label>
-      <ion-icon name="close" (click)="removeFilter('date')"></ion-icon>
-    </ion-chip>
-    <ion-chip *ngIf="filter.chicken">
-      <ion-label>Hähnchen: {{ filter.chicken }}</ion-label>
-      <ion-icon name="close" (click)="removeFilter('chicken')"></ion-icon>
-    </ion-chip>
-    <ion-chip *ngIf="filter.nuggets">
-      <ion-label>Nuggets: {{ filter.nuggets }}</ion-label>
-      <ion-icon name="close" (click)="removeFilter('nuggets')"></ion-icon>
-    </ion-chip>
-    <ion-chip *ngIf="filter.fries">
-      <ion-label>Pommes: {{ filter.fries }}</ion-label>
-      <ion-icon name="close" (click)="removeFilter('fries')"></ion-icon>
-    </ion-chip>
-    <ion-chip *ngFor="let status of filter.status; let i = index">
-      <ion-label>Status: {{ getStatusLabel(status) }}</ion-label>
-      <ion-icon name="close" (click)="removeStatusFilter(i)"></ion-icon>
-    </ion-chip>
-  </div>
-
-  <div class="ion-padding-bottom" style="display: flex; justify-content: flex-end;"> <ion-text color="medium">
-      <p>{{ filteredOrders.length }} Bestellungen</p>
-    </ion-text>
-  </div>
+            <ion-item>
+              <ion-select [(ngModel)]="filter.status" multiple="true" placeholder="Status" (ionChange)="applyFilter()">
+                <ion-select-option value="CREATED">Erstellt</ion-select-option>
+                <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
+                <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
+                <ion-select-option value="COMPLETED">Fertig</ion-select-option>
+                <ion-select-option value="CANCELLED">CANCELLED</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
 
 
-  <ion-list>
-    <ion-card *ngFor="let order of filteredOrders; trackBy: trackByOrderId">
-      <ion-card-header>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: inline-flex; align-items: center; gap: 6px;">
-            <ion-card-title>
-              #{{ order.id }} {{ order.firstname }} {{ order.lastname }}
-            </ion-card-title>
-            <ion-button fill="clear" size="small" (click)="editOrder(order)">
-              bearbeiten
+    <div *ngIf="hasActiveFilters()" class="filter-batch ion-padding-start ion-padding-bottom">
+      <ion-chip *ngIf="filter.firstname">
+        <ion-label>Vorname: {{ filter.firstname }}</ion-label>
+        <ion-icon name="close" (click)="removeFilter('firstname')"></ion-icon>
+      </ion-chip>
+      <ion-chip *ngIf="filter.lastname">
+        <ion-label>Nachname: {{ filter.lastname }}</ion-label>
+        <ion-icon name="close" (click)="removeFilter('lastname')"></ion-icon>
+      </ion-chip>
+      <ion-chip *ngIf="filter.date">
+        <ion-label>Datum: {{ filter.date }}</ion-label>
+        <ion-icon name="close" (click)="removeFilter('date')"></ion-icon>
+      </ion-chip>
+      <ion-chip *ngIf="filter.chicken">
+        <ion-label>Hähnchen: {{ filter.chicken }}</ion-label>
+        <ion-icon name="close" (click)="removeFilter('chicken')"></ion-icon>
+      </ion-chip>
+      <ion-chip *ngIf="filter.nuggets">
+        <ion-label>Nuggets: {{ filter.nuggets }}</ion-label>
+        <ion-icon name="close" (click)="removeFilter('nuggets')"></ion-icon>
+      </ion-chip>
+      <ion-chip *ngIf="filter.fries">
+        <ion-label>Pommes: {{ filter.fries }}</ion-label>
+        <ion-icon name="close" (click)="removeFilter('fries')"></ion-icon>
+      </ion-chip>
+      <ion-chip *ngFor="let status of filter.status; let i = index">
+        <ion-label>Status: {{ getStatusLabel(status) }}</ion-label>
+        <ion-icon name="close" (click)="removeStatusFilter(i)"></ion-icon>
+      </ion-chip>
+    </div>
+
+    <div class="ion-padding-bottom" style="display: flex; justify-content: flex-end;"> <ion-text color="medium">
+        <p>{{ filteredOrders.length }} Bestellungen</p>
+      </ion-text>
+    </div>
+
+
+    <ion-list>
+      <ion-card *ngFor="let order of filteredOrders; trackBy: trackByOrderId">
+        <ion-card-header>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: inline-flex; align-items: center; gap: 6px;">
+              <ion-card-title>
+                #{{ order.id }} {{ order.firstname }} {{ order.lastname }}
+              </ion-card-title>
+              <ion-button fill="clear" size="small" (click)="editOrder(order)">
+                bearbeiten
+              </ion-button>
+            </div>
+
+            <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">
+              {{ getStatusLabel(order.status) }}
             </ion-button>
           </div>
+          <ion-card-subtitle>
+            {{ (order?.date ?? '') | time: 'dayOfWeek' }} {{ (order?.date ?? '') | time: 'date' }} um {{ (order?.date ??
+            '') |
+            time: 'time' }}
+          </ion-card-subtitle>
 
-          <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">
-            {{ getStatusLabel(order.status) }}
-          </ion-button>
-        </div>
-        <ion-card-subtitle>
-          {{ (order?.date ?? '') | time: 'dayOfWeek' }} {{ (order?.date ?? '') | time: 'date' }} um {{ (order?.date ??
-          '') |
-          time: 'time' }}
-        </ion-card-subtitle>
+          <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">{{ getStatusLabel(order.status)
+            }}</ion-button>
+        </ion-card-header>
 
-        <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">{{ getStatusLabel(order.status)
-          }}</ion-button>
-      </ion-card-header>
+        <ion-item>{{ order.price.toFixed(2) }}€</ion-item>
 
-      <ion-item>{{ order.price.toFixed(2) }}€</ion-item>
+        <ion-select [value]="order.status" #selectRefs interface="popover" style="display: none;"
+          (ionChange)="onStatusChange($event, order)">
+          <ion-select-option value="CREATED">Erstellt</ion-select-option>
+          <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
+          <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
+          <ion-select-option value="COMPLETED">Fertig</ion-select-option>
+          <ion-select-option value="CANCELLED">Storniert</ion-select-option>
+        </ion-select>
 
-      <ion-select [value]="order.status" #selectRefs interface="popover" style="display: none;"
-        (ionChange)="onStatusChange($event, order)">
-        <ion-select-option value="CREATED">Erstellt</ion-select-option>
-        <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
-        <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
-        <ion-select-option value="COMPLETED">Fertig</ion-select-option>
-        <ion-select-option value="CANCELLED">Storniert</ion-select-option>
-      </ion-select>
-
-      <ion-card-content>
-        <ion-item>
-          <ion-label><strong>Hähnchen:</strong></ion-label>
-          <ion-text>{{ order.chicken }}</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>Nuggets:</strong></ion-label>
-          <ion-text>{{ order.nuggets }}</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>Pommes:</strong></ion-label>
-          <ion-text>{{ order.fries }}</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>Sonstiges:</strong></ion-label>
-          <ion-text *ngIf="order.miscellaneous">{{ order.miscellaneous }}</ion-text>
-          <ion-text *ngIf="!order.miscellaneous">-</ion-text>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
-  </ion-list>
+        <ion-card-content>
+          <ion-item>
+            <ion-label><strong>Hähnchen:</strong></ion-label>
+            <ion-text>{{ order.chicken }}</ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label><strong>Nuggets:</strong></ion-label>
+            <ion-text>{{ order.nuggets }}</ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label><strong>Pommes:</strong></ion-label>
+            <ion-text>{{ order.fries }}</ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label><strong>Sonstiges:</strong></ion-label>
+            <ion-text *ngIf="order.miscellaneous">{{ order.miscellaneous }}</ion-text>
+            <ion-text *ngIf="!order.miscellaneous">-</ion-text>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+  </div>
 </ion-content>

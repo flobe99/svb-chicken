@@ -33,11 +33,15 @@ import {
   IonGrid,
   IonCol,
   IonRow,
-  IonText
-} from '@ionic/angular/standalone'
+  IonText,
+} from '@ionic/angular/standalone';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { TimePipe } from 'src/app/pipes/time.pipe';
-import { OrderChicken, OrderSummaryResponse, OrderSummarySlot } from 'src/app/models/order.model';
+import {
+  OrderChicken,
+  OrderSummaryResponse,
+  OrderSummarySlot,
+} from 'src/app/models/order.model';
 import { OrderService } from 'src/app/services/Order.Service';
 import { Router } from '@angular/router';
 import { StorageService } from 'src/app/services/storage.service';
@@ -86,10 +90,9 @@ import { TimeSlotConfig } from 'src/app/models/TimeSlotConfig.model';
     IonGrid,
     IonRow,
     IonCol,
-    IonText
-  ]
+    IonText,
+  ],
 })
-
 export class KitchenPage implements OnInit {
   timeSlots: TimeSlotConfig[] = [];
   config: ConfigChicken = new ConfigChicken();
@@ -98,11 +101,11 @@ export class KitchenPage implements OnInit {
   constructor(
     private orderService: OrderService,
     private router: Router,
-    private storageService: StorageService,
-  ) { }
+    private storageService: StorageService
+  ) {}
 
   async ngOnInit() {
-    this.init()
+    this.init();
   }
 
   ionViewWillEnter() {
@@ -119,25 +122,32 @@ export class KitchenPage implements OnInit {
         range_start: '',
         range_end: '',
         slots: [],
-        total: { chicken: 0, nuggets: 0, fries: 0 }
+        total: { chicken: 0, nuggets: 0, fries: 0 },
       }));
 
       const _timepipe = new TimePipe();
 
       slots.forEach((slot, index) => {
-        this.orderService.getOrderSummary(slot.date, (_timepipe.get(slot.range_start, 'time') + "-" + _timepipe.get(slot.range_end, 'time'))).subscribe(summary => {
-          this.timeSlots[index] = {
-            date: slot.date,
-            range_start: slot.range_start,
-            range_end: slot.range_end,
-            slots: summary.slots.map(s => new OrderSummarySlot(s)),
-            total: {
-              chicken: summary.total.chicken,
-              nuggets: summary.total.nuggets,
-              fries: summary.total.fries
-            }
-          };
-        });
+        this.orderService
+          .getOrderSummary(
+            slot.date,
+            _timepipe.get(slot.range_start, 'time') +
+              '-' +
+              _timepipe.get(slot.range_end, 'time')
+          )
+          .subscribe((summary) => {
+            this.timeSlots[index] = {
+              date: slot.date,
+              range_start: slot.range_start,
+              range_end: slot.range_end,
+              slots: summary.slots.map((s) => new OrderSummarySlot(s)),
+              total: {
+                chicken: summary.total.chicken,
+                nuggets: summary.total.nuggets,
+                fries: summary.total.fries,
+              },
+            };
+          });
       });
 
       // Konfiguration laden
@@ -151,43 +161,61 @@ export class KitchenPage implements OnInit {
       this.orderService.connectToOrderWebSocket(() => {
         slots.forEach((slot, index) => {
           const range = this.formatRange(slot.range_start, slot.range_end);
-          this.orderService.getOrderSummary(slot.date, range).subscribe(summary => {
-            this.timeSlots[index] = {
-              date: slot.date,
-              range_start: slot.range_start,
-              range_end: slot.range_end,
-              slots: summary.slots.map(s => new OrderSummarySlot(s)),
-              total: {
-                chicken: summary.total.chicken,
-                nuggets: summary.total.nuggets,
-                fries: summary.total.fries
-              }
-            };
-          });
+          this.orderService
+            .getOrderSummary(slot.date, range)
+            .subscribe((summary) => {
+              this.timeSlots[index] = {
+                date: slot.date,
+                range_start: slot.range_start,
+                range_end: slot.range_end,
+                slots: summary.slots.map((s) => new OrderSummarySlot(s)),
+                total: {
+                  chicken: summary.total.chicken,
+                  nuggets: summary.total.nuggets,
+                  fries: summary.total.fries,
+                },
+              };
+            });
         });
       });
     });
   }
 
   formatRange(start: string, end: string): string {
-    const startTime = new Date(start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const endTime = new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const startTime = new Date(start).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const endTime = new Date(end).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     return `${startTime}-${endTime}`;
   }
 
+  getCurrentTimeIndex(slot: OrderSummarySlot[], slotDate: string): number {
+    console.table(slot);
+    const now = new Date();
+    // const now = new Date('2025-10-11T18:59:00');
 
+    return slot.findIndex((s) => {
+      const start = new Date(`${slotDate}T${s.time}`);
+      const end = new Date(start.getTime() + 15 * 60 * 1000);
+
+      return now >= start && now < end;
+    });
+  }
 
   async goToTheke(date: string, time: string) {
-    console.log(date)
-    console.log(time)
+    console.log(date);
+    console.log(time);
     const filter = {
       // date: date.slice(0, 10)
-      date: date + time
+      date: date + time,
     };
-    await this.storageService.set('orderFilter', { date: date + "T" + time });
+    await this.storageService.set('orderFilter', { date: date + 'T' + time });
     this.router.navigate(['/theke'], {
-      state: { filter }
+      state: { filter },
     });
   }
 }
-

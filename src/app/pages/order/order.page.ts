@@ -19,7 +19,8 @@ import {
   IonModal,
   IonDatetimeButton,
   IonIcon,
-  IonNote
+  IonNote,
+  IonCard
 } from '@ionic/angular/standalone'
 
 import { Router } from '@angular/router';
@@ -56,7 +57,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     IonDatetimeButton,
     IonIcon,
     RefreshComponent,
-    IonNote
+    IonNote,
+    IonCard
   ]
 })
 export class OrderPage implements OnInit {

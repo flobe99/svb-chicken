@@ -8,3 +8,17 @@
     right: 8px;
     z-index: 10;
 }
+
+.order-center{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    ion-list,
+    ion-accordion-group,
+    div{
+        width: 100%;
+        max-width: 1300px;
+    }
+}
