@@ -162,8 +162,8 @@ export class OrderPage implements OnInit {
     if (
       !this.order.firstname ||
       !this.order.lastname ||
-      !this.order.mail ||
-      !this.order.phonenumber ||
+      // !this.order.mail ||
+      // !this.order.phonenumber ||
       this.order.chicken == null ||
       this.order.nuggets == null ||
       this.order.fries == null
