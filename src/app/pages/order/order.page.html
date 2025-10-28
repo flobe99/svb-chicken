@@ -44,8 +44,9 @@
         </ion-datetime-button>
       </ion-item>
 
-      <ion-note *ngIf="!dateValid" color="danger" class="ion-margin-horizontal">
-        Datum bzw. Uhrzeit nicht möglich
+      <ion-note *ngIf="dateErrorText!=''" color="danger" class="ion-margin-horizontal">
+        <!-- Datum bzw. Uhrzeit nicht möglich -->
+         {{dateErrorText}}
       </ion-note>
 
       <ion-modal [keepContentsMounted]="true" (didDismiss)="validateDate()">
@@ -57,20 +58,32 @@
 
       <ion-item>
         <ion-label position="floating" class="required-label">Hähnchen</ion-label>
-        <ion-input required type="number" [(ngModel)]="order.chicken" name="haehnchen" autocomplete="off"></ion-input>
+        <ion-input [errorText]="chickenErrorText" required type="number" [(ngModel)]="order.chicken" name="haehnchen"
+          autocomplete="off" #chickenInput="ngModel"></ion-input>
       </ion-item>
+      <ion-note *ngIf="chickenErrorText!=''" color="danger" class="ion-margin-horizontal">
+        {{chickenErrorText}}
+      </ion-note>
 
       <ion-item>
         <ion-label position="floating" class="required-label">Nuggets</ion-label>
-        <ion-input required type="number" [(ngModel)]="order.nuggets" name="nuggets" autocomplete="off"></ion-input>
+        <ion-input [errorText]="nuggetsErrorText" required type="number" [(ngModel)]="order.nuggets" name="nuggets"
+          autocomplete="off"></ion-input>
       </ion-item>
+      <ion-note *ngIf="nuggetsErrorText!=''" color="danger" class="ion-margin-horizontal">
+        {{nuggetsErrorText}}
+      </ion-note>
 
       <ion-item>
         <ion-label position="floating" class="required-label">
           Pommes
         </ion-label>
-        <ion-input required type="number" [(ngModel)]="order.fries" name="pommes" autocomplete="off"></ion-input>
+        <ion-input [errorText]="friesErrorText" required type="number" [(ngModel)]="order.fries" name="pommes"
+          autocomplete="off"></ion-input>
       </ion-item>
+      <ion-note *ngIf="friesErrorText!=''" color="danger" class="ion-margin-horizontal">
+        {{friesErrorText}}
+      </ion-note>
 
       <ion-item>
         <ion-label position="floating">Sonstiges</ion-label>
