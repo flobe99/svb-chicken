@@ -8,105 +8,116 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <ion-list>
-    <ion-card>
-      <ion-card-header>Verkaufszeiten</ion-card-header>
-      <ion-item-group>
-        <div *ngFor="let slot of slots;; let i = index">
-          <ion-card>
-            <ion-card-header>
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <ion-card-title>Slot {{i+1}}</ion-card-title>
-                <!-- <ion-icon color="danger" name="trash-outline" slot="start"></ion-icon> -->
-                <!-- <ion-button color="success" fill="clear" size="small" (click)="deleteSlot()">
-                  löschen
-                </ion-button> -->
-              </div>
-            </ion-card-header>
-            <ion-item>
-              <ion-label position="stacked">Datum</ion-label>
-              <ion-datetime-button datetime="date-{{i}}"></ion-datetime-button>
+  <div class="center-content">
+    <ion-list>
+      <ion-card>
+        <ion-card-header>Verkaufszeiten</ion-card-header>
+        <ion-item-group>
+          <div *ngFor="let slot of slots;; let i = index">
+            <ion-card style="position: relative">
+              <ion-card-header>
+                <ion-card-title>Slot {{ i + 1 }}</ion-card-title>
+                <ion-button fill="clear" color="danger" size="small" style="position: absolute; top: 8px; right: 8px;"
+                  (click)="deleteSlot(slot)">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+              </ion-card-header>
+              <ion-item>
+                <ion-label position="stacked">Datum</ion-label>
+                <ion-datetime-button datetime="date-{{i}}"></ion-datetime-button>
 
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime firstDayOfWeek="1" locale="de-DE" id="date-{{i}}" presentation="date"
-                    [(ngModel)]="slot.date"></ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Startzeit</ion-label>
-              <ion-datetime-button datetime="start-{{i}}"></ion-datetime-button>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime firstDayOfWeek="1" locale="de-DE" id="start-{{i}}" presentation="time"
-                    [(ngModel)]="slot.range_start"></ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Endzeit</ion-label>
-              <ion-datetime-button datetime="end-{{i}}"></ion-datetime-button>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime firstDayOfWeek="1" locale="de-DE" id="end-{{i}}" presentation="time"
-                    [(ngModel)]="slot.range_end"></ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
-          </ion-card>
-        </div>
-      </ion-item-group>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
 
-      <ion-button color="primary" (click)="saveSlots()">Speichern</ion-button>
-    </ion-card>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Startzeit</ion-label>
+                <ion-datetime-button datetime="start-{{i}}"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime firstDayOfWeek="1" locale="de-DE" id="start-{{i}}" presentation="time"
+                      [(ngModel)]="slot.range_start"></ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Endzeit</ion-label>
+                <ion-datetime-button datetime="end-{{i}}"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime firstDayOfWeek="1" locale="de-DE" id="end-{{i}}" presentation="time"
+                      [(ngModel)]="slot.range_end"></ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+            </ion-card>
+          </div>
+          <!-- <ion-icon name="add-circle-outline" slot="start"></ion-icon> -->
+          <ion-row class="ion-justify-content-center ion-padding">
+            <ion-button fill="clear" (click)="addSlot()" color="primary">
+              <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+            </ion-button>
+          </ion-row>
+        </ion-item-group>
 
-    <ion-card>
-      <ion-item-group>
-        <ion-item-divider>
-          <ion-label> Kosten </ion-label>
-        </ion-item-divider>
-        <ion-item *ngFor="let product of products">
-          <ion-label>{{ product.product }}:</ion-label>
-          <ion-text>
-            <ion-input type="number" [(ngModel)]="product.price" min="0" step="0.01" (ionBlur)="formatPrice(product)">
-              <ion-text slot="end" aria-hidden="true">€</ion-text>
-            </ion-input>
-          </ion-text>
-        </ion-item>
-      </ion-item-group>
-      <ion-button color="primary" (click)="saveProduct()">Speichern</ion-button>
-    </ion-card>
+        <ion-button color="primary" (click)="saveSlots()">Speichern</ion-button>
+      </ion-card>
 
-    <ion-card>
-      <ion-item-group>
-        <ion-item-divider>
-          <ion-label>Konfiguration</ion-label>
-        </ion-item-divider>
-        <ion-item>
-          <ion-label>Max. Hähnchen</ion-label>
-          <ion-text>
-            <ion-input type="number" [(ngModel)]="config.chicken" min="0" step="1"></ion-input>
-          </ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label>Max. Nuggets</ion-label>
-          <ion-text>
-            <ion-input type="number" [(ngModel)]="config.nuggets" min="0" step="1"></ion-input>
-          </ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label>Max. Pommes</ion-label>
-          <ion-text>
-            <ion-input type="number" [(ngModel)]="config.fries" min="0" step="1"></ion-input>
-          </ion-text>
-        </ion-item>
-      </ion-item-group>
-      <ion-button color="primary" (click)="saveConfig()">Speichern</ion-button>
-    </ion-card>
+      <ion-card>
+        <ion-item-group>
+          <ion-item-divider>
+            <ion-label> Kosten </ion-label>
+          </ion-item-divider>
 
-  </ion-list>
+          <ion-item *ngFor="let product of products">
+            <ion-label>{{ product.name }}:</ion-label>
+            <ion-input type="number" inputmode="decimal" [(ngModel)]="product.price"
+              (ionBlur)="formatPrice(product)" min="0" step="0.01"
+              placeholder="0.00"></ion-input>
+          </ion-item>
 
-  <!-- <ion-button color="primary" (click)="save()">Save</ion-button> -->
-  <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+        </ion-item-group>
+        <ion-button color="primary" (click)="saveProduct()">Speichern</ion-button>
+      </ion-card>
+
+      <ion-card>
+        <ion-item-group>
+          <ion-item-divider>
+            <ion-label>Konfiguration</ion-label>
+          </ion-item-divider>
+          <ion-item>
+            <ion-label>Max. Hähnchen</ion-label>
+            <ion-text>
+              <ion-input type="number" [(ngModel)]="config.chicken" min="0" step="1">
+                <ion-text slot="end">Stk.</ion-text>
+              </ion-input>
+            </ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label>Max. Nuggets</ion-label>
+            <ion-text>
+              <ion-input type="number" [(ngModel)]="config.nuggets" min="0" step="1">
+                <ion-text slot="end">Stk.</ion-text>
+              </ion-input>
+            </ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label>Max. Pommes</ion-label>
+            <ion-text>
+              <ion-input type="number" [(ngModel)]="config.fries" min="0" step="1">
+                <ion-text slot="end">Stk.</ion-text>
+              </ion-input>
+            </ion-text>
+          </ion-item>
+        </ion-item-group>
+        <ion-button color="primary" (click)="saveConfig()">Speichern</ion-button>
+      </ion-card>
+
+    </ion-list>
+
+    <ion-button color="primary" (click)="save()">Speichern</ion-button>
+    <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+  </div>
 </ion-content>

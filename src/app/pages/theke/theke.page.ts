@@ -1,4 +1,10 @@
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -30,8 +36,8 @@ import {
   IonSelectOption,
   IonAccordion,
   IonAccordionGroup,
-  IonText
-} from '@ionic/angular/standalone'
+  IonText,
+} from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { OrderService } from 'src/app/services/Order.Service';
@@ -39,7 +45,18 @@ import { OrderChicken } from 'src/app/models/order.model';
 import { StorageService } from 'src/app/services/storage.service';
 import { TimePipe } from 'src/app/pipes/time.pipe';
 import { addIcons } from 'ionicons';
-import { close, filter } from 'ionicons/icons';
+import {
+  close,
+  filter,
+  ellipsisVerticalOutline,
+  createOutline,
+  trashOutline,
+} from 'ionicons/icons';
+import {
+  ActionSheetController,
+  AlertController,
+  ToastController,
+} from '@ionic/angular';
 
 @Component({
   selector: 'app-theke',
@@ -79,8 +96,8 @@ import { close, filter } from 'ionicons/icons';
     IonSelectOption,
     IonAccordion,
     IonAccordionGroup,
-    TimePipe
-  ]
+    TimePipe,
+  ],
 })
 export class ThekePage implements OnInit {
   @ViewChildren('selectRefs') selectRefs!: QueryList<IonSelect>;
@@ -88,28 +105,37 @@ export class ThekePage implements OnInit {
   constructor(
     private orderService: OrderService,
     private storageService: StorageService,
-    private router: Router
+    private router: Router,
+    private actionSheetController: ActionSheetController,
+    private alertController: AlertController,
+    private toastController: ToastController
   ) {
-    addIcons({ filter, close });
-
+    addIcons({
+      filter,
+      close,
+      ellipsisVerticalOutline,
+      createOutline,
+      trashOutline,
+    });
   }
 
   public orders: OrderChicken[] = [];
   public filteredOrders: OrderChicken[] = [];
 
-  public filter: Partial<Omit<OrderChicken, 'status'>> & { status?: string[] } = {};
+  public filter: Partial<Omit<OrderChicken, 'status'>> & { status?: string[] } =
+    {};
 
   ngOnInit() {
-    this.init()
+    this.init();
   }
 
   ionViewDidEnter() {
-    this.init()
+    this.init();
   }
 
   async init(stateFilter?: any) {
     const savedFilter = await this.storageService.get('orderFilter');
-    console.table(savedFilter)
+    console.table(savedFilter);
 
     // Priorität: Navigation > Storage
     this.filter = stateFilter ?? savedFilter ?? {};
@@ -127,10 +153,38 @@ export class ThekePage implements OnInit {
     });
   }
 
+  async openActionSheet(order: OrderChicken) {
+    const actionSheet = await this.actionSheetController.create({
+      header: `Bestellung #${order.id} ${order.lastname}`,
+      buttons: [
+        {
+          text: 'Bearbeiten',
+          icon: 'create-outline',
+          handler: () => {
+            this.editOrder(order);
+          },
+        },
+        {
+          text: 'Löschen',
+          icon: 'trash-outline',
+          role: 'destructive',
+          handler: () => {
+            this.deleteOrder(order);
+          },
+        },
+        {
+          text: 'Abbrechen',
+          icon: 'close',
+          role: 'cancel',
+        },
+      ],
+    });
+    await actionSheet.present();
+  }
+
   trackByOrderId(index: number, order: OrderChicken): number {
     return order.id!;
   }
-
 
   applyFilter() {
     if (!Array.isArray(this.filter.status)) {
@@ -140,21 +194,39 @@ export class ThekePage implements OnInit {
       .filter((order) => {
         return (
           (!this.filter.id || order.id === this.filter.id) &&
-          (!this.filter.firstname || order.firstname.toLowerCase().includes(this.filter.firstname.toLowerCase())) &&
-          (!this.filter.lastname || order.lastname.toLowerCase().includes(this.filter.lastname.toLowerCase())) &&
-          (!this.filter.mail || order.mail.toLowerCase().includes(this.filter.mail.toLowerCase())) &&
-          (!this.filter.phonenumber || order.phonenumber.includes(this.filter.phonenumber)) &&
+          (!this.filter.firstname ||
+            order.firstname
+              .toLowerCase()
+              .includes(this.filter.firstname.toLowerCase())) &&
+          (!this.filter.lastname ||
+            order.lastname
+              .toLowerCase()
+              .includes(this.filter.lastname.toLowerCase())) &&
+          (!this.filter.mail ||
+            order.mail
+              .toLowerCase()
+              .includes(this.filter.mail.toLowerCase())) &&
+          (!this.filter.phonenumber ||
+            order.phonenumber.includes(this.filter.phonenumber)) &&
           (!this.filter.date || order.date.includes(this.filter.date)) &&
-          (!this.filter.miscellaneous || order.miscellaneous.toLowerCase().includes(this.filter.miscellaneous.toLowerCase())) &&
+          (!this.filter.miscellaneous ||
+            order.miscellaneous
+              .toLowerCase()
+              .includes(this.filter.miscellaneous.toLowerCase())) &&
           (!this.filter.chicken || order.chicken === this.filter.chicken) &&
           (!this.filter.nuggets || order.nuggets === this.filter.nuggets) &&
           (!this.filter.fries || order.fries === this.filter.fries) &&
-          (this.filter.status?.length === 0 || this.filter.status?.includes(order.status))
+          (this.filter.status?.length === 0 ||
+            this.filter.status?.includes(order.status))
         );
       })
       .sort((a, b) => {
-        const aTime = a.checked_in_at ? new Date(a.checked_in_at).getTime() : Infinity;
-        const bTime = b.checked_in_at ? new Date(b.checked_in_at).getTime() : Infinity;
+        const aTime = a.checked_in_at
+          ? new Date(a.checked_in_at).getTime()
+          : Infinity;
+        const bTime = b.checked_in_at
+          ? new Date(b.checked_in_at).getTime()
+          : Infinity;
         return aTime - bTime;
       });
 
@@ -189,10 +261,42 @@ export class ThekePage implements OnInit {
 
   editOrder(order: OrderChicken) {
     this.router.navigate(['/order'], {
-      state: { order }
+      state: { order },
     });
   }
 
+  async deleteOrder(order: OrderChicken) {
+    const alert = await this.alertController.create({
+      header: 'Bestellung löschen',
+      message: 'Möchtest du die Bestellung wirklich löschen?',
+      buttons: [
+        {
+          text: 'Nein',
+          role: 'cancel',
+        },
+        {
+          text: 'Ja',
+          handler: () => {
+            this.orderService
+              .deleteOrderById(order.id!)
+              .subscribe(async (response) => {
+                if (response.success) {
+                  const toast = await this.toastController.create({
+                    message: 'Bestellung erfolgreich gelöscht.',
+                    duration: 2000,
+                    color: 'success',
+                    position: 'bottom',
+                  });
+                  await toast.present();
+                }
+              });
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
 
   openSelect(order: OrderChicken) {
     const index = this.filteredOrders.indexOf(order);
@@ -208,7 +312,7 @@ export class ThekePage implements OnInit {
     CANCELLED: 'Storniert',
     PAID: 'Bezahlt',
     PRINTED: 'Gedruckt',
-    PREPARING: 'In Vorbereitung'
+    PREPARING: 'In Vorbereitung',
   };
 
   getStatusLabel(status: string): string {
@@ -223,15 +327,20 @@ export class ThekePage implements OnInit {
       order.checked_in_at = null as any;
     }
 
-    console.log("id: " + order.id)
-    console.table(order)
+    console.log('id: ' + order.id);
+    console.table(order);
 
     if (order.id) {
       this.orderService.updateOrder(order.id, order).subscribe((response) => {
         if (response.success) {
-          console.log(`Status für Bestellung ${order.id} erfolgreich aktualisiert: ${newStatus}`);
+          console.log(
+            `Status für Bestellung ${order.id} erfolgreich aktualisiert: ${newStatus}`
+          );
         } else {
-          console.error(`Fehler beim Aktualisieren von Bestellung ${order.id}`, response.error);
+          console.error(
+            `Fehler beim Aktualisieren von Bestellung ${order.id}`,
+            response.error
+          );
         }
       });
     }

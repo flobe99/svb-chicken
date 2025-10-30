@@ -36,14 +36,19 @@ import {
   IonDatetimeButton,
   IonModal,
   IonDatetime,
-  IonCardTitle
+  IonCardTitle,
 } from '@ionic/angular/standalone';
 import { firstValueFrom } from 'rxjs';
 import { ConfigChicken, Product } from 'src/app/models/product.model';
 import { OrderService } from 'src/app/services/Order.Service';
 import { Location } from '@angular/common';
 import { Slot } from 'src/app/models/slot.model';
-import { trashOutline } from 'ionicons/icons';
+import {
+  addCircleOutline,
+  addOutline,
+  ellipsisVerticalOutline,
+  trashOutline,
+} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 @Component({
@@ -84,19 +89,17 @@ import { addIcons } from 'ionicons';
     IonDatetimeButton,
     IonModal,
     IonDatetime,
-    IonCardTitle
+    IonCardTitle,
   ],
 })
-
 export class SettingsPage implements OnInit {
-
   public products: Product[] = [];
   public slots: Slot[] = [];
   config: ConfigChicken = {
     id: 0,
     chicken: 0,
     nuggets: 0,
-    fries: 0
+    fries: 0,
   };
 
   constructor(
@@ -106,8 +109,7 @@ export class SettingsPage implements OnInit {
     private toastController: ToastController,
     private location: Location
   ) {
-    console.log('ToastController:', this.toastController);
-    addIcons({ trashOutline });
+    addIcons({ trashOutline, addCircleOutline });
   }
 
   async ngOnInit() {
@@ -115,8 +117,8 @@ export class SettingsPage implements OnInit {
       this.slots = slots;
     });
 
-    this.orderService.getProducts().subscribe((data) => {
-      this.products = data;
+    this.orderService.getProducts().subscribe((products) => {
+      this.products = products;
     });
 
     this.orderService.getConfig().subscribe((config) => {
@@ -131,15 +133,42 @@ export class SettingsPage implements OnInit {
   }
 
   addSlot() {
+    const dateOnly = new Date().toISOString().split('T')[0]; // z. B. "2025-10-12"
+    const startTime = '17:00:00';
+    const endTime = '20:00:00';
+
     this.slots.push({
-      date: '',
-      range_start: '',
-      range_end: ''
+      date: dateOnly,
+      range_start: `${dateOnly}T${startTime}`,
+      range_end: `${dateOnly}T${endTime}`,
     });
   }
 
-  deleteSlot() {
-    // this.slots = this.slots.filter(slot => slot.id !== id);
+  deleteSlot(slot: Slot) {
+    if (slot) {
+      this.slots = this.slots.filter((s) => s !== slot);
+      this.orderService.deleteSlot(slot.id!).subscribe({
+        next: async () => {
+          const toast = await this.toastController.create({
+            message: 'Slot wurde gelöscht.',
+            duration: 2000,
+            position: 'top',
+            color: 'success',
+          });
+          await toast.present();
+        },
+        error: async (err) => {
+          const toast = await this.toastController.create({
+            message: 'Fehler beim Löschen des Slots',
+            duration: 2000,
+            position: 'top',
+            color: 'danger',
+          });
+          await toast.present();
+          console.error('Delete slot failed:', err);
+        },
+      });
+    }
   }
 
   extractTime(datetime: string): string {
@@ -150,32 +179,39 @@ export class SettingsPage implements OnInit {
     return `${hours}:${minutes}:${seconds}`;
   }
 
-
+  async save() {
+    await this.saveSlots();
+    await this.saveProduct();
+    await this.saveConfig();
+  }
 
   async saveSlots() {
     const results: boolean[] = [];
-    console.table(this.slots)
+    console.table(this.slots);
 
     for (const slot of this.slots) {
-      console.table("\n######################")
+      console.table('\n######################');
       const dateOnly = slot.date.split('T')[0]; // z. B. "2025-10-12"
       const startTime = this.extractTime(slot.range_start); // z. B. "17:00:00"
-      const endTime = this.extractTime(slot.range_end);     // z. B. "20:00:00"
+      const endTime = this.extractTime(slot.range_end); // z. B. "20:00:00"
 
       const payload = {
         date: dateOnly,
         range_start: `${dateOnly}T${startTime}`,
-        range_end: `${dateOnly}T${endTime}`
+        range_end: `${dateOnly}T${endTime}`,
       };
-
 
       try {
         if (slot.id) {
-          const res = await firstValueFrom(this.orderService.updateSlot(slot.id, payload));
+          const res = await firstValueFrom(
+            this.orderService.updateSlot(slot.id, payload)
+          );
           console.log(`Slot ${slot.id} aktualisiert`, res);
           results.push(true);
         } else {
-          const res = await firstValueFrom(this.orderService.createSlot(payload));
+          const res = await firstValueFrom(
+            this.orderService.createSlot(payload)
+          );
           console.log('Neuer Slot erstellt', res);
           results.push(true);
         }
@@ -185,7 +221,7 @@ export class SettingsPage implements OnInit {
       }
     }
 
-    const allSuccessful = results.every(r => r === true);
+    const allSuccessful = results.every((r) => r === true);
 
     const toast = await this.toastController.create({
       message: allSuccessful
@@ -193,7 +229,7 @@ export class SettingsPage implements OnInit {
         : 'Fehler beim Absenden der Settings.',
       duration: 2500,
       color: allSuccessful ? 'success' : 'danger',
-      position: 'top'
+      position: 'top',
     });
     await toast.present();
 
@@ -202,19 +238,16 @@ export class SettingsPage implements OnInit {
     }
   }
 
-
-
-
   async saveProduct() {
     try {
-      const updatePromises = this.products.map(product =>
+      const updatePromises = this.products.map((product) =>
         firstValueFrom(this.orderService.updateProduct(product))
       );
 
       const results = await Promise.all(updatePromises);
-      console.table(results)
-      const allSuccessful = results.every(res => res.success);
-      console.log(allSuccessful)
+      console.table(results);
+      const allSuccessful = results.every((res) => res.success);
+      console.log(allSuccessful);
 
       const toast = await this.toastController.create({
         message: allSuccessful
@@ -222,7 +255,7 @@ export class SettingsPage implements OnInit {
           : 'Fehler beim Absenden der Settings.',
         duration: 2500,
         color: allSuccessful ? 'success' : 'danger',
-        position: 'top'
+        position: 'top',
       });
       await toast.present();
 
@@ -235,7 +268,7 @@ export class SettingsPage implements OnInit {
         message: 'Fehler beim Absenden der Settings.',
         duration: 2500,
         color: 'danger',
-        position: 'top'
+        position: 'top',
       });
       await toast.present();
     }
@@ -250,7 +283,7 @@ export class SettingsPage implements OnInit {
             message: 'Settings erfolgreich gespeichert.',
             duration: 2500,
             color: 'success',
-            position: 'top'
+            position: 'top',
           });
           await toast.present();
           this.location.back();
@@ -258,7 +291,7 @@ export class SettingsPage implements OnInit {
           console.warn('Speichern fehlgeschlagen');
         }
       },
-      error: (err) => console.error('Fehler beim Speichern:', err)
+      error: (err) => console.error('Fehler beim Speichern:', err),
     });
   }
 

@@ -97,12 +97,10 @@
         <ion-card-header>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div style="display: inline-flex; align-items: center; gap: 6px;">
-              <ion-card-title>
+              <ion-card-title style="text-overflow: ellipsis;">
+                <ion-icon name="ellipsis-vertical-outline" (click)="openActionSheet(order)"></ion-icon>
                 #{{ order.id }} {{ order.firstname }} {{ order.lastname }}
               </ion-card-title>
-              <ion-button fill="clear" size="small" (click)="editOrder(order)">
-                bearbeiten
-              </ion-button>
             </div>
 
             <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">
@@ -119,7 +117,7 @@
             }}</ion-button>
         </ion-card-header>
 
-        <ion-item>{{ order.price.toFixed(2) }}€</ion-item>
+        <ion-item><strong>Preis:</strong> {{ order.price.toFixed(2) }}€</ion-item>
 
         <ion-select [value]="order.status" #selectRefs interface="popover" style="display: none;"
           (ionChange)="onStatusChange($event, order)">
