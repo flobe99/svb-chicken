@@ -10,6 +10,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Slot } from '../models/slot.model';
+import { Account } from '../models/Account.model';
 
 // export const DOMAIN = '192.168.199.133:8000';
 // export const API_URL = `http://${DOMAIN}`;
@@ -54,6 +55,37 @@ export class OrderService {
 
   deleteOrder() {
     this.storageService.delete('order');
+  }
+
+  register(user: { username: string; email: string; password: string }) {
+    return this.http.post(`${API_URL}/user/register`, user);
+  }
+
+  login(username: string, password: string) {
+    const body = new URLSearchParams();
+    body.set('username', username);
+    body.set('password', password);
+    return this.http.post(`${API_URL}/user/token`, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+  }
+
+  getCurrentUser(token: string): Observable<Account> {
+    return this.http.get(`${API_URL}/user/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).pipe(
+      map((userData: any) => {
+        return new Account({ ...userData, access_token: token });
+      })
+    );
+  }
+
+  changePassword(username: string, oldPassword: string, newPassword: string) {
+    return this.http.post(`${API_URL}/user/change-password`, {
+      username,
+      old_password: oldPassword,
+      new_password: newPassword,
+    });
   }
 
   // GET /orders

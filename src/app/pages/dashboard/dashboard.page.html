@@ -18,15 +18,21 @@
       <ion-card-subtitle>{{ event.date }}</ion-card-subtitle>
     </ion-card-header>
 
-    <ion-card-content>
-      <p><ion-icon name="location-outline"></ion-icon> {{ event.location }}</p>
-      <p><ion-icon name="time-outline"></ion-icon> {{ event.time }}</p>
-      <p>{{ event.description }}</p>
-    </ion-card-content>
+<ion-card-content>
+  <p><ion-icon name="location-outline"></ion-icon> {{ event.location }}</p> 
+  <ion-list *ngIf="slots.length > 0">
+    <ion-item *ngFor="let slot of slots">
+      <ion-label>
+        <strong>{{ formatDate(slot.date) }}</strong><br>
+        {{ formatTimeRange(slot.range_start, slot.range_end) }}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <p>{{ event.description }}</p>
+</ion-card-content>
   </ion-card>
 
   <ion-button expand="block" (click)="onClickOrder()">
-    <ion-icon name="fast-food-outline" slot="start"></ion-icon>
     Jetzt bestellen
   </ion-button>
 

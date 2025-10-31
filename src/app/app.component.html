@@ -6,7 +6,7 @@
         <ion-list id="inbox-list">
           <ion-list-header>Hähnchenwochenende</ion-list-header>
           <ion-note>florian&#64;betz-group.de</ion-note>
-          @for (p of appPages; track p; let i = $index) {
+          @for (p of pagesToShow; track p; let i = $index) {
           <ion-menu-toggle auto-hide="false">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false"
               routerLinkActive="selected">
@@ -17,11 +17,25 @@
           </ion-menu-toggle>
           }
         </ion-list>
+        @if(!isLoggedin)
+        {
+          <ion-menu-toggle auto-hide="false">
+          <div class="admin-button-wrapper">
+            <ion-button routerLink="/login" expand="block" shape="round" (click)="closeMenu()">
+              Login
+            </ion-button>
+          </div>
+          </ion-menu-toggle>
+        }
+        @else{
+          <ion-menu-toggle auto-hide="false">
         <div class="admin-button-wrapper">
-          <ion-button routerLink="/login" expand="block" shape="round">
+          <ion-button (click)="logout()" color="success" expand="block" shape="round">
             Admin
           </ion-button>
         </div>
+        </ion-menu-toggle>
+        }
       </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>

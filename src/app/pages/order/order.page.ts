@@ -137,7 +137,7 @@ export class OrderPage implements OnInit {
       });
     }
 
-    this.validateDate();
+    this.validateOrder();
   }
 
   roundToNextQuarterHour(date: Date): Date {
@@ -171,7 +171,7 @@ export class OrderPage implements OnInit {
       this.presentToast('Bitte alle Pflichtfelder ausfüllen');
       return;
     }
-    const isValid = await this.validateDate();
+    const isValid = await this.validateOrder();
     if (!isValid) {
       return;
     }
@@ -219,12 +219,11 @@ export class OrderPage implements OnInit {
         this.friesErrorText = 'Menge für Slot überschritten';
       }
 
-      // Optional: zeige jeden Fehler als Toast
       this.presentToast(message, 'danger');
     }
   }
 
-  async validateDate(): Promise<boolean> {
+  async validateOrder(): Promise<boolean> {
     this.dateErrorText = '';
     this.chickenErrorText = '';
     this.nuggetsErrorText = '';

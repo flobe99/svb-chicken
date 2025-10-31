@@ -75,7 +75,8 @@
           <ion-item *ngFor="let product of products">
             <ion-label>{{ product.name }}:</ion-label>
             <ion-input type="number" inputmode="decimal" [(ngModel)]="product.price" (ionBlur)="formatPrice(product)"
-              min="0" step="0.01" placeholder="0.00"></ion-input>
+              min="0" step="0.01" placeholder="0.00">
+            <ion-text slot="end">€</ion-text></ion-input>
           </ion-item>
 
         </ion-item-group>

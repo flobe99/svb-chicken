@@ -135,9 +135,6 @@ export class ThekePage implements OnInit {
 
   async init(stateFilter?: any) {
     const savedFilter = await this.storageService.get('orderFilter');
-    console.table(savedFilter);
-
-    // Priorität: Navigation > Storage
     this.filter = stateFilter ?? savedFilter ?? {};
 
     await this.orderService.getOrders().subscribe((orders) => {
@@ -155,7 +152,7 @@ export class ThekePage implements OnInit {
 
   async openActionSheet(order: OrderChicken) {
     const actionSheet = await this.actionSheetController.create({
-      header: `Bestellung #${order.id} ${order.lastname}`,
+      header: `Bestellung #${order.id} ${order.lastname}, ${order.firstname}`,
       buttons: [
         {
           text: 'Bearbeiten',
@@ -326,9 +323,6 @@ export class ThekePage implements OnInit {
     if (order.checked_in_at === '') {
       order.checked_in_at = null as any;
     }
-
-    console.log('id: ' + order.id);
-    console.table(order);
 
     if (order.id) {
       this.orderService.updateOrder(order.id, order).subscribe((response) => {

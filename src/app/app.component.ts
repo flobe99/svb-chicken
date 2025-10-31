@@ -19,6 +19,8 @@ import {
   ToastController,
   IonButton
 } from '@ionic/angular/standalone';
+import { AuthService } from './services/auth.service';
+import { AlertController, MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
@@ -43,16 +45,65 @@ import {
   ],
 })
 export class AppComponent {
+  public isLoggedin: boolean = false;
 
-  constructor(private toastController: ToastController) {
+  constructor(
+    private toastController: ToastController,
+    private authService: AuthService,
+    private alertController: AlertController,
+    private menuController: MenuController
+  ) {
+    let href = window.location.href.replace("://", "");
+    if (href.indexOf("/") > 0) {
+      this.authService.setJumpBackUrl(href.substring(href.indexOf("/")));
+    }
+
+    this.authService.getAccountLogin().subscribe(account => {
+      this.isLoggedin = account !== null && account.access_token !== '';
+    });
     addIcons({ fastFoodOutline, fastFood, settings, mail, add, homeOutline, addCircleOutline, restaurantOutline });
   }
 
-  public appPages = [
+
+  public appPages_login = [
     { title: 'Dashboard', url: '/dashboard', icon: 'home-outline' },
     { title: 'Bestellung', url: '/order', icon: 'fast-food-outline' },
     { title: 'Theke', url: '/theke', icon: 'add-circle-outline' },
     { title: 'Küche', url: '/kitchen', icon: 'restaurant-outline' },
     { title: 'Settings', url: '/settings', icon: 'settings' },
   ];
+
+  public appPages = [
+    { title: 'Dashboard', url: '/dashboard', icon: 'home-outline' },
+    { title: 'Bestellung', url: '/order', icon: 'fast-food-outline' },
+  ];
+
+  get pagesToShow() {
+    return this.isLoggedin ? this.appPages_login : this.appPages;
+  }
+
+  async logout() {
+    const alert = await this.alertController.create({
+      header: 'Logout',
+      message: 'Möchtest du dich ausloggen?',
+      buttons: [
+        {
+          text: 'Nein',
+          role: 'cancel',
+        },
+        {
+          text: 'Ja',
+          handler: () => {
+            this.authService.logout()
+          },
+        },
+      ],
+    });
+    await alert.present();
+    this.closeMenu()
+  }
+
+  closeMenu() {
+    this.menuController.close();
+  }
 }

@@ -37,6 +37,7 @@ import {
   IonModal,
   IonDatetime,
   IonCardTitle,
+  IonListHeader
 } from '@ionic/angular/standalone';
 import { firstValueFrom } from 'rxjs';
 import { ConfigChicken, Product } from 'src/app/models/product.model';
@@ -90,6 +91,7 @@ import { addIcons } from 'ionicons';
     IonModal,
     IonDatetime,
     IonCardTitle,
+    IonListHeader,
   ],
 })
 export class SettingsPage implements OnInit {

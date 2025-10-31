@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { OrderGuard } from './guards/order.guard';
+import { loginGuard, logoutGuard } from './guards/login.guard';
 
 export const routes: Routes = [
   {
@@ -33,20 +34,24 @@ export const routes: Routes = [
   },
   {
     path: 'theke',
-    loadComponent: () => import('./pages/theke/theke.page').then(m => m.ThekePage)
+    loadComponent: () => import('./pages/theke/theke.page').then(m => m.ThekePage),
+    canActivate: [loginGuard]
   },
   {
     path: 'kitchen',
-    loadComponent: () => import('./pages/kitchen/kitchen.page').then(m => m.KitchenPage)
+    loadComponent: () => import('./pages/kitchen/kitchen.page').then(m => m.KitchenPage),
+    canActivate: [loginGuard]
   },
 
   {
     path: 'settings',
-    loadComponent: () => import('./pages/settings/settings.page').then(m => m.SettingsPage)
+    loadComponent: () => import('./pages/settings/settings.page').then(m => m.SettingsPage),
+    canActivate: [loginGuard]
   },
   {
     path: 'login',
-    loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
+    loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage),
+    canActivate: [logoutGuard]
   },
   {
     path: '**',

@@ -48,7 +48,7 @@
         {{dateErrorText}}
       </ion-note>
 
-      <ion-modal [keepContentsMounted]="true" (didDismiss)="validateDate()">
+      <ion-modal [keepContentsMounted]="true" (didDismiss)="validateOrder()">
         <ng-template>
           <ion-datetime id="datetime" hourValues="10,11,12,13,14,15,16,17,18,19,20" minuteValues="0,15,30,45"
             presentation="date-time" [(ngModel)]="order.date" firstDayOfWeek="1"></ion-datetime>
