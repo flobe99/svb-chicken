@@ -111,8 +111,10 @@ import {
 })
 export class ThekePage implements OnInit {
   @ViewChildren('selectRefs') selectRefs!: QueryList<IonSelect>;
+  @ViewChildren('selectRefsKanban') selectRefsKanban!: QueryList<IonSelect>;
 
-  groupedOrders: { [key: string]: OrderChicken[] } = {};
+  public groupedOrders: { [key: string]: OrderChicken[] } = {};
+  public filteredOrders: OrderChicken[] = [];
   public viewMode: string = 'list';
   columns = [
     { key: 'CREATED', label: 'Erstellt' },
@@ -120,8 +122,6 @@ export class ThekePage implements OnInit {
     { key: 'READY_FOR_PICKUP', label: 'Abholbereit' },
     { key: 'COMPLETED', label: 'Fertig' },
   ];
-
-
 
   // public status = "CREATED";
   constructor(
@@ -142,7 +142,7 @@ export class ThekePage implements OnInit {
   }
 
   public orders: OrderChicken[] = [];
-  public filteredOrders: OrderChicken[] = [];
+
 
   public filter: Partial<Omit<OrderChicken, 'status'>> & { status?: string[] } =
     {};
@@ -156,6 +156,9 @@ export class ThekePage implements OnInit {
   }
 
   async init(stateFilter?: any) {
+
+    const viewModeStorage = await this.storageService.get('viewMode');
+    this.viewMode = viewModeStorage ? viewModeStorage : this.viewMode;
     const savedFilter = await this.storageService.get('orderFilter');
     this.filter = stateFilter ?? savedFilter ?? {};
 
@@ -170,7 +173,10 @@ export class ThekePage implements OnInit {
         this.applyFilter();
       });
     });
+  }
 
+  onViewModeChange() {
+    this.storageService.set('viewMode', this.viewMode);
   }
 
   groupOrders() {
@@ -329,6 +335,12 @@ export class ThekePage implements OnInit {
   openSelect(order: OrderChicken) {
     const index = this.filteredOrders.indexOf(order);
     const select = this.selectRefs.get(index);
+    select?.open();
+  }
+
+  openSelectKanban(order: OrderChicken, columnKey: string) {
+    const index = this.groupedOrders[columnKey].indexOf(order);
+    const select = this.selectRefsKanban.get(index);
     select?.open();
   }
 
