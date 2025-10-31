@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+  <div class="center-content">
+    <app-refresh></app-refresh>
+    <ion-card>
+      <ion-title>
+        Login
+      </ion-title>
+      <ion-item>
+        <ion-input type="text" label="Vorname">
+          <ion-input required [(ngModel)]="username" name="username" autocomplete="given-name"></ion-input>
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input type="password" label="Password">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input> </ion-item>
+      <ion-item>
+        <ion-button (click)="login()">Login</ion-button>
+      </ion-item>
+    </ion-card>
+  </div>
+</ion-content>

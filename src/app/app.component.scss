@@ -117,3 +117,10 @@ ion-note {
 ion-item.selected {
   --color: var(--ion-color-primary);
 }
+
+.admin-button-wrapper {
+  position: absolute;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+}
