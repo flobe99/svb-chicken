@@ -82,7 +82,7 @@ export class OrderPage implements OnInit {
     lastname: 'Betz',
     mail: 'betz.flori@gmail.com',
     phonenumber: '015254058901',
-    date: this.roundToNextQuarterHour(new Date()).toLocaleTimeString(),
+    date: this.roundToNextQuarterHour(new Date()),
     chicken: 1,
     nuggets: 1,
     fries: 2,
@@ -129,7 +129,7 @@ export class OrderPage implements OnInit {
         mail: '',
         phonenumber: '',
         date:
-          stateDate || this.roundToNextQuarterHour(new Date()).toLocaleTimeString(),
+          stateDate || this.roundToNextQuarterHour(new Date()),
         chicken: 0,
         nuggets: 0,
         fries: 0,
@@ -140,14 +140,18 @@ export class OrderPage implements OnInit {
     this.validateOrder();
   }
 
-  roundToNextQuarterHour(date: Date): Date {
-    const rounded = date;
-    const minutes = rounded.getMinutes();
+  roundToNextQuarterHour(date: Date): string {
+    const local = new Date(date.getTime());
+    const minutes = local.getMinutes();
     const remainder = 15 - (minutes % 15);
-    rounded.setMinutes(minutes + remainder);
-    rounded.setSeconds(0);
-    rounded.setMilliseconds(0);
-    return rounded;
+
+    local.setMinutes(minutes + remainder);
+    local.setSeconds(0);
+    local.setMilliseconds(0);
+
+    const tzOffset = local.getTimezoneOffset() * 60000;
+    const localTime = new Date(local.getTime() - tzOffset);
+    return localTime.toISOString().slice(0, 16);
   }
 
   async deleteOrder(order: OrderChicken) {
