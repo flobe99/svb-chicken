@@ -9,6 +9,7 @@
 
 <ion-content fullscreen>
   <div class="center-content">
+    <app-refresh (refreshed)="init()"></app-refresh>
     <ion-list>
       <ion-card>
         <ion-card-header>Verkaufszeiten</ion-card-header>
@@ -76,7 +77,7 @@
             <ion-label>{{ product.name }}:</ion-label>
             <ion-input type="number" inputmode="decimal" [(ngModel)]="product.price" (ionBlur)="formatPrice(product)"
               min="0" step="0.01" placeholder="0.00">
-            <ion-text slot="end">€</ion-text></ion-input>
+              <ion-text slot="end">€</ion-text></ion-input>
           </ion-item>
 
         </ion-item-group>

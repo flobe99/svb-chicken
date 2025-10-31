@@ -37,6 +37,11 @@ import {
   IonAccordion,
   IonAccordionGroup,
   IonText,
+  IonSegment,
+  IonSegmentButton,
+  IonGrid,
+  IonRow,
+  IonCol
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
@@ -97,10 +102,27 @@ import {
     IonAccordion,
     IonAccordionGroup,
     TimePipe,
+    IonSegment,
+    IonSegmentButton,
+    IonGrid,
+    IonRow,
+    IonCol
   ],
 })
 export class ThekePage implements OnInit {
   @ViewChildren('selectRefs') selectRefs!: QueryList<IonSelect>;
+
+  groupedOrders: { [key: string]: OrderChicken[] } = {};
+  public viewMode: string = 'list';
+  columns = [
+    { key: 'CREATED', label: 'Erstellt' },
+    { key: 'CHECKED_IN', label: 'DriveIn' },
+    { key: 'READY_FOR_PICKUP', label: 'Abholbereit' },
+    { key: 'COMPLETED', label: 'Fertig' },
+  ];
+
+
+
   // public status = "CREATED";
   constructor(
     private orderService: OrderService,
@@ -148,6 +170,14 @@ export class ThekePage implements OnInit {
         this.applyFilter();
       });
     });
+
+  }
+
+  groupOrders() {
+    this.groupedOrders = {};
+    for (const column of this.columns) {
+      this.groupedOrders[column.key] = this.filteredOrders.filter(o => o.status === column.key);
+    }
   }
 
   async openActionSheet(order: OrderChicken) {
@@ -184,6 +214,7 @@ export class ThekePage implements OnInit {
   }
 
   applyFilter() {
+
     if (!Array.isArray(this.filter.status)) {
       this.filter.status = [];
     }
@@ -226,7 +257,7 @@ export class ThekePage implements OnInit {
           : Infinity;
         return aTime - bTime;
       });
-
+    this.groupOrders();
     this.storageService.set('orderFilter', this.filter);
   }
 

@@ -37,7 +37,7 @@ import {
   IonModal,
   IonDatetime,
   IonCardTitle,
-  IonListHeader
+  IonListHeader,
 } from '@ionic/angular/standalone';
 import { firstValueFrom } from 'rxjs';
 import { ConfigChicken, Product } from 'src/app/models/product.model';
@@ -51,6 +51,7 @@ import {
   trashOutline,
 } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -93,6 +94,7 @@ import { AuthService } from 'src/app/services/auth.service';
     IonDatetime,
     IonCardTitle,
     IonListHeader,
+    RefreshComponent
   ],
 })
 export class SettingsPage implements OnInit {
@@ -117,6 +119,10 @@ export class SettingsPage implements OnInit {
   }
 
   async ngOnInit() {
+    this.init()
+  }
+
+  init() {
     this.orderService.getSlots().subscribe((slots) => {
       this.slots = slots;
     });
