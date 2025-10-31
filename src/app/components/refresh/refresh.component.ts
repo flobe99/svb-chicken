@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonRefresher, IonRefresherContent } from '@ionic/angular/standalone';
 
@@ -15,6 +15,7 @@ import { IonRefresher, IonRefresherContent } from '@ionic/angular/standalone';
 })
 export class RefreshComponent implements OnInit {
   @Input() refreshFn!: () => Promise<void>;
+  @Output() refreshed = new EventEmitter<void>();
 
   constructor(private router: Router) { }
 
@@ -23,10 +24,16 @@ export class RefreshComponent implements OnInit {
   }
 
   doRefresh(event: any) {
-    const currentUrl = this.router.url;
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate([currentUrl]);
-      event.target.complete();
-    });
+    this.refreshed.emit(); // 👈 ruft init() im Eltern-Template auf
+    event.target.complete();
   }
+
+
+  // doRefresh(event: any) {
+  //   const currentUrl = this.router.url;
+  //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+  //     this.router.navigate([currentUrl]);
+  //     event.target.complete();
+  //   });
+  // }
 }

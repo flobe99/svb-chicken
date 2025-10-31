@@ -12,22 +12,24 @@
   <div class="center-content">
     <app-refresh></app-refresh>
     <ion-card>
-      <ion-title>
-        Login
-      </ion-title>
-      <ion-item>
-        <ion-input required label="Username" [(ngModel)]="username" name="username"
-          autocomplete="given-name"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input type="password" label="Password" [(ngModel)]="password" name="password"
-          autocomplete="current-password">
-          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-        </ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-button (click)="login()">Login</ion-button>
-      </ion-item>
+      <form (ngSubmit)="login()">
+        <ion-title>
+          Login
+        </ion-title>
+        <ion-item>
+          <ion-input required label="Username" [(ngModel)]="username" name="username"
+            autocomplete="given-name"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="password" label="Password" [(ngModel)]="password" name="password"
+            autocomplete="current-password">
+            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-button type="submit" (click)="login()">Login</ion-button>
+        </ion-item>
+      </form>
     </ion-card>
   </div>
 </ion-content>

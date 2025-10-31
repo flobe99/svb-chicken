@@ -51,6 +51,7 @@ import {
   trashOutline,
 } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-settings',
@@ -109,7 +110,8 @@ export class SettingsPage implements OnInit {
     private router: Router,
     private orderService: OrderService,
     private toastController: ToastController,
-    private location: Location
+    private location: Location,
+    private authService: AuthService
   ) {
     addIcons({ trashOutline, addCircleOutline });
   }
@@ -146,7 +148,27 @@ export class SettingsPage implements OnInit {
     });
   }
 
-  deleteSlot(slot: Slot) {
+  async deleteSlot(slot: Slot) {
+    const alert = await this.alertController.create({
+      header: 'Slot löschen',
+      message: 'Möchtest du Slot löschen?',
+      buttons: [
+        {
+          text: 'Nein',
+          role: 'cancel',
+        },
+        {
+          text: 'Ja',
+          handler: () => {
+            this.confirmDeleteSlot(slot)
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  confirmDeleteSlot(slot: Slot) {
     if (slot) {
       this.slots = this.slots.filter((s) => s !== slot);
       this.orderService.deleteSlot(slot.id!).subscribe({

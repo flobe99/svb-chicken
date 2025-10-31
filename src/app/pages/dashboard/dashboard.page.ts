@@ -77,6 +77,10 @@ export class DashboardPage implements OnInit {
   constructor(private router: Router, private orderService: OrderService) { }
 
   ngOnInit() {
+    this.init();
+  }
+
+  init() {
     this.orderService.getSlots().subscribe((slots) => {
       this.slots = slots;
       const dates = slots.map(s => new Date(s.date));
