@@ -129,7 +129,7 @@ export class OrderPage implements OnInit {
         mail: '',
         phonenumber: '',
         date:
-          stateDate || this.roundToNextQuarterHour(new Date()).toISOString(),
+          stateDate || this.roundToNextQuarterHour(new Date()).toLocaleTimeString(),
         chicken: 0,
         nuggets: 0,
         fries: 0,
