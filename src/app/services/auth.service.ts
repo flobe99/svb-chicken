@@ -96,6 +96,7 @@ export class AuthService {
     this.storageService.delete('account');
     this.storageService.delete('login_hash');
     this.loginByStoredHash(null, "")
+    this.router.navigate(['/dashboard']);
   }
 
 }
