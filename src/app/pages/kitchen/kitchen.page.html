@@ -36,19 +36,19 @@
               {{ value.time }}
             </div>
           </ion-col>
-          <ion-col class="hoverable" [ngClass]="value.chicken <= config.chicken ? 'green-cell' : 'red-cell'">
+          <ion-col class="hoverable" [ngClass]="value.chicken < config.chicken ? 'green-cell' : 'red-cell'">
             <div (click)="goToTheke(slot.date, slot.slots[i].time)"
               (contextmenu)="openContextMenu($event, slot.date, slot.slots[i].time)">
               {{ value.chicken }}
             </div>
           </ion-col>
-          <ion-col class="hoverable" [ngClass]="value.nuggets <= config.nuggets ? 'green-cell' : 'red-cell'">
+          <ion-col class="hoverable" [ngClass]="value.nuggets < config.nuggets ? 'green-cell' : 'red-cell'">
             <div (click)="goToTheke(slot.date, slot.slots[i].time)"
               (contextmenu)="openContextMenu($event, slot.date, slot.slots[i].time)">
               {{ value.nuggets }}
             </div>
           </ion-col>
-          <ion-col class="hoverable" [ngClass]="value.fries <= config.fries ? 'green-cell' : 'red-cell'">
+          <ion-col class="hoverable" [ngClass]="value.fries < config.fries ? 'green-cell' : 'red-cell'">
             <div (click)="goToTheke(slot.date, slot.slots[i].time)"
               (contextmenu)="openContextMenu($event, slot.date, slot.slots[i].time)">
               {{ value.fries }}

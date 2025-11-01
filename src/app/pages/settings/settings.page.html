@@ -29,8 +29,8 @@
 
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
-                    <ion-datetime firstDayOfWeek="1" locale="de-DE" id="date-{{i}}" presentation="date"
-                      [(ngModel)]="slot.date"></ion-datetime>
+                    <ion-datetime firstDayOfWeek="1" minuteValues="0,15,30,45" locale="de-DE" id="date-{{i}}"
+                      presentation="date" [(ngModel)]="slot.date"></ion-datetime>
                   </ng-template>
                 </ion-modal>
               </ion-item>
@@ -115,6 +115,22 @@
           </ion-item>
         </ion-item-group>
         <ion-button color="primary" (click)="saveConfig()">Speichern</ion-button>
+      </ion-card>
+
+      <ion-card>
+        <ion-item-group>
+          <ion-item-divider>
+            <ion-label>Kanban</ion-label>
+          </ion-item-divider>
+
+          <ion-item *ngFor="let column of columns">
+            <ion-checkbox [(ngModel)]="column.state">
+              {{ column.label }}
+            </ion-checkbox>
+          </ion-item>
+        </ion-item-group>
+
+        <ion-button color="primary" (click)="saveKanbanColumns()">Speichern</ion-button>
       </ion-card>
 
     </ion-list>

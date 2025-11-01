@@ -38,6 +38,7 @@ import {
   IonDatetime,
   IonCardTitle,
   IonListHeader,
+  IonCheckbox
 } from '@ionic/angular/standalone';
 import { firstValueFrom } from 'rxjs';
 import { ConfigChicken, Product } from 'src/app/models/product.model';
@@ -53,6 +54,7 @@ import {
 import { addIcons } from 'ionicons';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-settings',
@@ -94,7 +96,8 @@ import { AuthService } from 'src/app/services/auth.service';
     IonDatetime,
     IonCardTitle,
     IonListHeader,
-    RefreshComponent
+    RefreshComponent,
+    IonCheckbox
   ],
 })
 export class SettingsPage implements OnInit {
@@ -106,6 +109,13 @@ export class SettingsPage implements OnInit {
     nuggets: 0,
     fries: 0,
   };
+  columns = [{ key: 'CREATED', label: 'Erstellt', state: true },]
+  default_columns = [
+    { key: 'CREATED', label: 'Erstellt', state: true },
+    { key: 'CHECKED_IN', label: 'DriveIn', state: true },
+    { key: 'READY_FOR_PICKUP', label: 'Abholbereit', state: true },
+    { key: 'COMPLETED', label: 'Fertig', state: true },
+  ]
 
   constructor(
     private alertController: AlertController,
@@ -113,7 +123,8 @@ export class SettingsPage implements OnInit {
     private orderService: OrderService,
     private toastController: ToastController,
     private location: Location,
-    private authService: AuthService
+    private authService: AuthService,
+    private storageService: StorageService
   ) {
     addIcons({ trashOutline, addCircleOutline });
   }
@@ -122,7 +133,7 @@ export class SettingsPage implements OnInit {
     this.init()
   }
 
-  init() {
+  async init() {
     this.orderService.getSlots().subscribe((slots) => {
       this.slots = slots;
     });
@@ -134,6 +145,10 @@ export class SettingsPage implements OnInit {
     this.orderService.getConfig().subscribe((config) => {
       this.config = config!;
     });
+
+    const savedColumns = await this.storageService.get('columns');
+    this.columns = savedColumns ? savedColumns : this.default_columns;
+
   }
 
   formatPrice(product: Product) {
@@ -213,6 +228,7 @@ export class SettingsPage implements OnInit {
     await this.saveSlots();
     await this.saveProduct();
     await this.saveConfig();
+    await this.saveKanbanColumns()
   }
 
   async saveSlots() {
@@ -323,6 +339,19 @@ export class SettingsPage implements OnInit {
       },
       error: (err) => console.error('Fehler beim Speichern:', err),
     });
+  }
+
+  async saveKanbanColumns() {
+    console.log(this.columns)
+    this.storageService.set("columns", this.columns)
+    const toast = await this.toastController.create({
+      message: 'Settings erfolgreich gespeichert.',
+      duration: 2500,
+      color: 'success',
+      position: 'top',
+    });
+    await toast.present();
+    this.location.back();
   }
 
   cancel() {

@@ -116,11 +116,12 @@ export class ThekePage implements OnInit {
   public groupedOrders: { [key: string]: OrderChicken[] } = {};
   public filteredOrders: OrderChicken[] = [];
   public viewMode: string = 'list';
-  columns = [
-    { key: 'CREATED', label: 'Erstellt' },
-    { key: 'CHECKED_IN', label: 'DriveIn' },
-    { key: 'READY_FOR_PICKUP', label: 'Abholbereit' },
-    { key: 'COMPLETED', label: 'Fertig' },
+  columns = [{ key: 'CREATED', label: 'Erstellt', state: true }]
+  default_columns = [
+    { key: 'CREATED', label: 'Erstellt', state: true },
+    { key: 'CHECKED_IN', label: 'DriveIn', state: true },
+    { key: 'READY_FOR_PICKUP', label: 'Abholbereit', state: true },
+    { key: 'COMPLETED', label: 'Fertig', state: true },
   ];
 
   // public status = "CREATED";
@@ -157,6 +158,9 @@ export class ThekePage implements OnInit {
 
   async init(stateFilter?: any) {
 
+    const savedColumns = await this.storageService.get('columns');
+    this.columns = savedColumns ? savedColumns : this.default_columns;
+
     const viewModeStorage = await this.storageService.get('viewMode');
     this.viewMode = viewModeStorage ? viewModeStorage : this.viewMode;
     const savedFilter = await this.storageService.get('orderFilter');
@@ -178,6 +182,12 @@ export class ThekePage implements OnInit {
   onViewModeChange() {
     this.storageService.set('viewMode', this.viewMode);
   }
+
+  getColumnSize(): number {
+    const activeColumns = this.columns.filter(c => c.state).length;
+    return activeColumns > 0 ? Math.floor(12 / activeColumns) : 12;
+  }
+
 
   groupOrders() {
     this.groupedOrders = {};
