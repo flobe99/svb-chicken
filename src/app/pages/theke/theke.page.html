@@ -34,6 +34,18 @@
                 [clearInput]="true"></ion-input>
             </ion-item>
 
+            <ion-item position="floating">
+              <ion-datetime-button datetime="datetime">
+              </ion-datetime-button>
+            </ion-item>
+
+            <ion-modal [keepContentsMounted]="true" (didDismiss)="applyFilter()">
+              <ng-template>
+                <ion-datetime id="datetime" minuteValues="0,15,30,45" presentation="date-time" [(ngModel)]="filter.date"
+                  firstDayOfWeek="1"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+
             <ion-item>
               <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()"
                 [clearInput]="true"></ion-input>
