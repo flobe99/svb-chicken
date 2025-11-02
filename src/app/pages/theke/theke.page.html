@@ -36,6 +36,7 @@
 
             <ion-item position="floating">
               <ion-datetime-button datetime="datetime">
+                <ion-label *ngIf="!filter.date">Datum wählen</ion-label>
               </ion-datetime-button>
             </ion-item>
 
@@ -46,10 +47,10 @@
               </ng-template>
             </ion-modal>
 
-            <ion-item>
+            <!-- <ion-item>
               <ion-input [(ngModel)]="filter.date" placeholder="Datum" (ionChange)="applyFilter()"
                 [clearInput]="true"></ion-input>
-            </ion-item>
+            </ion-item> -->
 
             <ion-item>
               <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen" (ionChange)="applyFilter()"
@@ -171,7 +172,7 @@
   </div>
   <ion-grid *ngIf="viewMode === 'kanban'">
     <ion-row>
-      <ion-col *ngFor="let column of columns" [size]="getColumnSize()">
+      <ion-col *ngFor="let column of activeColumns" [size]="getColumnSize()">
         <ion-card *ngIf="column.state">
           <ion-card-header>
             <ion-card-title>{{ column.label }}</ion-card-title>

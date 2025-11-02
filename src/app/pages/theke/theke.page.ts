@@ -183,6 +183,10 @@ export class ThekePage implements OnInit {
     this.storageService.set('viewMode', this.viewMode);
   }
 
+  get activeColumns() {
+    return this.columns.filter(c => c.state);
+  }
+
   getColumnSize(): number {
     const activeColumns = this.columns.filter(c => c.state).length;
     return activeColumns > 0 ? Math.floor(12 / activeColumns) : 12;
