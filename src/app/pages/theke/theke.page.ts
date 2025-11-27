@@ -46,7 +46,7 @@ import {
 import { Router } from '@angular/router';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { OrderService } from 'src/app/services/Order.Service';
-import { OrderChicken } from 'src/app/models/order.model';
+import { OrderChicken, OrderStatus } from 'src/app/models/order.model';
 import { StorageService } from 'src/app/services/storage.service';
 import { TimePipe } from 'src/app/pipes/time.pipe';
 import { addIcons } from 'ionicons';
@@ -62,6 +62,7 @@ import {
   AlertController,
   ToastController,
 } from '@ionic/angular';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-theke',
@@ -106,13 +107,15 @@ import {
     IonSegmentButton,
     IonGrid,
     IonRow,
-    IonCol
+    IonCol,
+    DragDropModule
   ],
 })
 export class ThekePage implements OnInit {
   @ViewChildren('selectRefs') selectRefs!: QueryList<IonSelect>;
   @ViewChildren('selectRefsKanban') selectRefsKanban!: QueryList<IonSelect>;
 
+  public connectedDropLists: string[] = [];
   public groupedOrders: { [key: string]: OrderChicken[] } = {};
   public filteredOrders: OrderChicken[] = [];
   public viewMode: string = 'list';
@@ -198,6 +201,7 @@ export class ThekePage implements OnInit {
     for (const column of this.columns) {
       this.groupedOrders[column.key] = this.filteredOrders.filter(o => o.status === column.key);
     }
+    this.connectedDropLists = this.columns.map(c => c.key);
   }
 
   async openActionSheet(order: OrderChicken) {
@@ -345,6 +349,51 @@ export class ThekePage implements OnInit {
 
     await alert.present();
   }
+
+  async drop(event: CdkDragDrop<OrderChicken[]>, targetColumnKey: string) {
+
+    // gleiches Drop-List → nur Reihenfolge ändern
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+      return;
+    }
+
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
+
+    const movedOrder = event.container.data[event.currentIndex];
+
+    movedOrder.status = targetColumnKey as OrderStatus;
+
+    if (targetColumnKey === 'CHECKED_IN' && !movedOrder.checked_in_at) {
+      movedOrder.checked_in_at = new Date().toISOString();
+    }
+
+    if (movedOrder.id) {
+      console.table(movedOrder)
+      this.orderService.updateOrder(movedOrder.id, movedOrder).subscribe({
+        next: (response) => {
+          if (response.success) {
+            console.log(
+              `Order ${movedOrder.id} in Status ${targetColumnKey} verschoben`
+            );
+          }
+        },
+        error: (err) => console.error('Update-Fehler', err),
+      });
+    }
+
+    this.groupOrders();
+  }
+
 
   openSelect(order: OrderChicken) {
     const index = this.filteredOrders.indexOf(order);

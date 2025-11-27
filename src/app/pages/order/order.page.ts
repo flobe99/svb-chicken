@@ -175,6 +175,7 @@ export class OrderPage implements OnInit {
       this.presentToast('Bitte alle Pflichtfelder ausfüllen');
       return;
     }
+    console.table(this.order)
     const isValid = await this.validateOrder();
     if (!isValid) {
       return;
@@ -228,6 +229,7 @@ export class OrderPage implements OnInit {
   }
 
   async validateOrder(): Promise<boolean> {
+    console.table(this.order)
     this.dateErrorText = '';
     this.chickenErrorText = '';
     this.nuggetsErrorText = '';

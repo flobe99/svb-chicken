@@ -178,60 +178,64 @@
             <ion-card-title>{{ column.label }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-list>
-              <!-- <ion-card *ngFor="let order of filteredOrders; trackBy: trackByOrderId"> -->
-              <ion-card *ngFor="let order of groupedOrders[column.key]; trackBy: trackByOrderId">
-                <ion-card-header>
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: inline-flex; align-items: center; gap: 6px;">
-                      <ion-card-title style="text-overflow: ellipsis;">
-                        <ion-icon style="cursor: pointer;" name="ellipsis-vertical-outline"
-                          (click)="openActionSheet(order)"></ion-icon>
-                        #{{ order.id }} {{ order.firstname }} {{ order.lastname }}
-                      </ion-card-title>
+            <div class="drop-wrapper" cdkDropList [id]="column.key" [cdkDropListData]="groupedOrders[column.key]"
+              (cdkDropListDropped)="drop($event, column.key)" [cdkDropListConnectedTo]="connectedDropLists">
+              <ion-list>
+                <!-- <ion-card *ngFor="let order of filteredOrders; trackBy: trackByOrderId"> -->
+                <ion-card *ngFor="let order of groupedOrders[column.key]; trackBy: trackByOrderId" cdkDrag
+                  class="draggable-card">
+                  <ion-card-header>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div style="display: inline-flex; align-items: center; gap: 6px;">
+                        <ion-card-title style="text-overflow: ellipsis;">
+                          <ion-icon style="cursor: pointer;" name="ellipsis-vertical-outline"
+                            (click)="openActionSheet(order)"></ion-icon>
+                          #{{ order.id }} {{ order.firstname }} {{ order.lastname }}
+                        </ion-card-title>
+                      </div>
+
+                      <ion-button class="chip-top-right" outline="true" (click)="selectRefsKanban.open()">
+                        {{ getStatusLabel(order.status) }}
+                      </ion-button>
                     </div>
+                    <ion-card-subtitle>
+                      {{ (order?.date ?? '') | time: 'dayOfWeek' }}
+                      {{ (order?.date ?? '') | time: 'date' }} um
+                      {{ (order?.date ?? '') | time: 'time' }}
+                    </ion-card-subtitle>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <p><strong>Preis:</strong> {{ order.price.toFixed(2) }}€</p>
 
-                    <ion-button class="chip-top-right" outline="true" (click)="selectRefsKanban.open()">
-                      {{ getStatusLabel(order.status) }}
-                    </ion-button>
-                  </div>
-                  <ion-card-subtitle>
-                    {{ (order?.date ?? '') | time: 'dayOfWeek' }}
-                    {{ (order?.date ?? '') | time: 'date' }} um
-                    {{ (order?.date ?? '') | time: 'time' }}
-                  </ion-card-subtitle>
-                </ion-card-header>
-                <ion-card-content>
-                  <p><strong>Preis:</strong> {{ order.price.toFixed(2) }}€</p>
-
-                  <ion-select [value]="order.status" #selectRefsKanban interface="popover" style="display: none;"
-                    (ionChange)="onStatusChange($event, order)">
-                    <ion-select-option value="CREATED">Erstellt</ion-select-option>
-                    <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
-                    <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
-                    <ion-select-option value="COMPLETED">Fertig</ion-select-option>
-                    <ion-select-option value="CANCELLED">Storniert</ion-select-option>
-                  </ion-select>
-                  <ion-item>
-                    <ion-label><strong>Hähnchen:</strong></ion-label>
-                    <ion-text>{{ order.chicken }}</ion-text>
-                  </ion-item>
-                  <ion-item>
-                    <ion-label><strong>Nuggets:</strong></ion-label>
-                    <ion-text>{{ order.nuggets }}</ion-text>
-                  </ion-item>
-                  <ion-item>
-                    <ion-label><strong>Pommes:</strong></ion-label>
-                    <ion-text>{{ order.fries }}</ion-text>
-                  </ion-item>
-                  <ion-item>
-                    <ion-label><strong>Sonstiges:</strong></ion-label>
-                    <ion-text *ngIf="order.miscellaneous">{{ order.miscellaneous }}</ion-text>
-                    <ion-text *ngIf="!order.miscellaneous">-</ion-text>
-                  </ion-item>
-                </ion-card-content>
-              </ion-card>
-            </ion-list>
+                    <ion-select [value]="order.status" #selectRefsKanban interface="popover" style="display: none;"
+                      (ionChange)="onStatusChange($event, order)">
+                      <ion-select-option value="CREATED">Erstellt</ion-select-option>
+                      <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
+                      <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
+                      <ion-select-option value="COMPLETED">Fertig</ion-select-option>
+                      <ion-select-option value="CANCELLED">Storniert</ion-select-option>
+                    </ion-select>
+                    <ion-item>
+                      <ion-label><strong>Hähnchen:</strong></ion-label>
+                      <ion-text>{{ order.chicken }}</ion-text>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label><strong>Nuggets:</strong></ion-label>
+                      <ion-text>{{ order.nuggets }}</ion-text>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label><strong>Pommes:</strong></ion-label>
+                      <ion-text>{{ order.fries }}</ion-text>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label><strong>Sonstiges:</strong></ion-label>
+                      <ion-text *ngIf="order.miscellaneous">{{ order.miscellaneous }}</ion-text>
+                      <ion-text *ngIf="!order.miscellaneous">-</ion-text>
+                    </ion-item>
+                  </ion-card-content>
+                </ion-card>
+              </ion-list>
+            </div>
           </ion-card-content>
         </ion-card>
       </ion-col>
