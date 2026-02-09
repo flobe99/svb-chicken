@@ -76,6 +76,7 @@ export class OrderPage implements OnInit {
   public chickenErrorText = '';
   public nuggetsErrorText = '';
   public friesErrorText = '';
+  public editOrder: OrderChicken | null = null;
 
   public order: OrderChicken = new OrderChicken({
     firstname: 'Florian',
@@ -110,26 +111,29 @@ export class OrderPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.init;
+    this.init();
   }
 
-  init() {
-    const nav = this.router.getCurrentNavigation();
-    const state = nav?.extras?.state;
-    const stateOrder = state?.['order'];
-    const stateDate = state?.['date'];
+  ionViewWillLeave(){
+    this.edit = false;
+    this.order = new OrderChicken();
+    this.orderService.clearEditOrder();
+  }
 
-    if (stateOrder) {
+  async init() {
+
+  (await this.orderService.getEditOrder()).subscribe(order => {
+    if (order) {
+      this.order = order;
       this.edit = true;
-      this.order = new OrderChicken(stateOrder);
-    } else {
+    }
+    else {
       this.order = new OrderChicken({
         firstname: '',
         lastname: '',
         mail: '',
         phonenumber: '',
-        date:
-          stateDate || this.roundToNextQuarterHour(new Date()),
+        date: this.roundToNextQuarterHour(new Date()),
         chicken: 0,
         nuggets: 0,
         fries: 0,
@@ -138,6 +142,26 @@ export class OrderPage implements OnInit {
     }
 
     this.validateOrder();
+  });
+
+
+    if (this.order) {
+      this.edit = true;
+    } else {
+      this.order = new OrderChicken({
+        firstname: '',
+        lastname: '',
+        mail: '',
+        phonenumber: '',
+        date: this.roundToNextQuarterHour(new Date()),
+        chicken: 0,
+        nuggets: 0,
+        fries: 0,
+        miscellaneous: '',
+      });
+    }
+
+    this.validateOrder(); // <-- wird jetzt NACH dem Laden ausgeführt
   }
 
   roundToNextQuarterHour(date: Date): string {

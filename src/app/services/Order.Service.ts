@@ -27,6 +27,8 @@ export class OrderService {
   private isLoaded = false;
   private socket: WebSocket | null = null;
 
+  private editOrder = new BehaviorSubject<OrderChicken | null>(null);
+
   constructor(
     private storageService: StorageService,
     private http: HttpClient
@@ -41,6 +43,16 @@ export class OrderService {
       return order;
     }
     return this.order.getValue();
+  }
+  clearEditOrder() {
+    this.editOrder.next(null);
+  }
+  setEditOrder(order: OrderChicken) {
+    this.editOrder.next(order);
+  }
+
+  async getEditOrder(): Promise<Observable<OrderChicken | null>> {
+    return this.editOrder.asObservable();
   }
 
   setOrder(order: OrderChicken) {
