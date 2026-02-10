@@ -18,6 +18,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/order/order.page').then(m => m.OrderPage)
   },
   {
+    path: 'order/:orderId',
+    loadComponent: () => import('./pages/order/order.page').then(m => m.OrderPage)
+  },
+  {
     path: 'order-overview',
     loadComponent: () => import('./pages/order-overview/order-overview.page').then(m => m.OrderOverviewPage),
     canActivate: [OrderGuard]

@@ -30,7 +30,7 @@ export class OrderService {
   constructor(
     private storageService: StorageService,
     private http: HttpClient
-  ) {}
+  ) { }
 
   // Lokale Speicherung
   async loadOrderFromStorage(): Promise<OrderChicken | null> {
@@ -99,6 +99,17 @@ export class OrderService {
         return of([]);
       }),
       map((data) => data.map((item) => new OrderChicken(item)))
+    );
+  }
+
+  // GET /order/{id}
+  getOrderById(id: string): Observable<OrderChicken> {
+    return this.http.get(`${API_URL}/order/${id}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Fehler beim Abrufen der Bestellung:', error);
+        return of();
+      }),
+      map((data) => new OrderChicken(data))
     );
   }
 

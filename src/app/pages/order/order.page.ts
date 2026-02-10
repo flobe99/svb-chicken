@@ -23,7 +23,7 @@ import {
   IonCard,
 } from '@ionic/angular/standalone';
 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { OrderChicken } from 'src/app/models/order.model';
 import { OrderService } from 'src/app/services/Order.Service';
 import { ToastController } from '@ionic/angular';
@@ -38,6 +38,8 @@ import {
 } from 'ionicons/icons';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { Slot } from 'src/app/models/slot.model';
 
 @Component({
   selector: 'app-order',
@@ -71,6 +73,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class OrderPage implements OnInit {
   public edit = false;
   // public dateValid: boolean = true;
+  slots: Slot[] = [];
 
   public dateErrorText = '';
   public chickenErrorText = '';
@@ -93,7 +96,8 @@ export class OrderPage implements OnInit {
     private router: Router,
     private orderService: OrderService,
     private toastController: ToastController,
-    private location: Location
+    private location: Location,
+    private route: ActivatedRoute
   ) {
     addIcons({
       fastFoodOutline,
@@ -110,32 +114,72 @@ export class OrderPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.init;
+    this.init();
   }
 
-  init() {
-    const nav = this.router.getCurrentNavigation();
-    const state = nav?.extras?.state;
-    const stateOrder = state?.['order'];
-    const stateDate = state?.['date'];
+  ionViewDidLeave() {
+    this.order = new OrderChicken({
+      firstname: '',
+      lastname: '',
+      mail: '',
+      phonenumber: '',
+      date: this.roundToNextQuarterHour(new Date()),
+      chicken: 0,
+      nuggets: 0,
+      fries: 0,
+      miscellaneous: '',
+    });
+  }
 
-    if (stateOrder) {
+  ionViewWillLeave() {
+    this.order = new OrderChicken({
+      firstname: '',
+      lastname: '',
+      mail: '',
+      phonenumber: '',
+      date: this.roundToNextQuarterHour(new Date()),
+      chicken: 0,
+      nuggets: 0,
+      fries: 0,
+      miscellaneous: '',
+    });
+  }
+
+  async init() {
+    const orderId = this.route.snapshot.paramMap.get('orderId')
+    console.log(orderId)
+
+    this.orderService.getSlots().subscribe((slots) => {
+      this.slots = slots
+    })
+
+    if (orderId) {
       this.edit = true;
-      this.order = new OrderChicken(stateOrder);
-    } else {
+
+      try {
+        const order = await firstValueFrom(this.orderService.getOrderById(orderId));
+        this.order = order;
+      } catch (err) {
+        console.error('Fehler beim Laden der Bestellung:', err);
+      }
+
+    }
+    else {
+      this.edit = false;
       this.order = new OrderChicken({
         firstname: '',
         lastname: '',
         mail: '',
         phonenumber: '',
-        date:
-          stateDate || this.roundToNextQuarterHour(new Date()),
+        date: this.roundToNextQuarterHour(new Date()),
         chicken: 0,
         nuggets: 0,
         fries: 0,
         miscellaneous: '',
       });
     }
+
+    console.table(this.order)
 
     this.validateOrder();
   }
@@ -175,8 +219,8 @@ export class OrderPage implements OnInit {
       this.presentToast('Bitte alle Pflichtfelder ausfüllen');
       return;
     }
-    console.table(this.order)
     const isValid = await this.validateOrder();
+
     if (!isValid) {
       return;
     }
