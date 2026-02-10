@@ -312,7 +312,8 @@ export class ThekePage implements OnInit {
   }
 
   editOrder(order: OrderChicken) {
-    this.router.navigate(['/order/' + order.id], {
+    this.orderService.setEditOrder(order);
+    this.router.navigate(['/order'], {
       state: { order },
     });
   }

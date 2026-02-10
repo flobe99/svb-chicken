@@ -79,6 +79,7 @@ export class OrderPage implements OnInit {
   public chickenErrorText = '';
   public nuggetsErrorText = '';
   public friesErrorText = '';
+  public editOrder: OrderChicken | null = null;
 
   public order: OrderChicken = new OrderChicken({
     firstname: 'Florian',
@@ -117,55 +118,42 @@ export class OrderPage implements OnInit {
     this.init();
   }
 
-  ionViewDidLeave() {
-    this.order = new OrderChicken({
-      firstname: '',
-      lastname: '',
-      mail: '',
-      phonenumber: '',
-      date: this.roundToNextQuarterHour(new Date()),
-      chicken: 0,
-      nuggets: 0,
-      fries: 0,
-      miscellaneous: '',
-    });
-  }
-
   ionViewWillLeave() {
-    this.order = new OrderChicken({
-      firstname: '',
-      lastname: '',
-      mail: '',
-      phonenumber: '',
-      date: this.roundToNextQuarterHour(new Date()),
-      chicken: 0,
-      nuggets: 0,
-      fries: 0,
-      miscellaneous: '',
-    });
+    this.edit = false;
+    this.order = new OrderChicken();
+    this.orderService.clearEditOrder();
   }
 
   async init() {
-    const orderId = this.route.snapshot.paramMap.get('orderId')
-    console.log(orderId)
 
-    this.orderService.getSlots().subscribe((slots) => {
-      this.slots = slots
-    })
-
-    if (orderId) {
-      this.edit = true;
-
-      try {
-        const order = await firstValueFrom(this.orderService.getOrderById(orderId));
+    (await this.orderService.getEditOrder()).subscribe(order => {
+      if (order) {
         this.order = order;
-      } catch (err) {
-        console.error('Fehler beim Laden der Bestellung:', err);
+        this.edit = true;
+      }
+      else {
+        this.order = new OrderChicken({
+          firstname: '',
+          lastname: '',
+          mail: '',
+          phonenumber: '',
+          date: this.roundToNextQuarterHour(new Date()),
+          chicken: 0,
+          nuggets: 0,
+          fries: 0,
+          miscellaneous: '',
+        });
       }
 
-    }
-    else {
-      this.edit = false;
+      console.table(this.order)
+
+      this.validateOrder();
+    });
+
+
+    if (this.order) {
+      this.edit = true;
+    } else {
       this.order = new OrderChicken({
         firstname: '',
         lastname: '',
@@ -179,9 +167,7 @@ export class OrderPage implements OnInit {
       });
     }
 
-    console.table(this.order)
-
-    this.validateOrder();
+    this.validateOrder(); // <-- wird jetzt NACH dem Laden ausgeführt
   }
 
   roundToNextQuarterHour(date: Date): string {
