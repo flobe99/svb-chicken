@@ -39,6 +39,8 @@
         <ion-label class="required-label">Datum & Uhrzeit</ion-label>
       </ion-item>
       <ion-item position="floating">
+        {{ order.date | date:'EEEE':'UTC' }}
+
         <ion-datetime-button datetime="datetime">
         </ion-datetime-button>
       </ion-item>
