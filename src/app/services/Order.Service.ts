@@ -11,6 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Slot } from '../models/slot.model';
 import { Account } from '../models/Account.model';
+import { TableReservation } from '../models/TableReservation.model';
 
 // export const DOMAIN = '192.168.199.133:8000';
 // export const API_URL = `http://${DOMAIN}`;
@@ -327,6 +328,15 @@ export class OrderService {
       catchError((error: HttpErrorResponse) => {
         console.error(`Fehler beim Löschen des Slots mit ID ${id}:`, error);
         return of({ success: false, error });
+      })
+    );
+  }
+
+  getTableReservations(): Observable<TableReservation[] | null> {
+    return this.http.get<TableReservation[]>(`${API_URL}/table-reservations`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Fehler beim Abrufen der Tischreservierungen:', error);
+        return of([]);
       })
     );
   }

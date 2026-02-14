@@ -40,6 +40,8 @@ import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Slot } from 'src/app/models/slot.model';
+import { TimePipe } from 'src/app/pipes/time.pipe';
+
 
 @Component({
   selector: 'app-order',
@@ -68,6 +70,7 @@ import { Slot } from 'src/app/models/slot.model';
     RefreshComponent,
     IonNote,
     IonCard,
+    TimePipe
   ],
 })
 export class OrderPage implements OnInit {

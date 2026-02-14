@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { fastFood, settings, mail, add, fastFoodOutline, homeOutline, addCircle, addCircleOutline, restaurantOutline } from 'ionicons/icons';
+import { fastFood, settings, mail, add, fastFoodOutline, homeOutline, addCircle, addCircleOutline, restaurantOutline, tabletPortraitOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 import {
@@ -68,6 +68,7 @@ export class AppComponent {
   public appPages_login = [
     { title: 'Dashboard', url: '/dashboard', icon: 'home-outline' },
     { title: 'Bestellung', url: '/order', icon: 'fast-food-outline' },
+    { title: 'Tisch-Reservierung', url: '/table-reservation', icon: 'fast-food-outline' },
     { title: 'Theke', url: '/theke', icon: 'add-circle-outline' },
     { title: 'Küche', url: '/kitchen', icon: 'restaurant-outline' },
     { title: 'Settings', url: '/settings', icon: 'settings' },

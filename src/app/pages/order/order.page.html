@@ -39,14 +39,12 @@
         <ion-label class="required-label">Datum & Uhrzeit</ion-label>
       </ion-item>
       <ion-item position="floating">
-        {{ order.date | date:'EEEE':'UTC' }}
-
+        {{ order.date | time: 'dayOfWeek' }}
         <ion-datetime-button datetime="datetime">
         </ion-datetime-button>
       </ion-item>
 
       <ion-note *ngIf="dateErrorText!=''" color="danger" class="ion-margin-horizontal">
-        <!-- Datum bzw. Uhrzeit nicht möglich -->
         {{dateErrorText}}
       </ion-note>
 

@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Tischreservierung</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-horizontal">
+  <div class="center-content">
+    <app-refresh (refreshed)="init()"></app-refresh>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Aktuelle Tischreservierungen</ion-card-title>
+      </ion-card-header>
+      <!-- <ion-segment [(ngModel)]="viewMode" (ngModelChange)="onViewModeChange()"> -->
+      <ion-segment *ngIf="slots?.length" [(ngModel)]="selectedSlotId" (ngModelChange)="onSlotFilterChanged($event)">
+        <ion-segment-button [value]="slot.id" *ngFor="let slot of slots">
+          <ion-label>{{ slot.date | time: 'dayOfWeek' }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <ion-card-content>
+        <div *ngIf="filteredReservations && filteredReservations.length > 0; else noReservations">
+          <ion-list>
+            <ion-item *ngFor="let reservation of filteredReservations">
+              <ion-label>
+                <h2>{{ reservation.customer_name }}</h2>
+                <p>{{ formatReservationTime(reservation) }}</p>
+                <p>Personen: {{ reservation.seats }}</p>
+                <p>Tisch: {{ reservation.table.name }}</p>
+                <p>Plätze: {{ reservation.seats }} / {{ reservation.table.seats }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+        <ng-template #noReservations>
+          <p>Keine aktuellen Tischreservierungen.</p>
+        </ng-template>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
