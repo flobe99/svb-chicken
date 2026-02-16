@@ -50,12 +50,7 @@
 //   width: 100%;
 // }
 
-// .timeline-scroll-wrapper {
-//   overflow-x: auto;
-//   overflow-y: hidden;
-//   white-space: nowrap;
-//   width: 100%;
-// }
+// .timeline-scroll-wrapper { overflow-x: auto; overflow-y: hidden; width: 100%; -webkit-overflow-scrolling: touch; /* sanftes Scrollen auf iOS */ }
 
 // .slot-header,
 // .table-row ion-col {
