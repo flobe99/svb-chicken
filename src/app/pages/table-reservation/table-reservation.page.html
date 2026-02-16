@@ -24,6 +24,7 @@
       </ion-segment>
     </ion-card>
 
+<div class="timeline-scroll-wrapper">
   <ion-grid class="timeline-grid" *ngIf="_selectedSlot && intervals.length">
     <ion-row class="header-row">
       <ion-col size="2">Tisch</ion-col>
@@ -37,14 +38,16 @@
         {{ tableName }}
       </ion-col>
 
-    <ion-col *ngFor="let interval of intervals"
-            [ngClass]="isReserved(tableName, interval) ? 'reserved' : 'free'"
-            (click)="onCellClick(tableName, interval)">
-      <div class="reserved-name" *ngIf="getReservation(tableName, interval) as r">
-        {{ r.customer_name }}
-      </div>
-    </ion-col>
+      <ion-col *ngFor="let interval of intervals"
+               [ngClass]="isReserved(tableName, interval) ? 'reserved' : 'free'"
+               (click)="onCellClick(tableName, interval)">
+        <div class="reserved-name" *ngIf="getReservation(tableName, interval) as r">
+          {{ r.customer_name }}
+        </div>
+      </ion-col>
     </ion-row>
   </ion-grid>
+</div>
+
   </div>
 </ion-content>
