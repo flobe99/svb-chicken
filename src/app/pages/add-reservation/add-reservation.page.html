@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Tisch-Reservierung</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-horizontal">
+  <div class="center-content">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Neue Reservierung</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Namen</ion-label>
+          <ion-input 
+            [(ngModel)]="customerName" 
+            placeholder="Name eingeben"
+            type="text">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Start</ion-label>
+          <ion-datetime
+            [(ngModel)]="startTime"            
+            (ngModelChange)="onStartTimeChanged()"            
+            presentation="date-time"
+            minuteValues="0,15,30,45"
+            firstDayOfWeek="1"
+            firstDayOfWeek="1">
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">End</ion-label>
+          <ion-datetime
+            [(ngModel)]="endTime"
+            presentation="date-time"
+            minuteValues="0,15,30,45"
+            firstDayOfWeek="1"
+            >
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Sitzplätze</ion-label>
+          <ion-input 
+            [(ngModel)]="seats" 
+            placeholder="Anzahl eingeben"
+            type="number"
+            min="1">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Tisch</ion-label>
+          <ion-select 
+            [(ngModel)]="selectedTable"
+            placeholder="Tisch auswählen">
+            <ion-select-option *ngFor="let table of tables" [value]="table.id">
+              {{ table.name }} ({{ table.seats }} Plätze)
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button 
+          expand="block" 
+          color="primary"
+          (click)="submitReservation()"
+          class="ion-margin-top">
+          Reservierung hinzufügen
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

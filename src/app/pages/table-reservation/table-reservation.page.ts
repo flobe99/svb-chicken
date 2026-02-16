@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -25,7 +26,9 @@ import {
   IonCardContent,
   IonList,
   IonSegment,
-  IonSegmentButton
+  IonSegmentButton,
+  IonAccordionGroup,
+  IonAccordion
 } from '@ionic/angular/standalone';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { TimePipe } from 'src/app/pipes/time.pipe';
@@ -66,7 +69,9 @@ import { Slot } from 'src/app/models/slot.model';
     IonCardContent,
     IonList,
     IonSegment,
-    IonSegmentButton
+    IonSegmentButton,
+    IonAccordionGroup,
+    IonAccordion
   ],
 })
 export class TableReservationPage implements OnInit {
@@ -75,8 +80,9 @@ export class TableReservationPage implements OnInit {
   slots: Slot[] = [];
   selectedSlotId: number | null = null;
   filteredReservations: TableReservation[] = [];
+  tablesByName: Map<string, TableReservation[]> = new Map();
 
-  constructor(private orderService: OrderService) { }
+  constructor(private orderService: OrderService, private router: Router) { }
 
   ngOnInit() {
     this.init();
@@ -105,12 +111,14 @@ export class TableReservationPage implements OnInit {
     const all = this.tableReservations ?? [];
     if (!this.selectedSlotId) {
       this.filteredReservations = all;
+      this.groupReservationsByTable();
       return;
     }
 
     const slot = this.slots.find((s) => s.id === this.selectedSlotId);
     if (!slot) {
       this.filteredReservations = all;
+      this.groupReservationsByTable();
       return;
     }
 
@@ -122,6 +130,7 @@ export class TableReservationPage implements OnInit {
       const rEnd = new Date(r.end).getTime();
       return rStart >= slotStart && rEnd <= slotEnd;
     });
+    this.groupReservationsByTable();
   }
 
   formatReservationTime(reservation: TableReservation): string {
@@ -138,5 +147,24 @@ export class TableReservationPage implements OnInit {
     const s = fmt(start);
     const e = fmt(end);
     return `${s} bis ${e} Uhr`;
+  }
+
+  groupReservationsByTable() {
+    this.tablesByName.clear();
+    this.filteredReservations.forEach((reservation) => {
+      const tableName = reservation.table?.name || 'Unbekannt';
+      if (!this.tablesByName.has(tableName)) {
+        this.tablesByName.set(tableName, []);
+      }
+      this.tablesByName.get(tableName)?.push(reservation);
+    });
+  }
+
+  getTableNames(): string[] {
+    return Array.from(this.tablesByName.keys()).sort();
+  }
+
+  navigateToAddReservation() {
+    this.router.navigate(['/add-reservation']);
   }
 }

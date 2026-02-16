@@ -12,6 +12,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Slot } from '../models/slot.model';
 import { Account } from '../models/Account.model';
 import { TableReservation } from '../models/TableReservation.model';
+import { Table } from '../models/Table.model';
 
 // export const DOMAIN = '192.168.199.133:8000';
 // export const API_URL = `http://${DOMAIN}`;
@@ -332,11 +333,29 @@ export class OrderService {
     );
   }
 
+  getTables(): Observable<Table[] | null> {
+    return this.http.get<Table[]>(`${API_URL}/tables-with-reservations`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Fehler beim Abrufen der Tabellen:', error);
+        return of([]);
+      })
+    );
+  }
+
   getTableReservations(): Observable<TableReservation[] | null> {
     return this.http.get<TableReservation[]>(`${API_URL}/table-reservations`).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Fehler beim Abrufen der Tischreservierungen:', error);
         return of([]);
+      })
+    );
+  }
+
+  addTableReservation(reservation: TableReservation): Observable<any> {
+    return this.http.post(`${API_URL}/table-reservations`, reservation).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Fehler beim Hinzufügen der Tischreservierung:', error);
+        return of({ success: false, error });
       })
     );
   }

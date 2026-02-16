@@ -6,7 +6,7 @@ export class TableReservation {
     seats: number;
     start: string;
     end: string;
-    table: Table;
+    table?: Table;
 
     constructor(obj?: Partial<TableReservation>) {
         this.id = obj?.id;
@@ -14,6 +14,6 @@ export class TableReservation {
         this.seats = obj?.seats ?? 0;
         this.start = obj?.start || '';
         this.end = obj?.end || '';
-        this.table = obj?.table ? new Table(obj.table) : new Table();
+        this.table = obj?.table;
     }
 }

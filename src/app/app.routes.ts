@@ -37,6 +37,10 @@ export const routes: Routes = [
     canActivate: [OrderGuard]
   },
   {
+    path: 'add-reservation',
+    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then( m => m.AddReservationPage)
+  },
+  {
     path: 'table-reservation',
     loadComponent: () => import('./pages/table-reservation/table-reservation.page').then(m => m.TableReservationPage)
   },
@@ -65,6 +69,4 @@ export const routes: Routes = [
     path: '**',
     loadComponent: () => import('./pages/order/order.page').then(m => m.OrderPage)
   },
-
-
 ];

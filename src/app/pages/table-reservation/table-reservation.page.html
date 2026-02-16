@@ -13,31 +13,44 @@
     <ion-card>
       <ion-card-header>
         <ion-card-title>Aktuelle Tischreservierungen</ion-card-title>
+        <ion-button expand="block" color="primary" (click)="navigateToAddReservation()">
+        Neue Reservierung
+      </ion-button>
       </ion-card-header>
-      <!-- <ion-segment [(ngModel)]="viewMode" (ngModelChange)="onViewModeChange()"> -->
       <ion-segment *ngIf="slots?.length" [(ngModel)]="selectedSlotId" (ngModelChange)="onSlotFilterChanged($event)">
         <ion-segment-button [value]="slot.id" *ngFor="let slot of slots">
           <ion-label>{{ slot.date | time: 'dayOfWeek' }}</ion-label>
         </ion-segment-button>
       </ion-segment>
-      <ion-card-content>
-        <div *ngIf="filteredReservations && filteredReservations.length > 0; else noReservations">
-          <ion-list>
-            <ion-item *ngFor="let reservation of filteredReservations">
-              <ion-label>
-                <h2>{{ reservation.customer_name }}</h2>
-                <p>{{ formatReservationTime(reservation) }}</p>
-                <p>Personen: {{ reservation.seats }}</p>
-                <p>Tisch: {{ reservation.table.name }}</p>
-                <p>Plätze: {{ reservation.seats }} / {{ reservation.table.seats }}</p>
-              </ion-label>
-            </ion-item>
-          </ion-list>
-        </div>
-        <ng-template #noReservations>
-          <p>Keine aktuellen Tischreservierungen.</p>
-        </ng-template>
-      </ion-card-content>
     </ion-card>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Alle Tische und Reservierungen</ion-card-title>
+      </ion-card-header>
+        <ion-card-content>
+          <ion-accordion-group *ngIf="getTableNames().length > 0; else noTables">
+            <ion-accordion *ngFor="let tableName of getTableNames()" [value]="tableName">
+              <ion-item slot="header">
+                <ion-label>
+                  <h2>Tisch {{ tableName }}</h2>
+                  <p>{{ (tablesByName.get(tableName) || []).length }} Reservierung(en)</p>
+                </ion-label>
+              </ion-item>
+              <ion-list slot="content">
+                <ion-item *ngFor="let reservation of (tablesByName.get(tableName) || [])">
+                  <ion-label>
+                    <h2>{{ reservation.customer_name }}</h2>
+                    <p>{{ formatReservationTime(reservation) }}</p>
+                    <p>Personen: {{ reservation.seats }} / {{ reservation.table?.seats }} Plätze</p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </ion-accordion>
+          </ion-accordion-group>
+          <ng-template #noTables>
+            <p>Keine Tische mit Reservierungen.</p>
+          </ng-template>
+        </ion-card-content>
+      </ion-card>
   </div>
 </ion-content>
