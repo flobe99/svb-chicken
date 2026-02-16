@@ -19,7 +19,8 @@ import {
   IonSelectOption,
   IonDatetime,
   IonButton,
-  ToastController
+  ToastController,
+  LoadingController
 } from '@ionic/angular/standalone';
 import { Table } from 'src/app/models/Table.model';
 import { TableReservation } from 'src/app/models/TableReservation.model';
@@ -66,6 +67,7 @@ export class AddReservationPage implements OnInit {
   constructor(
     private orderService: OrderService,
     private toastController: ToastController,
+    private loadingController: LoadingController,
     private router: Router
   ) { }
 
@@ -114,6 +116,14 @@ export class AddReservationPage implements OnInit {
       return;
     }
 
+    const loading = await this.loadingController.create({
+      message: 'Die Reservierung wird erstellt...',
+      spinner: 'circles',
+      translucent: true,
+      showBackdrop: true
+    });
+    await loading.present();
+
     const reservation = {
       customer_name: this.customerName,
       seats: this.seats || 0,
@@ -123,12 +133,15 @@ export class AddReservationPage implements OnInit {
     };
 
     this.orderService.addTableReservation(reservation).subscribe(
-      (response) => {
+      async (response) => {
+        await loading.dismiss();
         this.showToast('Reservierung erfolgreich hinzugefügt');
         this.router.navigate(['/table-reservation']);
       },
-      (error) => {
+      async (error) => {
+        await loading.dismiss();
         this.showToast('Fehler beim Hinzufügen der Reservierung');
+        console.error('Error:', error);
       }
     );
   }

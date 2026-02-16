@@ -88,6 +88,10 @@ export class TableReservationPage implements OnInit {
     this.init();
   }
 
+  ionViewWillEnter() {
+    this.init();
+  }
+
   init() {
     this.orderService.getTableReservations().subscribe((reservations) => {
       this.tableReservations = reservations;
