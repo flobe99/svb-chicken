@@ -20,7 +20,9 @@ import {
   IonDatetime,
   IonButton,
   ToastController,
-  LoadingController
+  LoadingController,
+  IonDatetimeButton,
+  IonModal
 } from '@ionic/angular/standalone';
 import { Table } from 'src/app/models/Table.model';
 import { TableReservation } from 'src/app/models/TableReservation.model';
@@ -51,6 +53,8 @@ import { BackComponent } from 'src/app/components/back/back.component';
     IonSelect,
     IonSelectOption,
     IonDatetime,
+    IonDatetimeButton,
+    IonModal,
     IonButton,
     CommonModule,
     FormsModule,
@@ -60,6 +64,7 @@ import { BackComponent } from 'src/app/components/back/back.component';
 export class AddReservationPage implements OnInit {
   customerName: string = '';
   seats: number | null = null;
+  date: string = '';
   startTime: string = '';
   endTime: string = '';
   selectedTable: number | null = null;
@@ -186,7 +191,7 @@ export class AddReservationPage implements OnInit {
     }
 
 
-    const loadingMessage = this.isEditMode 
+    const loadingMessage = this.isEditMode
       ? 'Die Reservierung wird aktualisiert...'
       : 'Die Reservierung wird erstellt...';
 
@@ -252,17 +257,17 @@ export class AddReservationPage implements OnInit {
       this.showToast('Bitte wählen Sie eine Endzeit aus');
       return false;
     }
-    
+
     const startDate = new Date(this.startTime);
     const endDate = new Date(this.endTime);
-    
-    if (startDate.getDate() !== endDate.getDate() || 
-        startDate.getMonth() !== endDate.getMonth() || 
-        startDate.getFullYear() !== endDate.getFullYear()) {
+
+    if (startDate.getDate() !== endDate.getDate() ||
+      startDate.getMonth() !== endDate.getMonth() ||
+      startDate.getFullYear() !== endDate.getFullYear()) {
       this.showToast('Start und Ende müssen am selben Tag sein');
       return false;
     }
-    
+
     if (startDate >= endDate) {
       this.showToast('Die Endzeit muss nach der Startzeit liegen');
       return false;
