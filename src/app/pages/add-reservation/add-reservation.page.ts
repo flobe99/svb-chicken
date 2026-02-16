@@ -27,6 +27,7 @@ import { TableReservation } from 'src/app/models/TableReservation.model';
 import { OrderService } from 'src/app/services/Order.Service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Slot } from 'src/app/models/slot.model';
+import { BackComponent } from 'src/app/components/back/back.component';
 
 @Component({
   selector: 'app-add-reservation',
@@ -52,7 +53,8 @@ import { Slot } from 'src/app/models/slot.model';
     IonDatetime,
     IonButton,
     CommonModule,
-    FormsModule
+    FormsModule,
+    BackComponent
   ]
 })
 export class AddReservationPage implements OnInit {
@@ -65,6 +67,7 @@ export class AddReservationPage implements OnInit {
   slots: Slot[] = [];
   reservationId: number | null = null;
   isEditMode: boolean = false;
+  tableReservations: TableReservation[] = [];
 
   constructor(
     private orderService: OrderService,
@@ -84,6 +87,7 @@ export class AddReservationPage implements OnInit {
     });
     this.loadTables();
     this.loadSlots();
+    this.loadReservations();
   }
 
   loadReservationData() {
@@ -91,6 +95,7 @@ export class AddReservationPage implements OnInit {
 
     this.orderService.getTableReservations().subscribe(
       (reservations) => {
+        this.tableReservations = reservations || [];
         const reservation = reservations?.find(r => r.id === this.reservationId);
         if (reservation) {
           this.customerName = reservation.customer_name;
@@ -126,6 +131,17 @@ export class AddReservationPage implements OnInit {
       },
       (error) => {
         this.showToast('Fehler beim Laden der Tische');
+      }
+    );
+  }
+
+  loadReservations() {
+    this.orderService.getTableReservations().subscribe(
+      (reservations) => {
+        this.tableReservations = reservations || [];
+      },
+      (error) => {
+        this.showToast('Fehler beim Laden der Reservierungen');
       }
     );
   }
@@ -246,6 +262,27 @@ export class AddReservationPage implements OnInit {
       this.showToast('Bitte wählen Sie einen Tisch aus');
       return false;
     }
+
+    const startTime = new Date(this.startTime).getTime();
+    const endTime = new Date(this.endTime).getTime();
+
+    const hasConflict = this.tableReservations.some((r) => {
+      if (this.isEditMode && r.id === this.reservationId) {
+        return false;
+      }
+      if (r.table?.id !== this.selectedTable) {
+        return false;
+      }
+      const rStart = new Date(r.start).getTime();
+      const rEnd = new Date(r.end).getTime();
+      return startTime < rEnd && endTime > rStart;
+    });
+
+    if (hasConflict) {
+      this.showToast('Dieser Tisch hat bereits eine Reservierung in diesem Zeitraum');
+      return false;
+    }
+
     return true;
   }
 

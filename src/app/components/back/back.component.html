@@ -1,0 +1,14 @@
+<ion-grid *ngIf="backEnabled" class="ion-no-padding">
+  <ion-row class="ion-no-padding">
+    <ion-col></ion-col>
+    <ion-col>
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        <ion-label class="bold">
+          Zurück
+        </ion-label>
+      </ion-button>
+    </ion-col>
+    <ion-col></ion-col>
+  </ion-row>
+</ion-grid>
