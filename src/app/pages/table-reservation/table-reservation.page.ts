@@ -221,7 +221,7 @@ generateIntervalsForSlot(slot: Slot) {
 
   let current = new Date(start);
 
-  while (current < end) {
+  while (current <= end) {
     this.intervals.push(
       current.toTimeString().substring(0, 5)
     );

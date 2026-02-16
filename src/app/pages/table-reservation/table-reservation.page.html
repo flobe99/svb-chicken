@@ -24,30 +24,32 @@
       </ion-segment>
     </ion-card>
 
-<div class="timeline-scroll-wrapper">
-  <ion-grid class="timeline-grid" *ngIf="_selectedSlot && intervals.length">
-    <ion-row class="header-row">
-      <ion-col size="2">Tisch</ion-col>
-      <ion-col *ngFor="let interval of intervals" class="slot-header">
-        {{ interval }}
-      </ion-col>
-    </ion-row>
+    <h1>{{ _selectedSlot?.date! | time: 'dayOfWeek' }} {{ _selectedSlot?.date! | time: 'date' }}: {{ _selectedSlot?.range_start! | time: 'time' }} - {{ _selectedSlot?.range_end! | time: 'time' }}</h1>
 
-    <ion-row *ngFor="let tableName of getTableNames()" class="table-row">
-      <ion-col size="2" class="table-name">
-        {{ tableName }}
-      </ion-col>
+    <div class="timeline-scroll-wrapper">
+      <ion-grid class="timeline-grid" *ngIf="_selectedSlot && intervals.length">
+        <ion-row class="header-row">
+          <ion-col>Tisch</ion-col>
+          <ion-col *ngFor="let interval of intervals" class="slot-header">
+            {{ interval }}
+          </ion-col>
+        </ion-row>
 
-      <ion-col *ngFor="let interval of intervals"
-               [ngClass]="isReserved(tableName, interval) ? 'reserved' : 'free'"
-               (click)="onCellClick(tableName, interval)">
-        <div class="reserved-name" *ngIf="getReservation(tableName, interval) as r">
-          {{ r.customer_name }}
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</div>
+        <ion-row *ngFor="let tableName of getTableNames()" class="table-row">
+          <ion-col class="table-name">
+            {{ tableName }}
+          </ion-col>
+
+          <ion-col *ngFor="let interval of intervals"
+                  [ngClass]="isReserved(tableName, interval) ? 'reserved' : 'free'"
+                  (click)="onCellClick(tableName, interval)">
+            <div class="reserved-name" *ngIf="getReservation(tableName, interval) as r">
+              {{ r.customer_name }}
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
 
   </div>
 </ion-content>
