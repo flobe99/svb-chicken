@@ -85,15 +85,15 @@ export class OrderPage implements OnInit {
   public editOrder: OrderChicken | null = null;
 
   public order: OrderChicken = new OrderChicken({
-    firstname: 'Florian',
-    lastname: 'Betz',
-    mail: 'betz.flori@gmail.com',
-    phonenumber: '015254058901',
+    firstname: '',
+    lastname: '',
+    mail: '',
+    phonenumber: '',
     date: this.roundToNextQuarterHour(new Date()),
-    chicken: 1,
-    nuggets: 1,
-    fries: 2,
-    miscellaneous: 'Viel Gewürz',
+    chicken: 0,
+    nuggets: 0,
+    fries: 0,
+    miscellaneous: '',
   });
 
   constructor(
@@ -128,13 +128,11 @@ export class OrderPage implements OnInit {
   }
 
   async init() {
-
     (await this.orderService.getEditOrder()).subscribe(order => {
       if (order) {
         this.order = order;
         this.edit = true;
-      }
-      else {
+      } else {
         this.order = new OrderChicken({
           firstname: '',
           lastname: '',
@@ -146,31 +144,11 @@ export class OrderPage implements OnInit {
           fries: 0,
           miscellaneous: '',
         });
+        this.edit = false;
       }
-
-      console.table(this.order)
 
       this.validateOrder();
     });
-
-
-    if (this.order) {
-      this.edit = true;
-    } else {
-      this.order = new OrderChicken({
-        firstname: '',
-        lastname: '',
-        mail: '',
-        phonenumber: '',
-        date: this.roundToNextQuarterHour(new Date()),
-        chicken: 0,
-        nuggets: 0,
-        fries: 0,
-        miscellaneous: '',
-      });
-    }
-
-    this.validateOrder();
   }
 
   roundToNextQuarterHour(date: Date): string {
