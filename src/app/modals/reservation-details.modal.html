@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Reservierungsdetails</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <h2>{{ reservation.customer_name }}</h2>
+
+  <p><strong>Tisch:</strong> {{ reservation.table?.name }}</p>
+  <p><strong>Personen:</strong> {{ reservation.seats }} / {{ reservation.table?.seats }}</p>
+
+  <p><strong>Von:</strong> {{ reservation.start | date:'HH:mm' }}</p>
+  <p><strong>Bis:</strong> {{ reservation.end | date:'HH:mm' }}</p>
+
+  <ion-button expand="block" color="medium" (click)="edit()">
+    <ion-icon name="pencil" slot="start"></ion-icon>
+    Bearbeiten
+  </ion-button>
+
+  <ion-button expand="block" color="primary" (click)="close()">
+    Schließen
+  </ion-button>
+</ion-content>

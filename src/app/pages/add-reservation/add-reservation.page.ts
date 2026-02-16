@@ -147,12 +147,22 @@ export class AddReservationPage implements OnInit {
   }
 
   onStartTimeChanged() {
-    if (this.startTime) {
-      const startDate = new Date(this.startTime);
-      const endDate = new Date(startDate.getTime() + 1.5 * 60 * 60 * 1000);
-      this.endTime = endDate.toISOString();
-    }
+    if (!this.startTime) return;
+
+    const [datePart, timePart] = this.startTime.split('T');
+    const [hourStr, minuteStr] = timePart.split(':');
+
+    let hour = parseInt(hourStr, 10);
+    const minute = parseInt(minuteStr, 10);
+
+    hour = (hour + 1) % 24;
+
+    const newHour = hour.toString().padStart(2, '0');
+    const newMinute = minute.toString().padStart(2, '0');
+
+    this.endTime = `${datePart}T${newHour}:${newMinute}`;
   }
+
 
   async submitReservation() {
     if (!this.validateForm()) {
@@ -163,6 +173,18 @@ export class AddReservationPage implements OnInit {
       this.showToast('Bitte wählen Sie einen Tisch aus');
       return;
     }
+
+    const table = this.tables.find(t => t.id === this.selectedTable);
+    if (!table) {
+      this.showToast('Ausgewählter Tisch wurde nicht gefunden');
+      return;
+    }
+
+    if (this.seats! > table.seats) {
+      this.showToast(`Dieser Tisch hat nur ${table.seats} Plätze`);
+      return;
+    }
+
 
     const loadingMessage = this.isEditMode 
       ? 'Die Reservierung wird aktualisiert...'

@@ -28,7 +28,11 @@ import {
   IonSegment,
   IonSegmentButton,
   IonAccordionGroup,
-  IonAccordion
+  IonAccordion,
+  IonCol,
+  IonRow,
+  IonGrid,
+  ModalController
 } from '@ionic/angular/standalone';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { TimePipe } from 'src/app/pipes/time.pipe';
@@ -37,6 +41,8 @@ import { OrderService } from 'src/app/services/Order.Service';
 import { Slot } from 'src/app/models/slot.model';
 import { addIcons } from 'ionicons';
 import { pencil, pencilOutline, pencilSharp } from 'ionicons/icons';
+import { Table } from 'src/app/models/Table.model';
+import { ReservationDetailsModal } from 'src/app/modals/reservation-details.modal';
 
 @Component({
   selector: 'app-table-reservation',
@@ -73,7 +79,10 @@ import { pencil, pencilOutline, pencilSharp } from 'ionicons/icons';
     IonSegment,
     IonSegmentButton,
     IonAccordionGroup,
-    IonAccordion
+    IonAccordion,
+    IonCol,
+    IonRow,
+    IonGrid
   ],
 })
 export class TableReservationPage implements OnInit {
@@ -83,8 +92,9 @@ export class TableReservationPage implements OnInit {
   selectedSlotId: number | null = null;
   filteredReservations: TableReservation[] = [];
   tablesByName: Map<string, TableReservation[]> = new Map();
+  tables: Table[] = [];
 
-  constructor(private orderService: OrderService, private router: Router) { 
+  constructor(private orderService: OrderService, private router: Router, private modalCtrl: ModalController) { 
     addIcons({ pencil, pencilOutline, pencilSharp });
   }
 
@@ -97,6 +107,11 @@ export class TableReservationPage implements OnInit {
   }
 
   init() {
+    this.orderService.getTables().subscribe((tables) => {
+      this.tables = tables ?? [];
+      this.groupReservationsByTable();
+    });
+
     this.orderService.getTableReservations().subscribe((reservations) => {
       this.tableReservations = reservations;
       this.applyFilter();
@@ -105,15 +120,24 @@ export class TableReservationPage implements OnInit {
       this.slots = slots;
       this._selectedSlot = slots.length > 0 ? slots[0] : null;
       this.selectedSlotId = this._selectedSlot?.id ?? null;
+      if (this._selectedSlot) {
+        this.generateIntervalsForSlot(this._selectedSlot);
+      }
       this.applyFilter();
     });
   }
 
-  onSlotFilterChanged(slotId: number | null) {
-    this.selectedSlotId = slotId as any;
-    this._selectedSlot = this.slots.find((s) => s.id === this.selectedSlotId) ?? null;
-    this.applyFilter();
+onSlotFilterChanged(slotId: number | null) {
+  this.selectedSlotId = slotId as any;
+  this._selectedSlot = this.slots.find((s) => s.id === this.selectedSlotId) ?? null;
+
+  if (this._selectedSlot) {
+    this.generateIntervalsForSlot(this._selectedSlot);
   }
+
+  this.applyFilter();
+}
+
 
   applyFilter() {
     const all = this.tableReservations ?? [];
@@ -159,11 +183,18 @@ export class TableReservationPage implements OnInit {
 
   groupReservationsByTable() {
     this.tablesByName.clear();
+
+    this.tables.forEach(table => {
+      this.tablesByName.set(table.name, []);
+    });
+
     this.filteredReservations.forEach((reservation) => {
       const tableName = reservation.table?.name || 'Unbekannt';
+
       if (!this.tablesByName.has(tableName)) {
         this.tablesByName.set(tableName, []);
       }
+
       this.tablesByName.get(tableName)?.push(reservation);
     });
   }
@@ -179,4 +210,86 @@ export class TableReservationPage implements OnInit {
   editReservation(reservation: TableReservation) {
     this.router.navigate(['/add-reservation', reservation.id]);
   }
+
+intervals: string[] = []; // z. B. ["18:00", "18:15", "18:30", ...]
+
+generateIntervalsForSlot(slot: Slot) {
+  this.intervals = [];
+
+  const start = new Date(slot.range_start);
+  const end = new Date(slot.range_end);
+
+  let current = new Date(start);
+
+  while (current < end) {
+    this.intervals.push(
+      current.toTimeString().substring(0, 5)
+    );
+    current = new Date(current.getTime() + 15 * 60000);
+  }
+}
+
+
+  isReserved(tableName: string, interval: string): boolean {
+    const reservations = this.tablesByName.get(tableName) || [];
+    if (!this._selectedSlot) return false;
+
+    const slotDate = new Date(this._selectedSlot.date);
+    const [h, m] = interval.split(':').map(Number);
+
+    const intervalStart = new Date(slotDate);
+    intervalStart.setHours(h, m, 0, 0);
+
+    const intervalEnd = new Date(intervalStart.getTime() + 15 * 60000);
+
+    return reservations.some(r => {
+      const rStart = new Date(r.start);
+      const rEnd = new Date(r.end);
+
+      return rStart < intervalEnd && rEnd > intervalStart;
+    });
+  }
+
+  getReservation(tableName: string, interval: string): TableReservation | null {
+    const reservations = this.tablesByName.get(tableName) || [];
+    if (!this._selectedSlot) return null;
+
+    const slotDate = new Date(this._selectedSlot.date);
+    const [h, m] = interval.split(':').map(Number);
+
+    const intervalStart = new Date(slotDate);
+    intervalStart.setHours(h, m, 0, 0);
+
+    const intervalEnd = new Date(intervalStart.getTime() + 15 * 60000);
+
+    return reservations.find(r => {
+      const rStart = new Date(r.start);
+      const rEnd = new Date(r.end);
+      return rStart < intervalEnd && rEnd > intervalStart;
+    }) || null;
+  }
+
+  async openReservationModal(reservation: TableReservation) {
+    const modal = await this.modalCtrl.create({
+      component: ReservationDetailsModal,
+      componentProps: {
+        reservation: reservation
+      }
+    });
+
+    await modal.present();
+  }
+
+  onCellClick(tableName: string, interval: string) {
+    const reservation = this.getReservation(tableName, interval);
+
+    if (!reservation) {
+      console.log("Frei – neue Reservierung möglich");
+      return;
+    }
+
+    this.openReservationModal(reservation);
+  }
+
+
 }

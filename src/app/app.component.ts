@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { fastFood, settings, mail, add, fastFoodOutline, homeOutline, addCircle, addCircleOutline, restaurantOutline, tabletPortraitOutline } from 'ionicons/icons';
+import { fastFood, settings, mail, add, fastFoodOutline, homeOutline, addCircle, addCircleOutline, restaurantOutline, tabletPortraitOutline, bookmarkOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 import {
@@ -61,14 +61,23 @@ export class AppComponent {
     this.authService.getAccountLogin().subscribe(account => {
       this.isLoggedin = account !== null && account.access_token !== '';
     });
-    addIcons({ fastFoodOutline, fastFood, settings, mail, add, homeOutline, addCircleOutline, restaurantOutline });
+    addIcons({
+      fastFoodOutline,
+      fastFood,
+      settings,
+      mail,
+      add,
+      homeOutline,
+      addCircleOutline,
+      restaurantOutline,
+      bookmarkOutline
+    });
   }
-
 
   public appPages_login = [
     { title: 'Dashboard', url: '/dashboard', icon: 'home-outline' },
     { title: 'Bestellung', url: '/order', icon: 'fast-food-outline' },
-    { title: 'Tisch-Reservierung', url: '/table-reservation', icon: 'fast-food-outline' },
+    { title: 'Tisch-Reservierung', url: '/table-reservation', icon: 'bookmark-outline' },
     { title: 'Theke', url: '/theke', icon: 'add-circle-outline' },
     { title: 'Küche', url: '/kitchen', icon: 'restaurant-outline' },
     { title: 'Settings', url: '/settings', icon: 'settings' },

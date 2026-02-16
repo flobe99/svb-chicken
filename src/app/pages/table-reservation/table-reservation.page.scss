@@ -1,0 +1,50 @@
+.timeline-grid {
+  width: 100%;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+.header-row {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+.slot-header {
+  text-align: center;
+  border-left: 1px solid #ccc;
+  margin: 5px;
+}
+
+.table-row {
+  height: 32px;
+  margin: 5px;
+}
+
+.table-name {
+  font-weight: bold;
+  background: #fafafa;
+}
+
+.free {
+  background: #e8ffe8;
+  border-left: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.reserved {
+  background: #ffb3b3;
+  border-left: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.reserved-name {
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}

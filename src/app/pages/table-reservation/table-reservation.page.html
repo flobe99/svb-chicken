@@ -23,39 +23,28 @@
         </ion-segment-button>
       </ion-segment>
     </ion-card>
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Alle Tische und Reservierungen</ion-card-title>
-      </ion-card-header>
-        <ion-card-content>
-          <ion-accordion-group *ngIf="getTableNames().length > 0; else noTables">
-            <ion-accordion *ngFor="let tableName of getTableNames()" [value]="tableName">
-              <ion-item slot="header">
-                <ion-label>
-                  <h2>Tisch {{ tableName }}</h2>
-                  <p>{{ (tablesByName.get(tableName) || []).length }} Reservierung(en)</p>
-                </ion-label>
-              </ion-item>
-              <ion-list slot="content">
-                <ion-item *ngFor="let reservation of (tablesByName.get(tableName) || [])">
-                  <ion-label>
-                    <h2>{{ reservation.customer_name }}</h2>
-                    <p>{{ formatReservationTime(reservation) }}</p>
-                    <p>Personen: {{ reservation.seats }} / {{ reservation.table?.seats }} Plätze</p>
-                  </ion-label>
-                  <ion-icon 
-                    slot="end"
-                    name="pencil"
-                    (click)="editReservation(reservation)"
-                    style="cursor: pointer;"></ion-icon>
-                </ion-item>
-              </ion-list>
-            </ion-accordion>
-          </ion-accordion-group>
-          <ng-template #noTables>
-            <p>Keine Tische mit Reservierungen.</p>
-          </ng-template>
-        </ion-card-content>
-      </ion-card>
+
+  <ion-grid class="timeline-grid" *ngIf="_selectedSlot && intervals.length">
+    <ion-row class="header-row">
+      <ion-col size="2">Tisch</ion-col>
+      <ion-col *ngFor="let interval of intervals" class="slot-header">
+        {{ interval }}
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngFor="let tableName of getTableNames()" class="table-row">
+      <ion-col size="2" class="table-name">
+        {{ tableName }}
+      </ion-col>
+
+    <ion-col *ngFor="let interval of intervals"
+            [ngClass]="isReserved(tableName, interval) ? 'reserved' : 'free'"
+            (click)="onCellClick(tableName, interval)">
+      <div class="reserved-name" *ngIf="getReservation(tableName, interval) as r">
+        {{ r.customer_name }}
+      </div>
+    </ion-col>
+    </ion-row>
+  </ion-grid>
   </div>
 </ion-content>
