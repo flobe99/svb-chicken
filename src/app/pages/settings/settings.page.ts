@@ -158,7 +158,7 @@ export class SettingsPage implements OnInit {
   }
 
   addSlot() {
-    const dateOnly = new Date().toISOString().split('T')[0]; // z. B. "2025-10-12"
+    const dateOnly = new Date().toISOString().split('T')[0];
     const startTime = '17:00:00';
     const endTime = '20:00:00';
 
@@ -237,9 +237,9 @@ export class SettingsPage implements OnInit {
 
     for (const slot of this.slots) {
       console.table('\n######################');
-      const dateOnly = slot.date.split('T')[0]; // z. B. "2025-10-12"
-      const startTime = this.extractTime(slot.range_start); // z. B. "17:00:00"
-      const endTime = this.extractTime(slot.range_end); // z. B. "20:00:00"
+      const dateOnly = slot.date.split('T')[0];
+      const startTime = this.extractTime(slot.range_start);
+      const endTime = this.extractTime(slot.range_end);
 
       const payload = {
         date: dateOnly,

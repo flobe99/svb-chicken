@@ -170,7 +170,7 @@ export class OrderPage implements OnInit {
       });
     }
 
-    this.validateOrder(); // <-- wird jetzt NACH dem Laden ausgeführt
+    this.validateOrder();
   }
 
   roundToNextQuarterHour(date: Date): string {
@@ -283,7 +283,6 @@ export class OrderPage implements OnInit {
 
       this.setErrorMessages(errors);
 
-      // Falls keine strukturierte Fehlerliste vorhanden ist
       if (errors.length === 0) {
         this.presentToast(
           err.error?.detail || 'Fehler bei der Validierung',

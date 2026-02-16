@@ -25,7 +25,7 @@ import {
 import { Table } from 'src/app/models/Table.model';
 import { TableReservation } from 'src/app/models/TableReservation.model';
 import { OrderService } from 'src/app/services/Order.Service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Slot } from 'src/app/models/slot.model';
 
 @Component({
@@ -63,17 +63,49 @@ export class AddReservationPage implements OnInit {
   selectedTable: number | null = null;
   tables: Table[] = [];
   slots: Slot[] = [];
+  reservationId: number | null = null;
+  isEditMode: boolean = false;
 
   constructor(
     private orderService: OrderService,
     private toastController: ToastController,
     private loadingController: LoadingController,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
+    this.activatedRoute.params.subscribe(params => {
+      if (params['id']) {
+        this.reservationId = parseInt(params['id']);
+        this.isEditMode = true;
+        this.loadReservationData();
+      }
+    });
     this.loadTables();
     this.loadSlots();
+  }
+
+  loadReservationData() {
+    if (!this.reservationId) return;
+
+    this.orderService.getTableReservations().subscribe(
+      (reservations) => {
+        const reservation = reservations?.find(r => r.id === this.reservationId);
+        if (reservation) {
+          this.customerName = reservation.customer_name;
+          this.seats = reservation.seats;
+          this.startTime = reservation.start;
+          this.endTime = reservation.end;
+          this.selectedTable = reservation.table?.id || null;
+        } else {
+          this.showToast('Reservierung nicht gefunden');
+        }
+      },
+      (error) => {
+        this.showToast('Fehler beim Laden der Reservierung');
+      }
+    );
   }
 
   loadSlots() {
@@ -101,7 +133,7 @@ export class AddReservationPage implements OnInit {
   onStartTimeChanged() {
     if (this.startTime) {
       const startDate = new Date(this.startTime);
-      const endDate = new Date(startDate.getTime() + 1.5 * 60 * 60 * 1000); // 1.5 Stunden hinzufügen
+      const endDate = new Date(startDate.getTime() + 1.5 * 60 * 60 * 1000);
       this.endTime = endDate.toISOString();
     }
   }
@@ -116,8 +148,12 @@ export class AddReservationPage implements OnInit {
       return;
     }
 
+    const loadingMessage = this.isEditMode 
+      ? 'Die Reservierung wird aktualisiert...'
+      : 'Die Reservierung wird erstellt...';
+
     const loading = await this.loadingController.create({
-      message: 'Die Reservierung wird erstellt...',
+      message: loadingMessage,
       spinner: 'circles',
       translucent: true,
       showBackdrop: true
@@ -132,18 +168,33 @@ export class AddReservationPage implements OnInit {
       table_id: this.selectedTable
     };
 
-    this.orderService.addTableReservation(reservation).subscribe(
-      async (response) => {
-        await loading.dismiss();
-        this.showToast('Reservierung erfolgreich hinzugefügt');
-        this.router.navigate(['/table-reservation']);
-      },
-      async (error) => {
-        await loading.dismiss();
-        this.showToast('Fehler beim Hinzufügen der Reservierung');
-        console.error('Error:', error);
-      }
-    );
+    if (this.isEditMode && this.reservationId) {
+      this.orderService.updateTableReservation(this.reservationId, reservation).subscribe(
+        async (response) => {
+          await loading.dismiss();
+          this.showToast('Reservierung erfolgreich aktualisiert');
+          this.router.navigate(['/table-reservation']);
+        },
+        async (error) => {
+          await loading.dismiss();
+          this.showToast('Fehler beim Aktualisieren der Reservierung');
+          console.error('Error:', error);
+        }
+      );
+    } else {
+      this.orderService.addTableReservation(reservation).subscribe(
+        async (response) => {
+          await loading.dismiss();
+          this.showToast('Reservierung erfolgreich hinzugefügt');
+          this.router.navigate(['/table-reservation']);
+        },
+        async (error) => {
+          await loading.dismiss();
+          this.showToast('Fehler beim Hinzufügen der Reservierung');
+          console.error('Error:', error);
+        }
+      );
+    }
   }
 
   validateForm(): boolean {
@@ -167,7 +218,6 @@ export class AddReservationPage implements OnInit {
     const startDate = new Date(this.startTime);
     const endDate = new Date(this.endTime);
     
-    // Überprüfe, ob Start und Ende am selben Tag sind
     if (startDate.getDate() !== endDate.getDate() || 
         startDate.getMonth() !== endDate.getMonth() || 
         startDate.getFullYear() !== endDate.getFullYear()) {
@@ -180,7 +230,6 @@ export class AddReservationPage implements OnInit {
       return false;
     }
 
-    // Überprüfe, ob die Startzeit innerhalb eines Slots liegt
     const isWithinSlot = this.slots.some((slot) => {
       const slotStart = new Date(slot.range_start).getTime();
       const slotEnd = new Date(slot.range_end).getTime();

@@ -24,16 +24,7 @@ export class RefreshComponent implements OnInit {
   }
 
   doRefresh(event: any) {
-    this.refreshed.emit(); // 👈 ruft init() im Eltern-Template auf
+    this.refreshed.emit();
     event.target.complete();
   }
-
-
-  // doRefresh(event: any) {
-  //   const currentUrl = this.router.url;
-  //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-  //     this.router.navigate([currentUrl]);
-  //     event.target.complete();
-  //   });
-  // }
 }

@@ -120,10 +120,8 @@ export class KitchenPage implements OnInit {
   }
 
   async init() {
-    // Lade Slot-Konfigurationen dynamisch vom Backend
     this.orderService.getSlots().subscribe((slots) => {
       this.slots = slots;
-      // Initialisiere Platzhalter für jedes Slot-Objekt
       this.timeSlots = slots.map(() => ({
         date: '',
         range_start: '',
@@ -160,14 +158,12 @@ export class KitchenPage implements OnInit {
           });
       });
 
-      // Konfiguration laden
       this.orderService.getConfig().subscribe((config) => {
         if (config) {
           this.config = config;
         }
       });
 
-      // WebSocket verbinden und bei Änderungen aktualisieren
       this.orderService.connectToOrderWebSocket(() => {
         slots.forEach((slot, index) => {
           const range = this.formatRange(slot.range_start, slot.range_end);
@@ -238,7 +234,6 @@ export class KitchenPage implements OnInit {
 
   getCurrentTimeIndex(slot: OrderSummarySlot[], slotDate: string): number {
     const now = new Date();
-    // const now = new Date('2025-10-11T19:59:00');
 
     return slot.findIndex((s) => {
       const start = new Date(`${slotDate}T${s.time}`);
@@ -250,7 +245,6 @@ export class KitchenPage implements OnInit {
 
   async goToTheke(date: string, time: string) {
     const filter = {
-      // date: date.slice(0, 10)
       date: date + time,
     };
     await this.storageService.set('orderFilter', { date: date + 'T' + time });

@@ -41,6 +41,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/add-reservation/add-reservation.page').then( m => m.AddReservationPage)
   },
   {
+    path: 'add-reservation/:id',
+    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then( m => m.AddReservationPage)
+  },
+  {
     path: 'table-reservation',
     loadComponent: () => import('./pages/table-reservation/table-reservation.page').then(m => m.TableReservationPage)
   },

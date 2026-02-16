@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-// import { IonicModule, ToastController } from '@ionic/angular';
 import {
   IonContent,
   IonHeader,
@@ -106,7 +105,6 @@ export class OrderOverviewPage implements OnInit {
       else {
         let errorMessage = 'Die Bestellung in diesem Zeitfenster ist nicht möglich.';
 
-        // Prüfe auf Fehlercode 400 und zeige die Backend-Fehlermeldung
         if (response.status === 400 && response.error?.detail) {
           errorMessage = response.error.detail;
         }
@@ -122,11 +120,9 @@ export class OrderOverviewPage implements OnInit {
       }
 
     } catch (error: any) {
-      // console.error('Fehler beim Absenden der Bestellung:', error);
 
       let errorMessage = 'Die Bestellung in diesem Zeitfenster ist nicht möglich.';
 
-      // Prüfe auf Fehlercode 400 und zeige die Backend-Fehlermeldung
       if (error.status === 400 && error.error?.detail) {
         errorMessage = error.error.detail;
       }

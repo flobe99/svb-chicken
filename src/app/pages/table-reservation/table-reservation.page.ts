@@ -35,6 +35,8 @@ import { TimePipe } from 'src/app/pipes/time.pipe';
 import { TableReservation } from 'src/app/models/TableReservation.model';
 import { OrderService } from 'src/app/services/Order.Service';
 import { Slot } from 'src/app/models/slot.model';
+import { addIcons } from 'ionicons';
+import { pencil, pencilOutline, pencilSharp } from 'ionicons/icons';
 
 @Component({
   selector: 'app-table-reservation',
@@ -82,7 +84,9 @@ export class TableReservationPage implements OnInit {
   filteredReservations: TableReservation[] = [];
   tablesByName: Map<string, TableReservation[]> = new Map();
 
-  constructor(private orderService: OrderService, private router: Router) { }
+  constructor(private orderService: OrderService, private router: Router) { 
+    addIcons({ pencil, pencilOutline, pencilSharp });
+  }
 
   ngOnInit() {
     this.init();
@@ -170,5 +174,9 @@ export class TableReservationPage implements OnInit {
 
   navigateToAddReservation() {
     this.router.navigate(['/add-reservation']);
+  }
+
+  editReservation(reservation: TableReservation) {
+    this.router.navigate(['/add-reservation', reservation.id]);
   }
 }

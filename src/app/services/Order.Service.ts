@@ -359,4 +359,13 @@ export class OrderService {
       })
     );
   }
+
+  updateTableReservation(id: number, reservation: any): Observable<any> {
+    return this.http.put(`${API_URL}/table-reservations/${id}`, reservation).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Fehler beim Aktualisieren der Tischreservierung:', error);
+        return of({ success: false, error });
+      })
+    );
+  }
 }
