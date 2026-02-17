@@ -65,6 +65,12 @@ export class ScanOrderPage implements OnInit {
   order: OrderChicken | null = null;
   errorMsg = '';
   manualCode = '';
+  // Web fallback scanner state
+  private videoStream: MediaStream | null = null;
+  private canvasEl: HTMLCanvasElement | null = null;
+  private canvasCtx: CanvasRenderingContext2D | null = null;
+  private scanActive = false;
+  private _webScanRaf: number | null = null;
 
   @ViewChild('selectRefs', { static: false }) selectRefs: any;
 
@@ -102,7 +108,28 @@ export class ScanOrderPage implements OnInit {
       }
 
       this.scanning = true;
-      const result = await BarcodeScanner.startScan();
+      // Some plugin versions require hiding the webview background so the
+      // native camera preview becomes visible. Try to prepare and hide background.
+      try {
+        if ((BarcodeScanner as any).prepare) {
+          await (BarcodeScanner as any).prepare();
+        }
+        if ((BarcodeScanner as any).hideBackground) {
+          await (BarcodeScanner as any).hideBackground();
+        }
+      } catch (e) {
+        console.debug('hideBackground/prepare not available or failed', e);
+      }
+
+      let result: any = null;
+      try {
+        result = await BarcodeScanner.startScan();
+      } catch (e) {
+        // Plugin failed at runtime (e.g. running in browser) -> fallback to web scanner
+        console.debug('Capacitor scanner start failed, falling back to web scanner', e);
+        await this.startWebScan();
+        return;
+      }
       this.scanning = false;
 
       if (result && (result as any).hasContent) {
@@ -112,9 +139,15 @@ export class ScanOrderPage implements OnInit {
         this.errorMsg = 'Kein QR-Code erkannt.';
       }
     } catch (e) {
-      console.error('Scan Fehler', e);
-      this.errorMsg = 'Scanner nicht verfügbar. Bitte manuell eingeben.';
-      this.scanning = false;
+      console.error('Scan Fehler (plugin import)', e);
+      // If plugin import fails (missing in package.json), fall back to web scanner
+      try {
+        await this.startWebScan();
+      } catch (we) {
+        console.error('Web scanner start failed', we);
+        this.errorMsg = 'Scanner nicht verfügbar. Bitte manuell eingeben.';
+        this.scanning = false;
+      }
     }
   }
 
@@ -125,11 +158,90 @@ export class ScanOrderPage implements OnInit {
         const mod = await import('@capacitor-community/barcode-scanner');
         if (mod && (mod as any).BarcodeScanner && (mod as any).BarcodeScanner.stopScan) {
           await (mod as any).BarcodeScanner.stopScan();
+          if ((mod as any).BarcodeScanner.showBackground) {
+            try { await (mod as any).BarcodeScanner.showBackground(); } catch { /* ignore */ }
+          }
         }
       } catch (e) {
         // ignore
       }
     })();
+    // also stop web fallback if running
+    this.stopWebScan();
+  }
+
+  private async startWebScan() {
+    if (!('mediaDevices' in navigator) || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('getUserMedia not supported');
+    }
+
+    this.errorMsg = '';
+    this.scanning = true;
+    const container = document.getElementById('scanner');
+    if (!container) throw new Error('Scanner container not found');
+
+    // create video element
+    const video = document.createElement('video');
+    video.setAttribute('playsinline', 'true');
+    video.style.width = '100%';
+    video.style.height = 'auto';
+    container.innerHTML = '';
+    container.appendChild(video);
+
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    this.videoStream = stream;
+    video.srcObject = stream;
+    await video.play();
+
+    // create canvas for scanning
+    const canvas = document.createElement('canvas');
+    this.canvasEl = canvas;
+    this.canvasCtx = canvas.getContext('2d');
+    this.scanActive = true;
+
+    const jsqrMod = await import('jsqr');
+    const jsQR = (jsqrMod && (jsqrMod as any).default) || jsqrMod;
+
+    const tick = async () => {
+      if (!this.scanActive) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        this.canvasCtx!.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = this.canvasCtx!.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code && code.data) {
+          this.scanActive = false;
+          this.stopWebScan();
+          this.handleScanned(code.data);
+          return;
+        }
+      }
+      this._webScanRaf = requestAnimationFrame(tick);
+    };
+
+    tick();
+  }
+
+  private stopWebScan() {
+    this.scanActive = false;
+    if (this._webScanRaf) {
+      cancelAnimationFrame(this._webScanRaf);
+      this._webScanRaf = null;
+    }
+    if (this.videoStream) {
+      this.videoStream.getTracks().forEach(t => t.stop());
+      this.videoStream = null;
+    }
+    if (this.canvasEl && this.canvasEl.parentElement) {
+      // leave canvas removed
+      this.canvasEl.remove();
+      this.canvasEl = null;
+      this.canvasCtx = null;
+    }
+    const container = document.getElementById('scanner');
+    if (container) container.innerHTML = '';
+    this.scanning = false;
   }
 
   showManual() {
