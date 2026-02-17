@@ -38,11 +38,11 @@ export const routes: Routes = [
   },
   {
     path: 'add-reservation',
-    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then( m => m.AddReservationPage)
+    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then(m => m.AddReservationPage)
   },
   {
     path: 'add-reservation/:id',
-    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then( m => m.AddReservationPage)
+    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then(m => m.AddReservationPage)
   },
   {
     path: 'table-reservation',
@@ -58,7 +58,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/kitchen/kitchen.page').then(m => m.KitchenPage),
     canActivate: [loginGuard]
   },
-
+  {
+    path: 'scan-order',
+    loadComponent: () => import('./pages/scan-order/scan-order.page').then(m => m.ScanOrderPage)
+  },
   {
     path: 'settings',
     loadComponent: () => import('./pages/settings/settings.page').then(m => m.SettingsPage),

@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>QR-Code Bestellung</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-horizontal">
+  <div class="center-content">
+    <app-refresh></app-refresh>
+  </div>
+
+  <div class="ion-padding">
+    <ion-button expand="block" color="primary" (click)="startScan()" *ngIf="!scanning">QR-Code scannen</ion-button>
+    <ion-button expand="block" color="medium" (click)="stopScan()" *ngIf="scanning">Scan stoppen</ion-button>
+
+    <ion-item>
+      <ion-label position="floating">Bestell ID</ion-label>
+      <ion-input [(ngModel)]="manualCode" placeholder="123"></ion-input>
+      <ion-button slot="end" (click)="showManual()">Anzeigen</ion-button>
+    </ion-item>
+
+    <div *ngIf="errorMsg" class="ion-padding-top">
+      <ion-note color="danger">{{ errorMsg }}</ion-note>
+    </div>
+
+    <div id="scanner" *ngIf="scanning"></div>
+
+    <ion-card *ngIf="order">
+      <ion-card-header>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: inline-flex; align-items: center; gap: 6px;">
+            <ion-card-title style="text-overflow: ellipsis;">
+              <ion-icon style="cursor: pointer;" name="ellipsis-vertical-outline"
+                (click)="openActionSheet(order)"></ion-icon>
+              #{{ order.id }} {{ order.firstname }} {{ order.lastname }}
+            </ion-card-title>
+          </div>
+
+          <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">
+            {{ getStatusLabel(order.status) }}
+          </ion-button>
+        </div>
+        <ion-card-subtitle>
+          {{ (order?.date ?? '') | time: 'dayOfWeek' }} {{ (order?.date ?? '') | time: 'date' }} um {{ (order?.date ??
+          '') |
+          time: 'time' }}
+        </ion-card-subtitle>
+
+        <!-- <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">{{ getStatusLabel(order.status)
+            }}</ion-button> -->
+      </ion-card-header>
+
+      <ion-card-content>
+        <p><strong>Preis:</strong> {{ order.price.toFixed(2) }}€</p>
+
+        <ion-select [value]="order.status" #selectRefs interface="popover" style="display: none;"
+          (ionChange)="onStatusChange($event, order)">
+          <ion-select-option value="CREATED">Erstellt</ion-select-option>
+          <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
+          <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
+          <ion-select-option value="COMPLETED">Fertig</ion-select-option>
+          <ion-select-option value="CANCELLED">Storniert</ion-select-option>
+        </ion-select>
+        <ion-item>
+          <ion-label><strong>Hähnchen:</strong></ion-label>
+          <ion-text>{{ order.chicken }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>Nuggets:</strong></ion-label>
+          <ion-text>{{ order.nuggets }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>Pommes:</strong></ion-label>
+          <ion-text>{{ order.fries }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>Sonstiges:</strong></ion-label>
+          <ion-text *ngIf="order.miscellaneous">{{ order.miscellaneous }}</ion-text>
+          <ion-text *ngIf="!order.miscellaneous">-</ion-text>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
