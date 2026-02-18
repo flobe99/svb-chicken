@@ -9,6 +9,7 @@ import { OrderChicken } from 'src/app/models/order.model';
 import { OrderService } from 'src/app/services/Order.Service';
 import { Router } from '@angular/router';
 import { TimePipe } from 'src/app/pipes/time.pipe';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-order-view',
@@ -17,7 +18,7 @@ import { TimePipe } from 'src/app/pipes/time.pipe';
   imports: [
     IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle,
     IonCardContent, IonItem, IonLabel, IonText, IonSelect, IonSelectOption,
-    IonButton, IonIcon, TimePipe
+    IonButton, IonIcon, TimePipe, CommonModule
   ]
 })
 export class OrderComponent implements OnInit{
