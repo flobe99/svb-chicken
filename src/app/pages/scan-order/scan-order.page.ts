@@ -23,15 +23,9 @@ import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { createOutline, ellipsisVerticalOutline, close, filter, trashOutline } from 'ionicons/icons';
 
-// ZXing rein: nur BrowserQRCodeReader benutzen
-import {
-  BrowserQRCodeReader,
-  IScannerControls,
-  // Result
-} from '@zxing/browser';
-import {
-  Result
-} from '@zxing/library';
+import { BrowserQRCodeReader, IScannerControls} from '@zxing/browser';
+import { Result} from '@zxing/library';
+import { OrderComponent } from 'src/app/components/order/order.component';
 
 @Component({
   selector: 'app-scan-order',
@@ -67,7 +61,8 @@ import {
     IonCardContent,
     IonSelect,
     IonSelectOption,
-    IonText
+    IonText,
+    OrderComponent 
   ],
 })
 export class ScanOrderPage implements OnInit, OnDestroy {
@@ -77,7 +72,6 @@ export class ScanOrderPage implements OnInit, OnDestroy {
   errorMsg = '';
   manualCode = '';
 
-  // ZXing
   @ViewChild('videoEl', { static: false }) videoEl!: ElementRef<HTMLVideoElement>;
   private reader = new BrowserQRCodeReader();
   private controls?: IScannerControls;
@@ -110,17 +104,16 @@ export class ScanOrderPage implements OnInit, OnDestroy {
     this.teardown();
   }
 
-  // --- Web Scanner Start (ZXing) ---
   async startScan() {
     this.errorMsg = '';
     this.order = null;
 
     try {
-      // 1) Permission holen (iOS benötigt das, damit device labels gefüllt sind)
+      // Permission
       const tmp = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       tmp.getTracks().forEach(t => t.stop());
 
-      // 2) Kameras auflisten
+      // 2) list all available cameras
       const devices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
       if (!devices.length) {
         this.errorMsg = 'Keine Kamera gefunden.';
@@ -128,14 +121,13 @@ export class ScanOrderPage implements OnInit, OnDestroy {
       }
       this.cameras = devices;
 
-      // Rückkamera bevorzugen
+      // default camera 
       const back = devices.find(d => /back|rear|environment/i.test(d.label));
       this.selectedDeviceId = back?.deviceId ?? devices[0].deviceId;
 
-      // 3) Scan starten
+      // start scan
       await this.beginDecodeWithDevice(this.selectedDeviceId);
 
-      // Sichtbarkeits-/Seitenwechsel handhaben
       document.addEventListener('visibilitychange', this.handleVisibility, { passive: true });
       window.addEventListener('pagehide', this.cleanup, { passive: true });
     } catch (e: any) {
@@ -155,20 +147,15 @@ export class ScanOrderPage implements OnInit, OnDestroy {
       throw new Error('Videoelement nicht gefunden.');
     }
 
-    // iOS freundlich
     video.setAttribute('playsinline', 'true');
     video.setAttribute('muted', 'true');
 
     this.scanning = true;
 
-    // decodeFromVideoDevice kann je nach Version:
-    // - void zurückgeben (controls kommen im Callback), oder
-    // - IScannerControls zurückgeben.
     const ctrlOrVoid = await this.reader.decodeFromVideoDevice(
       deviceId,
       video,
       (result: Result | undefined, err: unknown, controls: IScannerControls) => {
-        // Controls beim ersten Callback sichern (Pflicht für void-Variante)
         if (!this.controls) {
           this.controls = controls;
         }
@@ -179,11 +166,9 @@ export class ScanOrderPage implements OnInit, OnDestroy {
             this.onDetected(text);
           });
         }
-        // Einzelne Frame-Errors ignorieren
       }
     );
 
-    // Falls die Methode in deiner Version direkt Controls zurückgibt:
     if (ctrlOrVoid && typeof (ctrlOrVoid as any).stop === 'function') {
       this.controls = ctrlOrVoid as IScannerControls;
     }
@@ -233,12 +218,9 @@ export class ScanOrderPage implements OnInit, OnDestroy {
   }
 
   private onDetected(content: string) {
-    // Nach erster Erkennung stoppen (Debounce)
     this.stopScan(false);
     this.handleScanned(content);
   }
-
-  // --- Bestehende Logik für Bestellung ---
 
   showManual() {
     if (!this.manualCode || !this.manualCode.trim()) {
@@ -259,10 +241,8 @@ export class ScanOrderPage implements OnInit, OnDestroy {
 
   private extractOrderId(content: string): string | null {
     if (!content) return null;
-    // URL-Muster: /order/123 (oder komplette URL mit .../order/123)
     const m = content.match(/\/order\/(\d+)/i);
     if (m && m[1]) return m[1];
-    // Fallback: erste Ziffernfolge
     const d = content.match(/\d+/);
     return d ? d[0] : null;
   }

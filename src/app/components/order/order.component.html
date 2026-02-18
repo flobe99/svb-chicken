@@ -1,0 +1,64 @@
+<ion-card *ngIf="order">
+  <ion-card-header>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: inline-flex; align-items: center; gap: 6px;">
+        <ion-card-title style="text-overflow: ellipsis;">
+          <ion-icon
+            style="cursor: pointer;"
+            name="ellipsis-vertical-outline"
+            (click)="openActionSheet(order)">
+          </ion-icon>
+          #{{ order.id }} {{ order.firstname }} {{ order.lastname }}
+        </ion-card-title>
+      </div>
+
+      <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">
+        {{ getStatusLabel(order.status) }}
+      </ion-button>
+    </div>
+
+    <ion-card-subtitle>
+      {{ (order?.date ?? '') | time: 'dayOfWeek' }}
+      {{ (order?.date ?? '') | time: 'date' }} um
+      {{ (order?.date ?? '') | time: 'time' }}
+    </ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <p><strong>Preis:</strong> {{ order.price.toFixed(2) }}€</p>
+
+    <!-- Hidden Select (wie bei dir) -->
+    <ion-select [value]="order.status"
+                #selectRefs
+                interface="popover"
+                style="display:none"
+                (ionChange)="onStatusChange($event, order)">
+      <ion-select-option value="CREATED">Erstellt</ion-select-option>
+      <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
+      <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
+      <ion-select-option value="COMPLETED">Fertig</ion-select-option>
+      <ion-select-option value="CANCELLED">Storniert</ion-select-option>
+    </ion-select>
+
+    <ion-item>
+      <ion-label><strong>Hähnchen:</strong></ion-label>
+      <ion-text>{{ order.chicken }}</ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label><strong>Nuggets:</strong></ion-label>
+      <ion-text>{{ order.nuggets }}</ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label><strong>Pommes:</strong></ion-label>
+      <ion-text>{{ order.fries }}</ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label><strong>Sonstiges:</strong></ion-label>
+      <ion-text *ngIf="order.miscellaneous">{{ order.miscellaneous }}</ion-text>
+      <ion-text *ngIf="!order.miscellaneous">-</ion-text>
+    </ion-item>
+  </ion-card-content>
+</ion-card>

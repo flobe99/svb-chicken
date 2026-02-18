@@ -41,8 +41,9 @@
       </ion-item>
     </div>
 
-
-    <ion-card *ngIf="order">
+    <app-order-view *ngIf="order" [order]="order"></app-order-view>
+    
+    <!-- <ion-card *ngIf="order">
       <ion-card-header>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="display: inline-flex; align-items: center; gap: 6px;">
@@ -92,6 +93,6 @@
           <ion-text *ngIf="!order.miscellaneous">-</ion-text>
         </ion-item>
       </ion-card-content>
-    </ion-card>
+    </ion-card> -->
   </div>
 </ion-content>
