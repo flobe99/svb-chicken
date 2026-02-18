@@ -26,7 +26,19 @@
       <ion-note color="danger">{{ errorMsg }}</ion-note>
     </div>
 
-    <div id="scanner" *ngIf="scanning"></div>
+    <!-- Scanner-Bereich -->
+    <div *ngIf="scanning" class="scanner">
+      <video #videoEl autoplay playsinline muted></video>
+
+      <ion-item *ngIf="cameras.length > 1">
+        <ion-label>Kamera</ion-label>
+        <ion-select interface="action-sheet" [value]="selectedDeviceId" (ionChange)="onCameraChange($event)">
+          <ion-select-option *ngFor="let c of cameras" [value]="c.deviceId">
+            {{ c.label || 'Kamera' }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
 
     <ion-card *ngIf="order">
       <ion-card-header>
@@ -44,13 +56,8 @@
           </ion-button>
         </div>
         <ion-card-subtitle>
-          {{ (order?.date ?? '') | time: 'dayOfWeek' }} {{ (order?.date ?? '') | time: 'date' }} um {{ (order?.date ??
-          '') |
-          time: 'time' }}
+          {{ (order?.date ?? '') | time: 'dayOfWeek' }} {{ (order?.date ?? '') | time: 'date' }} um {{ (order?.date ?? '') | time: 'time' }}
         </ion-card-subtitle>
-
-        <!-- <ion-button class="chip-top-right" outline="true" (click)="openSelect(order)">{{ getStatusLabel(order.status)
-            }}</ion-button> -->
       </ion-card-header>
 
       <ion-card-content>
@@ -64,6 +71,7 @@
           <ion-select-option value="COMPLETED">Fertig</ion-select-option>
           <ion-select-option value="CANCELLED">Storniert</ion-select-option>
         </ion-select>
+
         <ion-item>
           <ion-label><strong>Hähnchen:</strong></ion-label>
           <ion-text>{{ order.chicken }}</ion-text>

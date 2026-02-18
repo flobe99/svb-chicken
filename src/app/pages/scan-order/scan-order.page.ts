@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -13,6 +13,7 @@ import {
   IonSelectOption,
   IonText,
 } from '@ionic/angular/standalone';
+
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { TimePipe } from 'src/app/pipes/time.pipe';
 import { OrderService } from 'src/app/services/Order.Service';
@@ -21,6 +22,16 @@ import { StorageService } from 'src/app/services/storage.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { createOutline, ellipsisVerticalOutline, close, filter, trashOutline } from 'ionicons/icons';
+
+// ZXing rein: nur BrowserQRCodeReader benutzen
+import {
+  BrowserQRCodeReader,
+  IScannerControls,
+  // Result
+} from '@zxing/browser';
+import {
+  Result
+} from '@zxing/library';
 
 @Component({
   selector: 'app-scan-order',
@@ -59,18 +70,19 @@ import { createOutline, ellipsisVerticalOutline, close, filter, trashOutline } f
     IonText
   ],
 })
-export class ScanOrderPage implements OnInit {
+export class ScanOrderPage implements OnInit, OnDestroy {
 
   scanning = false;
   order: OrderChicken | null = null;
   errorMsg = '';
   manualCode = '';
-  // Web fallback scanner state
-  private videoStream: MediaStream | null = null;
-  private canvasEl: HTMLCanvasElement | null = null;
-  private canvasCtx: CanvasRenderingContext2D | null = null;
-  private scanActive = false;
-  private _webScanRaf: number | null = null;
+
+  // ZXing
+  @ViewChild('videoEl', { static: false }) videoEl!: ElementRef<HTMLVideoElement>;
+  private reader = new BrowserQRCodeReader();
+  private controls?: IScannerControls;
+  cameras: MediaDeviceInfo[] = [];
+  selectedDeviceId: string | null = null;
 
   @ViewChild('selectRefs', { static: false }) selectRefs: any;
 
@@ -80,7 +92,8 @@ export class ScanOrderPage implements OnInit {
     private router: Router,
     private actionSheetController: ActionSheetController,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private ngZone: NgZone,
   ) {
     addIcons({
       filter,
@@ -91,158 +104,141 @@ export class ScanOrderPage implements OnInit {
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   ngOnDestroy() {
+    this.teardown();
+  }
+
+  // --- Web Scanner Start (ZXing) ---
+  async startScan() {
+    this.errorMsg = '';
+    this.order = null;
+
+    try {
+      // 1) Permission holen (iOS benötigt das, damit device labels gefüllt sind)
+      const tmp = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      tmp.getTracks().forEach(t => t.stop());
+
+      // 2) Kameras auflisten
+      const devices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
+      if (!devices.length) {
+        this.errorMsg = 'Keine Kamera gefunden.';
+        return;
+      }
+      this.cameras = devices;
+
+      // Rückkamera bevorzugen
+      const back = devices.find(d => /back|rear|environment/i.test(d.label));
+      this.selectedDeviceId = back?.deviceId ?? devices[0].deviceId;
+
+      // 3) Scan starten
+      await this.beginDecodeWithDevice(this.selectedDeviceId);
+
+      // Sichtbarkeits-/Seitenwechsel handhaben
+      document.addEventListener('visibilitychange', this.handleVisibility, { passive: true });
+      window.addEventListener('pagehide', this.cleanup, { passive: true });
+    } catch (e: any) {
+      console.error('Scan-Start fehlgeschlagen', e);
+      this.errorMsg = e?.message ?? 'Kamera konnte nicht geöffnet werden.';
+      this.scanning = false;
+    }
+  }
+
+  private async beginDecodeWithDevice(deviceId: string | null) {
+    if (!deviceId) {
+      throw new Error('Keine Kamera-ID verfügbar.');
+    }
+
+    const video = this.videoEl?.nativeElement;
+    if (!video) {
+      throw new Error('Videoelement nicht gefunden.');
+    }
+
+    // iOS freundlich
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('muted', 'true');
+
+    this.scanning = true;
+
+    // decodeFromVideoDevice kann je nach Version:
+    // - void zurückgeben (controls kommen im Callback), oder
+    // - IScannerControls zurückgeben.
+    const ctrlOrVoid = await this.reader.decodeFromVideoDevice(
+      deviceId,
+      video,
+      (result: Result | undefined, err: unknown, controls: IScannerControls) => {
+        // Controls beim ersten Callback sichern (Pflicht für void-Variante)
+        if (!this.controls) {
+          this.controls = controls;
+        }
+
+        if (result) {
+          this.ngZone.run(() => {
+            const text = result.getText();
+            this.onDetected(text);
+          });
+        }
+        // Einzelne Frame-Errors ignorieren
+      }
+    );
+
+    // Falls die Methode in deiner Version direkt Controls zurückgibt:
+    if (ctrlOrVoid && typeof (ctrlOrVoid as any).stop === 'function') {
+      this.controls = ctrlOrVoid as IScannerControls;
+    }
+  }
+
+  onCameraChange(event: any) {
+    const id = event.detail?.value as string;
+    if (!id) return;
+    this.switchCamera(id);
+  }
+
+  private async switchCamera(deviceId: string) {
+    try {
+      this.stopScan(false);
+      await this.beginDecodeWithDevice(deviceId);
+      this.selectedDeviceId = deviceId;
+      this.scanning = true;
+    } catch (e: any) {
+      console.error('Kamerawechsel fehlgeschlagen', e);
+      this.errorMsg = e?.message ?? 'Kamerawechsel fehlgeschlagen.';
+    }
+  }
+
+  stopScan(hideMsg = true) {
+    if (hideMsg) this.errorMsg = '';
+    if (this.controls) {
+      this.controls.stop();
+      this.controls = undefined;
+    }
+    this.scanning = false;
+  }
+
+  private handleVisibility = () => {
+    if (document.hidden) {
+      this.stopScan();
+    }
+  };
+
+  private cleanup = () => {
+    this.stopScan();
+  };
+
+  private teardown() {
+    document.removeEventListener('visibilitychange', this.handleVisibility);
+    window.removeEventListener('pagehide', this.cleanup);
     this.stopScan();
   }
 
-  async startScan() {
-    this.errorMsg = '';
-    try {
-      const { BarcodeScanner } = await import('@capacitor-community/barcode-scanner');
-      const permission = await BarcodeScanner.checkPermission({ force: true });
-      if (permission && permission.granted === false) {
-        this.errorMsg = 'Kamerazugriff verweigert';
-        return;
-      }
-
-      this.scanning = true;
-      // Some plugin versions require hiding the webview background so the
-      // native camera preview becomes visible. Try to prepare and hide background.
-      try {
-        if ((BarcodeScanner as any).prepare) {
-          await (BarcodeScanner as any).prepare();
-        }
-        if ((BarcodeScanner as any).hideBackground) {
-          await (BarcodeScanner as any).hideBackground();
-        }
-      } catch (e) {
-        console.debug('hideBackground/prepare not available or failed', e);
-      }
-
-      let result: any = null;
-      try {
-        result = await BarcodeScanner.startScan();
-      } catch (e) {
-        // Plugin failed at runtime (e.g. running in browser) -> fallback to web scanner
-        console.debug('Capacitor scanner start failed, falling back to web scanner', e);
-        await this.startWebScan();
-        return;
-      }
-      this.scanning = false;
-
-      if (result && (result as any).hasContent) {
-        const content = (result as any).content || (result as any).text || '';
-        this.handleScanned(content);
-      } else {
-        this.errorMsg = 'Kein QR-Code erkannt.';
-      }
-    } catch (e) {
-      console.error('Scan Fehler (plugin import)', e);
-      // If plugin import fails (missing in package.json), fall back to web scanner
-      try {
-        await this.startWebScan();
-      } catch (we) {
-        console.error('Web scanner start failed', we);
-        this.errorMsg = 'Scanner nicht verfügbar. Bitte manuell eingeben.';
-        this.scanning = false;
-      }
-    }
+  private onDetected(content: string) {
+    // Nach erster Erkennung stoppen (Debounce)
+    this.stopScan(false);
+    this.handleScanned(content);
   }
 
-  stopScan() {
-    this.scanning = false;
-    (async () => {
-      try {
-        const mod = await import('@capacitor-community/barcode-scanner');
-        if (mod && (mod as any).BarcodeScanner && (mod as any).BarcodeScanner.stopScan) {
-          await (mod as any).BarcodeScanner.stopScan();
-          if ((mod as any).BarcodeScanner.showBackground) {
-            try { await (mod as any).BarcodeScanner.showBackground(); } catch { /* ignore */ }
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
-    })();
-    // also stop web fallback if running
-    this.stopWebScan();
-  }
-
-  private async startWebScan() {
-    if (!('mediaDevices' in navigator) || !navigator.mediaDevices.getUserMedia) {
-      throw new Error('getUserMedia not supported');
-    }
-
-    this.errorMsg = '';
-    this.scanning = true;
-    const container = document.getElementById('scanner');
-    if (!container) throw new Error('Scanner container not found');
-
-    // create video element
-    const video = document.createElement('video');
-    video.setAttribute('playsinline', 'true');
-    video.style.width = '100%';
-    video.style.height = 'auto';
-    container.innerHTML = '';
-    container.appendChild(video);
-
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    this.videoStream = stream;
-    video.srcObject = stream;
-    await video.play();
-
-    // create canvas for scanning
-    const canvas = document.createElement('canvas');
-    this.canvasEl = canvas;
-    this.canvasCtx = canvas.getContext('2d');
-    this.scanActive = true;
-
-    const jsqrMod = await import('jsqr');
-    const jsQR = (jsqrMod && (jsqrMod as any).default) || jsqrMod;
-
-    const tick = async () => {
-      if (!this.scanActive) return;
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        this.canvasCtx!.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = this.canvasCtx!.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-        if (code && code.data) {
-          this.scanActive = false;
-          this.stopWebScan();
-          this.handleScanned(code.data);
-          return;
-        }
-      }
-      this._webScanRaf = requestAnimationFrame(tick);
-    };
-
-    tick();
-  }
-
-  private stopWebScan() {
-    this.scanActive = false;
-    if (this._webScanRaf) {
-      cancelAnimationFrame(this._webScanRaf);
-      this._webScanRaf = null;
-    }
-    if (this.videoStream) {
-      this.videoStream.getTracks().forEach(t => t.stop());
-      this.videoStream = null;
-    }
-    if (this.canvasEl && this.canvasEl.parentElement) {
-      // leave canvas removed
-      this.canvasEl.remove();
-      this.canvasEl = null;
-      this.canvasCtx = null;
-    }
-    const container = document.getElementById('scanner');
-    if (container) container.innerHTML = '';
-    this.scanning = false;
-  }
+  // --- Bestehende Logik für Bestellung ---
 
   showManual() {
     if (!this.manualCode || !this.manualCode.trim()) {
@@ -263,10 +259,10 @@ export class ScanOrderPage implements OnInit {
 
   private extractOrderId(content: string): string | null {
     if (!content) return null;
-    // If the QR contains a URL like /order/123 or full URL
-    const m = content.match(/\/order\/(\d+)/);
+    // URL-Muster: /order/123 (oder komplette URL mit .../order/123)
+    const m = content.match(/\/order\/(\d+)/i);
     if (m && m[1]) return m[1];
-    // If it's just digits
+    // Fallback: erste Ziffernfolge
     const d = content.match(/\d+/);
     return d ? d[0] : null;
   }
@@ -357,6 +353,7 @@ export class ScanOrderPage implements OnInit {
 
     await alert.present();
   }
+
   openSelect(order: OrderChicken) {
     if (this.selectRefs) {
       try {
@@ -407,6 +404,5 @@ export class ScanOrderPage implements OnInit {
         }
       });
     }
-    // this.applyFilter();
   }
 }
