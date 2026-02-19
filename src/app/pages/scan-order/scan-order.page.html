@@ -18,7 +18,7 @@
 
     <ion-item>
       <ion-label position="floating">Bestell ID</ion-label>
-      <ion-input [(ngModel)]="manualCode" placeholder="123"></ion-input>
+      <ion-input [(ngModel)]="manualCode" placeholder="123" (ngModelChange)="showManual()"></ion-input>
       <ion-button slot="end" (click)="showManual()">Anzeigen</ion-button>
     </ion-item>
 
@@ -42,7 +42,7 @@
     </div>
 
     <app-order-view *ngIf="order" [order]="order"></app-order-view>
-    
+
     <!-- <ion-card *ngIf="order">
       <ion-card-header>
         <div style="display: flex; justify-content: space-between; align-items: center;">
