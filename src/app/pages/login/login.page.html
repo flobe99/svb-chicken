@@ -17,11 +17,13 @@
           Login
         </ion-title>
         <ion-item>
-          <ion-input required label="Username" [(ngModel)]="username" name="username"
+          <ion-label position="stacked">Username</ion-label>
+          <ion-input required [(ngModel)]="username" placeholder="Username" name="username"
             autocomplete="given-name"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-input type="password" label="Password" [(ngModel)]="password" name="password"
+          <ion-label position="stacked">Password</ion-label>
+          <ion-input type="password" [(ngModel)]="password" placeholder="Password" name="password"
             autocomplete="current-password">
             <ion-input-password-toggle slot="end"></ion-input-password-toggle>
           </ion-input>
