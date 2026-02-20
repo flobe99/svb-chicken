@@ -11,6 +11,7 @@ export class TimePipe implements PipeTransform {
     }
 
     public get(value: string | Date, attribute?: string): string {
+        if (!value) return '';
         value = typeof value === "string" ? value : value.toISOString();
         const date = new Date(value);
 

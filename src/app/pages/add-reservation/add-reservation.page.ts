@@ -1,35 +1,40 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
+  IonButton,
   IonButtons,
-  IonMenuButton,
   IonCard,
+  IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
+  IonCol,
+  IonContent,
+  IonDatetime,
+  IonDatetimeButton,
+  IonGrid,
+  IonHeader,
+  IonInput,
   IonItem,
   IonLabel,
-  IonInput,
+  IonMenuButton,
+  IonModal,
+  IonRow,
   IonSelect,
   IonSelectOption,
-  IonDatetime,
-  IonButton,
-  ToastController,
+  IonTitle,
+  IonToolbar,
   LoadingController,
-  IonDatetimeButton,
-  IonModal
+  ModalController,
+  ToastController,
 } from '@ionic/angular/standalone';
+import { BackComponent } from 'src/app/components/back/back.component';
+import { ReservationDetailsModal } from 'src/app/modals/reservation-details.modal';
+import { Slot } from 'src/app/models/slot.model';
 import { Table } from 'src/app/models/Table.model';
 import { TableReservation } from 'src/app/models/TableReservation.model';
 import { OrderService } from 'src/app/services/Order.Service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Slot } from 'src/app/models/slot.model';
-import { BackComponent } from 'src/app/components/back/back.component';
 
 @Component({
   selector: 'app-add-reservation',
@@ -58,7 +63,10 @@ import { BackComponent } from 'src/app/components/back/back.component';
     IonButton,
     CommonModule,
     FormsModule,
-    BackComponent
+    BackComponent,
+    IonGrid,
+    IonRow,
+    IonCol
   ]
 })
 export class AddReservationPage implements OnInit {
@@ -73,13 +81,19 @@ export class AddReservationPage implements OnInit {
   reservationId: number | null = null;
   isEditMode: boolean = false;
   tableReservations: TableReservation[] = [];
+  //////////////////////////////
+  tablesByName: Map<string, TableReservation[]> = new Map();
+  public _selectedSlot: Slot | null = null;
+  filteredReservations: TableReservation[] = [];
+  selectedSlotId: number | null = null;
 
   constructor(
     private orderService: OrderService,
     private toastController: ToastController,
     private loadingController: LoadingController,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit() {
@@ -93,6 +107,58 @@ export class AddReservationPage implements OnInit {
     this.loadTables();
     this.loadSlots();
     this.loadReservations();
+    if(!this.isEditMode)
+    {
+      this.setDefaultTimes();
+    }
+    this.init()
+  }
+
+  init() {
+    this.orderService.getTables().subscribe((tables) => {
+      this.tables = tables ?? [];
+      this.groupReservationsByTable();
+    });
+
+    this.orderService.getTableReservations().subscribe((reservations) => {
+      this.tableReservations = reservations!;
+      this.applyFilter();
+    });
+    this.orderService.getSlots().subscribe((slots) => {
+      this.slots = slots;
+      if(!this.selectedSlotId){
+        this._selectedSlot = slots.length > 0 ? slots[0] : null;
+        this.selectedSlotId = this._selectedSlot?.id ?? null;
+      }
+      else{
+        this._selectedSlot = slots.find((s) => s.id === this.selectedSlotId) ?? null;
+      }
+
+      if (this._selectedSlot) {
+        this.generateIntervalsForSlot(this._selectedSlot);
+      }
+      this.applyFilter();
+    });
+  }
+
+  private setDefaultTimes() {
+    this.date = this.roundToNextQuarterHour(new Date());
+    this.startTime = this.roundToNextQuarterHour(new Date());
+    this.endTime = this.roundToNextQuarterHour(new Date(Date.now() + 60 * 60 * 1000));
+  }
+
+  roundToNextQuarterHour(date: Date): string {
+    const local = new Date(date.getTime());
+    const minutes = local.getMinutes();
+    const remainder = 15 - (minutes % 15);
+
+    local.setMinutes(minutes + remainder);
+    local.setSeconds(0);
+    local.setMilliseconds(0);
+
+    const tzOffset = local.getTimezoneOffset() * 60000;
+    const localTime = new Date(local.getTime() - tzOffset);
+    return localTime.toISOString().slice(0, 16);
   }
 
   loadReservationData() {
@@ -105,6 +171,7 @@ export class AddReservationPage implements OnInit {
         if (reservation) {
           this.customerName = reservation.customer_name;
           this.seats = reservation.seats;
+          this.date = reservation.start.split('T')[0];
           this.startTime = reservation.start;
           this.endTime = reservation.end;
           this.selectedTable = reservation.table?.id || null;
@@ -151,25 +218,70 @@ export class AddReservationPage implements OnInit {
     );
   }
 
-  onStartTimeChanged() {
-    if (!this.startTime) return;
+onStartTimeChanged() {
+  if (!this.startTime) return;
 
-    const [datePart, timePart] = this.startTime.split('T');
-    const [hourStr, minuteStr] = timePart.split(':');
+  // Datum übernehmen
+  this.date = this.startTime.split("T")[0];
 
-    let hour = parseInt(hourStr, 10);
-    const minute = parseInt(minuteStr, 10);
+  // Endzeit +1h setzen
+  const [datePart, timePart] = this.startTime.split('T');
+  const [h, m] = timePart.split(':').map(n => parseInt(n));
+  const endHour = (h + 1) % 24;
+  this.endTime = `${datePart}T${endHour.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
 
-    hour = (hour + 1) % 24;
+  this.updateSelectedSlot();
 
-    const newHour = hour.toString().padStart(2, '0');
-    const newMinute = minute.toString().padStart(2, '0');
-
-    this.endTime = `${datePart}T${newHour}:${newMinute}`;
+  if (this._selectedSlot) {
+    this.generateIntervalsForSlot(this._selectedSlot);
   }
 
+  this.applyFilter();
+}
+
+onDateChanged() {
+  if (!this.date) return;
+
+  const [h, m] = this.startTime.split("T")[1].split(":");
+  this.startTime = `${this.date}T${h}:${m}`;
+  this.endTime   = `${this.date}T${(parseInt(h)+1).toString().padStart(2,'0')}:${m}`;
+
+  this.updateSelectedSlot();
+
+  if (this._selectedSlot) {
+    this.generateIntervalsForSlot(this._selectedSlot);
+  }
+
+  this.applyFilter();
+}
+
+private updateSelectedSlot() {
+
+  if (!this.startTime) return;
+
+  const startDate = this.startTime.split("T")[0];
+  const startMs   = new Date(this.startTime).getTime();
+
+  const matchingSlot = this.slots.find(slot => {
+
+    const slotDate = new Date(slot.date).toISOString().split("T")[0];
+
+    if (slotDate !== startDate) return false;
+
+    const slotStart = new Date(slot.range_start).getTime();
+    const slotEnd   = new Date(slot.range_end).getTime();
+
+    return startMs >= slotStart && startMs < slotEnd;
+  });
+
+  if (matchingSlot) {
+    this._selectedSlot = matchingSlot;
+    this.selectedSlotId = matchingSlot.id!;
+  }
+}
 
   async submitReservation() {
+    this.onDateChanged();
     if (!this.validateForm()) {
       return;
     }
@@ -276,7 +388,7 @@ export class AddReservationPage implements OnInit {
     const isWithinSlot = this.slots.some((slot) => {
       const slotStart = new Date(slot.range_start).getTime();
       const slotEnd = new Date(slot.range_end).getTime();
-      const startTime = startDate.getTime();
+      const startTime = new Date(this.startTime).getTime();
       return startTime >= slotStart && startTime < slotEnd;
     });
 
@@ -321,5 +433,139 @@ export class AddReservationPage implements OnInit {
     });
     await toast.present();
   }
+
+// #############################################################
+
+  getTableNames(): string[] {
+    return Array.from(this.tablesByName.keys()).sort();
+  }
+
+
+getReservation(tableName: string, interval: string): TableReservation | null {
+  const reservations = this.tablesByName.get(tableName) || [];
+  if (!this._selectedSlot) return null;
+
+  const selectedDate = this.getSelectedDate();
+  const [h, m] = interval.split(':').map(Number);
+
+  const intervalStart = new Date(`${selectedDate}T${interval}:00`);
+  const intervalEnd   = new Date(intervalStart.getTime() + 15 * 60000);
+
+  return (
+    reservations.find(r => {
+      const rStart = new Date(r.start);
+      const rEnd   = new Date(r.end);
+      return rStart < intervalEnd && rEnd > intervalStart;
+    }) || null
+  );
+}
+
+
+  async openReservationModal(reservation: TableReservation) {
+    const modal = await this.modalCtrl.create({
+      component: ReservationDetailsModal,
+      componentProps: {
+        reservation: reservation
+      }
+    });
+
+    await modal.present();
+  }
+
+  onCellClick(tableName: string, interval: string) {
+    const reservation = this.getReservation(tableName, interval);
+
+    if (!reservation) {
+      console.log("Frei – neue Reservierung möglich");
+      return;
+    }
+
+    this.openReservationModal(reservation);
+  }
+
+
+isReserved(tableName: string, interval: string): boolean {
+  const reservations = this.tablesByName.get(tableName) || [];
+  if (!this._selectedSlot) return false;
+
+  const selectedDate = this.getSelectedDate();
+  const [h, m] = interval.split(':').map(Number);
+
+  const intervalStart = new Date(`${selectedDate}T${interval}:00`);
+  const intervalEnd   = new Date(intervalStart.getTime() + 15 * 60000);
+
+  return reservations.some(r => {
+    const rStart = new Date(r.start);
+    const rEnd   = new Date(r.end);
+    return rStart < intervalEnd && rEnd > intervalStart;
+  });
+}
+
+intervals: string[] = [];
+generateIntervalsForSlot(slot: Slot) {
+  this.intervals = [];
+
+  const start = new Date(slot.range_start);
+  const end = new Date(slot.range_end);
+
+  let current = new Date(start);
+
+  while (current <= end) {
+    this.intervals.push(
+      current.toTimeString().substring(0, 5)
+    );
+    current = new Date(current.getTime() + 15 * 60000);
+  }
+}
+
+  groupReservationsByTable() {
+    this.tablesByName.clear();
+
+    this.tables.forEach(table => {
+      this.tablesByName.set(table.name, []);
+    });
+
+    this.filteredReservations.forEach((reservation) => {
+      const tableName = reservation.table?.name || 'Unbekannt';
+
+      if (!this.tablesByName.has(tableName)) {
+        this.tablesByName.set(tableName, []);
+      }
+
+      this.tablesByName.get(tableName)?.push(reservation);
+    });
+  }
+
+  private getSelectedDate(): string {
+  const src = this.startTime;
+  return src.split('T')[0];
+}
+
+applyFilter() {
+  const all = this.tableReservations ?? [];
+
+  const slot = this.slots.find(s => s.id === this.selectedSlotId) ?? null;
+
+  const selectedDate = this.getSelectedDate();
+
+  let filtered = all.filter(r => r.start.startsWith(selectedDate));
+
+  if (slot) {
+    const slotStartTime = new Date(slot.range_start);
+    const slotEndTime   = new Date(slot.range_end);
+
+    const slotStart = new Date(`${selectedDate}T${slotStartTime.toTimeString().slice(0,5)}`).getTime();
+    const slotEnd   = new Date(`${selectedDate}T${slotEndTime.toTimeString().slice(0,5)}`).getTime();
+
+    filtered = filtered.filter(r => {
+      const rStart = new Date(r.start).getTime();
+      const rEnd   = new Date(r.end).getTime();
+      return rStart < slotEnd && rEnd > slotStart;
+    });
+  }
+
+  this.filteredReservations = filtered;
+  this.groupReservationsByTable();
+}
 }
 

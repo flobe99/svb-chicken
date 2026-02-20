@@ -1,46 +1,47 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Location } from '@angular/common';
 import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonItem,
-  IonLabel,
-  IonInput,
   IonButton,
   IonButtons,
-  IonMenuButton,
-  IonDatetime,
-  IonTextarea,
-  IonPopover,
-  IonModal,
-  IonDatetimeButton,
-  IonIcon,
-  IonNote,
   IonCard,
+  IonContent,
+  IonDatetime,
+  IonDatetimeButton,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonMenuButton,
+  IonModal,
+  IonNote,
+  IonPopover,
+  IonSelectOption,
+  IonTextarea,
+  IonTitle,
+  IonToggle,
+  IonToolbar
 } from '@ionic/angular/standalone';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OrderChicken } from 'src/app/models/order.model';
-import { OrderService } from 'src/app/services/Order.Service';
 import { ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
-  fastFood,
-  settings,
-  mail,
   add,
+  fastFood,
   fastFoodOutline,
   informationCircleOutline,
+  mail,
+  settings,
 } from 'ionicons/icons';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
-import { HttpErrorResponse } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { OrderChicken } from 'src/app/models/order.model';
 import { Slot } from 'src/app/models/slot.model';
+import { Table } from 'src/app/models/Table.model';
 import { TimePipe } from 'src/app/pipes/time.pipe';
+import { OrderService } from 'src/app/services/Order.Service';
 
 
 @Component({
@@ -70,19 +71,23 @@ import { TimePipe } from 'src/app/pipes/time.pipe';
     RefreshComponent,
     IonNote,
     IonCard,
-    TimePipe
+    TimePipe,
+    IonToggle,
+    IonSelectOption
   ],
 })
 export class OrderPage implements OnInit {
   public edit = false;
-  // public dateValid: boolean = true;
   slots: Slot[] = [];
+  public isDriveIn:boolean = true;
 
   public dateErrorText = '';
   public chickenErrorText = '';
   public nuggetsErrorText = '';
   public friesErrorText = '';
   public editOrder: OrderChicken | null = null;
+  tables: Table[] = [];
+  selectedTable: number | null = null;
 
   public order: OrderChicken = new OrderChicken({
     firstname: '',
@@ -114,10 +119,12 @@ export class OrderPage implements OnInit {
   }
 
   ngOnInit() {
+    this.isDriveIn=true;
     this.init();
   }
 
   ionViewWillEnter() {
+    this.isDriveIn=true;
     this.init();
   }
 
@@ -149,6 +156,27 @@ export class OrderPage implements OnInit {
 
       this.validateOrder();
     });
+    this.loadTables();
+  }
+
+  loadTables() {
+    this.orderService.getTables().subscribe(
+      (tables) => {
+        this.tables = tables || [];
+      },
+      (error) => {
+        this.showToast('Fehler beim Laden der Tische');
+      }
+    );
+  }
+
+  async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 
   roundToNextQuarterHour(date: Date): string {

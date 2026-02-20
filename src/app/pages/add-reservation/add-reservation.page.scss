@@ -1,0 +1,73 @@
+.timeline-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.timeline-grid {
+  min-width: max-content;
+  width: 100%;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+.timeline-grid ion-row {
+  flex-wrap: nowrap !important;
+}
+
+.timeline-grid ion-col {
+  flex: 0 0 auto !important;
+  width: 55px;        
+  min-width: 55px;    
+  max-width: 55px;    
+  white-space: nowrap;
+}
+
+.header-row {
+  background: #f0f0f0;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+}
+
+.slot-header {
+  text-align: center;
+  border-left: 1px solid #ccc;
+  padding: 4px 6px;
+}
+
+.table-row {
+  height: 32px;
+}
+
+.table-name {
+  font-weight: bold;
+  background: #fafafa;
+  padding-left: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.free,
+.reserved {
+  border-left: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.free {
+  background: #e8ffe8;
+}
+
+.reserved {
+  background: #ffb3b3;
+  cursor: pointer;
+}
+
+.reserved-name {
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}

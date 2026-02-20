@@ -43,7 +43,7 @@ import {
   IonRow,
   IonCol
 } from '@ionic/angular/standalone';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { OrderService } from 'src/app/services/Order.Service';
 import { OrderChicken, OrderStatus } from 'src/app/models/order.model';
@@ -63,6 +63,7 @@ import {
   ToastController,
 } from '@ionic/angular';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Slot } from 'src/app/models/slot.model';
 
 @Component({
   selector: 'app-theke',
@@ -115,6 +116,8 @@ export class ThekePage implements OnInit {
   @ViewChildren('selectRefs') selectRefs!: QueryList<IonSelect>;
   @ViewChildren('selectRefsKanban') selectRefsKanban!: QueryList<IonSelect>;
 
+  slots: Slot[] = [];
+  slotDates: string[] = [];
   public connectedDropLists: string[] = [];
   public groupedOrders: { [key: string]: OrderChicken[] } = {};
   public filteredOrders: OrderChicken[] = [];
@@ -126,6 +129,7 @@ export class ThekePage implements OnInit {
     { key: 'READY_FOR_PICKUP', label: 'Abholbereit', state: true },
     { key: 'COMPLETED', label: 'Fertig', state: true },
   ];
+  
 
   // public status = "CREATED";
   constructor(
@@ -134,7 +138,8 @@ export class ThekePage implements OnInit {
     private router: Router,
     private actionSheetController: ActionSheetController,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private route: ActivatedRoute
   ) {
     addIcons({
       filter,
@@ -169,6 +174,15 @@ export class ThekePage implements OnInit {
     const savedFilter = await this.storageService.get('orderFilter');
     this.filter = stateFilter ?? savedFilter ?? {};
 
+    this.route.queryParams.subscribe(params => {
+      const id = params['id'];
+
+      if (id) {
+        this.filter = {};
+        this.filter.id = Number(id);
+      }
+    });
+
     await this.orderService.getOrders().subscribe((orders) => {
       this.orders = orders;
       this.applyFilter();
@@ -180,7 +194,23 @@ export class ThekePage implements OnInit {
         this.applyFilter();
       });
     });
+
+    this.orderService.getSlots().subscribe(
+      (slots) => {
+        this.slots = slots || [];
+        this.slotDates = Array.from(
+          new Set(this.slots.map(s => s.date))
+        );
+
+      }
+    );
   }
+
+  public isDateEnabled = (isoDateString: string): boolean => {
+    const day = isoDateString.split('T')[0];
+
+    return this.slotDates.includes(day);
+  };
 
   onViewModeChange() {
     this.storageService.set('viewMode', this.viewMode);
@@ -245,7 +275,7 @@ export class ThekePage implements OnInit {
     this.filteredOrders = this.orders
       .filter((order) => {
         return (
-          (!this.filter.id || order.id === this.filter.id) &&
+          (!this.filter.id || order.id === Number(this.filter.id)) &&
           (!this.filter.firstname ||
             order.firstname
               .toLowerCase()
@@ -287,6 +317,7 @@ export class ThekePage implements OnInit {
 
   hasActiveFilters(): boolean {
     return !!(
+      this.filter.id ||
       this.filter.firstname ||
       this.filter.lastname ||
       this.filter.date ||

@@ -26,7 +26,7 @@
 
     <h1>{{ _selectedSlot?.date! | time: 'dayOfWeek' }} {{ _selectedSlot?.date! | time: 'date' }}: {{ _selectedSlot?.range_start! | time: 'time' }} - {{ _selectedSlot?.range_end! | time: 'time' }}</h1>
 
-    <div class="timeline-scroll-wrapper">
+    <div class="timeline-scroll-wrapper" *ngIf="getTableNames().length">
       <ion-grid class="timeline-grid" *ngIf="_selectedSlot && intervals.length">
         <ion-row class="header-row">
           <ion-col>Tisch</ion-col>
@@ -50,6 +50,8 @@
         </ion-row>
       </ion-grid>
     </div>
-
+    <div *ngIf="!getTableNames().length">
+      <p>Keine Tische verfügbar</p>
+    </div>
   </div>
 </ion-content>

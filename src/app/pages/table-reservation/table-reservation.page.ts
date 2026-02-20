@@ -1,48 +1,48 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonItem,
-  IonLabel,
-  IonInput,
+  IonAccordion,
+  IonAccordionGroup,
   IonButton,
   IonButtons,
-  IonMenuButton,
-  IonDatetime,
-  IonTextarea,
-  IonPopover,
-  IonModal,
-  IonDatetimeButton,
-  IonIcon,
-  IonNote,
   IonCard,
+  IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
+  IonCol,
+  IonContent,
+  IonDatetime,
+  IonDatetimeButton,
+  IonGrid,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
   IonList,
+  IonMenuButton,
+  IonModal,
+  IonNote,
+  IonPopover,
+  IonRow,
   IonSegment,
   IonSegmentButton,
-  IonAccordionGroup,
-  IonAccordion,
-  IonCol,
-  IonRow,
-  IonGrid,
+  IonTextarea,
+  IonTitle,
+  IonToolbar,
   ModalController
 } from '@ionic/angular/standalone';
-import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
-import { TimePipe } from 'src/app/pipes/time.pipe';
-import { TableReservation } from 'src/app/models/TableReservation.model';
-import { OrderService } from 'src/app/services/Order.Service';
-import { Slot } from 'src/app/models/slot.model';
 import { addIcons } from 'ionicons';
 import { pencil, pencilOutline, pencilSharp } from 'ionicons/icons';
-import { Table } from 'src/app/models/Table.model';
+import { RefreshComponent } from 'src/app/components/refresh/refresh.component';
 import { ReservationDetailsModal } from 'src/app/modals/reservation-details.modal';
+import { Slot } from 'src/app/models/slot.model';
+import { Table } from 'src/app/models/Table.model';
+import { TableReservation } from 'src/app/models/TableReservation.model';
+import { TimePipe } from 'src/app/pipes/time.pipe';
+import { OrderService } from 'src/app/services/Order.Service';
 
 @Component({
   selector: 'app-table-reservation',
@@ -118,8 +118,14 @@ export class TableReservationPage implements OnInit {
     });
     this.orderService.getSlots().subscribe((slots) => {
       this.slots = slots;
-      this._selectedSlot = slots.length > 0 ? slots[0] : null;
-      this.selectedSlotId = this._selectedSlot?.id ?? null;
+      if(!this.selectedSlotId){
+        this._selectedSlot = slots.length > 0 ? slots[0] : null;
+        this.selectedSlotId = this._selectedSlot?.id ?? null;
+      }
+      else{
+        this._selectedSlot = slots.find((s) => s.id === this.selectedSlotId) ?? null;
+      }
+
       if (this._selectedSlot) {
         this.generateIntervalsForSlot(this._selectedSlot);
       }

@@ -10,7 +10,7 @@ export enum OrderStatus {
 }
 
 export class OrderChicken {
-    id?: number;
+    id: number;
     firstname: string;
     lastname: string;
     mail: string;
@@ -25,7 +25,7 @@ export class OrderChicken {
     checked_in_at: string;
 
     constructor(obj?: Partial<OrderChicken>) {
-        this.id = obj?.id;
+        this.id = obj?.id || 0; 
         this.firstname = obj?.firstname || '';
         this.lastname = obj?.lastname || '';
         this.mail = obj?.mail || '';

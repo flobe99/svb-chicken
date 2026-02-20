@@ -39,7 +39,7 @@
                 <ion-datetime-button datetime="start-{{i}}"></ion-datetime-button>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
-                    <ion-datetime firstDayOfWeek="1" locale="de-DE" id="start-{{i}}" presentation="time"
+                    <ion-datetime firstDayOfWeek="1" minuteValues="0,15,30,45" locale="de-DE" id="start-{{i}}" presentation="time"
                       [(ngModel)]="slot.range_start"></ion-datetime>
                   </ng-template>
                 </ion-modal>
@@ -49,14 +49,13 @@
                 <ion-datetime-button datetime="end-{{i}}"></ion-datetime-button>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
-                    <ion-datetime firstDayOfWeek="1" locale="de-DE" id="end-{{i}}" presentation="time"
+                    <ion-datetime firstDayOfWeek="1" minuteValues="0,15,30,45"locale="de-DE" id="end-{{i}}" presentation="time"
                       [(ngModel)]="slot.range_end"></ion-datetime>
                   </ng-template>
                 </ion-modal>
               </ion-item>
             </ion-card>
           </div>
-          <!-- <ion-icon name="add-circle-outline" slot="start"></ion-icon> -->
           <ion-row class="ion-justify-content-center ion-padding">
             <ion-button fill="clear" (click)="addSlot()" color="primary">
               <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
