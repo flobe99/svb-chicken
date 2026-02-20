@@ -34,6 +34,7 @@ import { ReservationDetailsModal } from 'src/app/modals/reservation-details.moda
 import { Slot } from 'src/app/models/slot.model';
 import { Table } from 'src/app/models/Table.model';
 import { TableReservation } from 'src/app/models/TableReservation.model';
+import { TimePipe } from 'src/app/pipes/time.pipe';
 import { OrderService } from 'src/app/services/Order.Service';
 
 @Component({
@@ -66,7 +67,8 @@ import { OrderService } from 'src/app/services/Order.Service';
     BackComponent,
     IonGrid,
     IonRow,
-    IonCol
+    IonCol,
+    TimePipe
   ]
 })
 export class AddReservationPage implements OnInit {
@@ -142,7 +144,7 @@ export class AddReservationPage implements OnInit {
   }
 
   private setDefaultTimes() {
-    this.date = this.roundToNextQuarterHour(new Date());
+    this.date = new Date().toISOString().split('T')[0];
     this.startTime = this.roundToNextQuarterHour(new Date());
     this.endTime = this.roundToNextQuarterHour(new Date(Date.now() + 60 * 60 * 1000));
   }
@@ -221,20 +223,19 @@ export class AddReservationPage implements OnInit {
 onStartTimeChanged() {
   if (!this.startTime) return;
 
-  // Datum übernehmen
-  this.date = this.startTime.split("T")[0];
+  const [, timePartRaw] = this.startTime.split("T");
+  const [hour, minute] = timePartRaw.split(":");
 
-  // Endzeit +1h setzen
-  const [datePart, timePart] = this.startTime.split('T');
-  const [h, m] = timePart.split(':').map(n => parseInt(n));
-  const endHour = (h + 1) % 24;
-  this.endTime = `${datePart}T${endHour.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+  const selectedDate = this.date;
+
+  this.startTime = `${selectedDate}T${hour}:${minute}`;
+  
+  let endHour = (parseInt(hour) + 1).toString().padStart(2, "0");
+  endHour = endHour === "24" ? "00" : endHour;
+  this.endTime = `${selectedDate}T${endHour}:${minute}`;
 
   this.updateSelectedSlot();
-
-  if (this._selectedSlot) {
-    this.generateIntervalsForSlot(this._selectedSlot);
-  }
+  if (this._selectedSlot) this.generateIntervalsForSlot(this._selectedSlot);
 
   this.applyFilter();
 }
@@ -242,15 +243,16 @@ onStartTimeChanged() {
 onDateChanged() {
   if (!this.date) return;
 
-  const [h, m] = this.startTime.split("T")[1].split(":");
-  this.startTime = `${this.date}T${h}:${m}`;
-  this.endTime   = `${this.date}T${(parseInt(h)+1).toString().padStart(2,'0')}:${m}`;
+  const selected = this.date;
+
+  const time = this.startTime?.split("T")[1] ?? "17:00:00.00";
+  const endTime = this.endTime?.split("T")[1] ?? "18:00:00";
+
+  this.startTime = `${selected}T${time}`;
+  this.endTime   = `${selected}T${endTime}`;
 
   this.updateSelectedSlot();
-
-  if (this._selectedSlot) {
-    this.generateIntervalsForSlot(this._selectedSlot);
-  }
+  if (this._selectedSlot) this.generateIntervalsForSlot(this._selectedSlot);
 
   this.applyFilter();
 }
