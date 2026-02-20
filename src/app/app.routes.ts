@@ -15,11 +15,13 @@ export const routes: Routes = [
   },
   {
     path: 'order',
-    loadComponent: () => import('./pages/order/order.page').then(m => m.OrderPage)
+    loadComponent: () => import('./pages/order/order.page').then(m => m.OrderPage),
+    canActivate: [loginGuard]
   },
   {
     path: 'order/:orderId',
-    loadComponent: () => import('./pages/order/order.page').then(m => m.OrderPage)
+    loadComponent: () => import('./pages/order/order.page').then(m => m.OrderPage),
+    canActivate: [loginGuard]
   },
   {
     path: 'order-overview',
@@ -38,15 +40,18 @@ export const routes: Routes = [
   },
   {
     path: 'add-reservation',
-    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then(m => m.AddReservationPage)
+    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then(m => m.AddReservationPage),
+    canActivate: [loginGuard]
   },
   {
     path: 'add-reservation/:id',
-    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then(m => m.AddReservationPage)
+    loadComponent: () => import('./pages/add-reservation/add-reservation.page').then(m => m.AddReservationPage),
+    canActivate: [loginGuard]
   },
   {
     path: 'table-reservation',
-    loadComponent: () => import('./pages/table-reservation/table-reservation.page').then(m => m.TableReservationPage)
+    loadComponent: () => import('./pages/table-reservation/table-reservation.page').then(m => m.TableReservationPage),
+    canActivate: [loginGuard]
   },
   {
     path: 'theke',
@@ -60,7 +65,8 @@ export const routes: Routes = [
   },
   {
     path: 'scan-order',
-    loadComponent: () => import('./pages/scan-order/scan-order.page').then(m => m.ScanOrderPage)
+    loadComponent: () => import('./pages/scan-order/scan-order.page').then(m => m.ScanOrderPage),
+    canActivate: [loginGuard]
   },
   {
     path: 'settings',
