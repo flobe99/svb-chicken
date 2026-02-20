@@ -254,6 +254,7 @@ export class ScanOrderPage implements OnInit, OnDestroy {
       next: (o) => {
         if (o && (o as any).id) {
           this.order = o;
+          this.manualCode = this.order.id.toString();
         } else {
           this.errorMsg = 'Bestellung nicht gefunden.';
         }

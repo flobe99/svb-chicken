@@ -26,15 +26,15 @@
         <div class="ion-padding" slot="content">
           <ion-list>
             <ion-item>
-              <ion-input [(ngModel)]="filter.id" placeholder="Bestell id" (ionChange)="applyFilter()"
+              <ion-input [(ngModel)]="filter.id" placeholder="Bestell id" (ngModelChange)="applyFilter()"
                 [clearInput]="true"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ionChange)="applyFilter()"
+              <ion-input [(ngModel)]="filter.firstname" placeholder="Vorname" (ngModelChange)="applyFilter()"
                 [clearInput]="true"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ionChange)="applyFilter()"
+              <ion-input [(ngModel)]="filter.lastname" placeholder="Nachname" (ngModelChange)="applyFilter()"
                 [clearInput]="true"></ion-input>
             </ion-item>
 
@@ -57,16 +57,16 @@
             </ion-item> -->
 
             <ion-item>
-              <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen" (ionChange)="applyFilter()"
+              <ion-input type="number" [(ngModel)]="filter.chicken" placeholder="Hähnchen" (ngModelChange)="applyFilter()"
                 [clearInput]="true"></ion-input>
-              <ion-input type="number" [(ngModel)]="filter.nuggets" placeholder="Nuggets" (ionChange)="applyFilter()"
+              <ion-input type="number" [(ngModel)]="filter.nuggets" placeholder="Nuggets" (ngModelChange)="applyFilter()"
                 [clearInput]="true"></ion-input>
-              <ion-input type="number" [(ngModel)]="filter.fries" placeholder="Pommes" (ionChange)="applyFilter()"
+              <ion-input type="number" [(ngModel)]="filter.fries" placeholder="Pommes" (ngModelChange)="applyFilter()"
                 [clearInput]="true"></ion-input>
             </ion-item>
 
             <ion-item>
-              <ion-select [(ngModel)]="filter.status" multiple="true" placeholder="Status" (ionChange)="applyFilter()">
+              <ion-select [(ngModel)]="filter.status" multiple="true" placeholder="Status" (ngModelChange)="applyFilter()">
                 <ion-select-option value="CREATED">Erstellt</ion-select-option>
                 <ion-select-option value="CHECKED_IN">DriveIn</ion-select-option>
                 <ion-select-option value="READY_FOR_PICKUP">Abholbereit</ion-select-option>
@@ -80,6 +80,10 @@
     </ion-accordion-group>
 
     <div *ngIf="hasActiveFilters()" class="filter-batch ion-padding-start ion-padding-bottom">
+      <ion-chip *ngIf="filter.id">
+        <ion-label>Id: {{ filter.id }}</ion-label>
+        <ion-icon name="close" (click)="removeFilter('id')"></ion-icon>
+      </ion-chip>
       <ion-chip *ngIf="filter.firstname">
         <ion-label>Vorname: {{ filter.firstname }}</ion-label>
         <ion-icon name="close" (click)="removeFilter('firstname')"></ion-icon>
