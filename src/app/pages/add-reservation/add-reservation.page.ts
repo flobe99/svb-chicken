@@ -280,6 +280,9 @@ private updateSelectedSlot() {
     this._selectedSlot = matchingSlot;
     this.selectedSlotId = matchingSlot.id!;
   }
+  else{
+    this._selectedSlot = null;
+  }
 }
 
   async submitReservation() {

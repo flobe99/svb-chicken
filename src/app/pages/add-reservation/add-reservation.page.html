@@ -94,7 +94,7 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-card>
+    <ion-card *ngIf="_selectedSlot">
       <ion-card-header>
         <ion-card-title>Aktuelle Reservierungen {{ _selectedSlot?.date! | time: 'dayOfWeek' }} {{ _selectedSlot?.date! | time: 'date' }}</ion-card-title>
       </ion-card-header>
