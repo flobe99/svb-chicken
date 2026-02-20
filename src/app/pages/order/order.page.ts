@@ -21,7 +21,10 @@ import {
   IonTextarea,
   IonTitle,
   IonToggle,
-  IonToolbar
+  IonToolbar,
+  IonCheckbox,
+  IonSegment,
+  IonSegmentButton
 } from '@ionic/angular/standalone';
 
 import { HttpErrorResponse } from '@angular/common/http';
@@ -73,7 +76,10 @@ import { OrderService } from 'src/app/services/Order.Service';
     IonCard,
     TimePipe,
     IonToggle,
-    IonSelectOption
+    IonSelectOption,
+    IonCheckbox,
+    IonSegment,
+    IonSegmentButton
   ],
 })
 export class OrderPage implements OnInit {
@@ -88,6 +94,7 @@ export class OrderPage implements OnInit {
   public editOrder: OrderChicken | null = null;
   tables: Table[] = [];
   selectedTable: number | null = null;
+  selectedOrderType: string = 'DriveIn';
 
   public order: OrderChicken = new OrderChicken({
     firstname: '',
@@ -157,6 +164,15 @@ export class OrderPage implements OnInit {
       this.validateOrder();
     });
     this.loadTables();
+  }
+
+  onOrderTypeChanged(){
+    if(this.selectedOrderType === 'DriveIn'){
+      this.isDriveIn = true;
+      // this.selectedTable = null;
+    } else {
+      this.isDriveIn = false;
+    }
   }
 
   loadTables() {

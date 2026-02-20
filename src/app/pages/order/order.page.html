@@ -10,7 +10,16 @@
 <ion-content class="ion-padding-horizontal">
   <div class="center-content">
     <app-refresh></app-refresh>
-    <ion-toggle [(ngModel)]="isDriveIn" >DriveIn</ion-toggle>
+    <ion-card>
+      <ion-segment [(ngModel)]="selectedOrderType" (ngModelChange)="onOrderTypeChanged()">
+        <ion-segment-button value="DriveIn" content-id="first">
+          <ion-label>DriveIn</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Lokal" content-id="second">
+          <ion-label>Lokal</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-card>
     <ion-card *ngIf="isDriveIn">
       <ion-item>
         <ion-label position="floating" class="required-label">
@@ -121,6 +130,10 @@
         </ion-label>
         <ion-input [errorText]="friesErrorText" required type="number" [(ngModel)]="order.fries" name="pommes"
           autocomplete="off"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Sonstiges</ion-label>
+        <ion-textarea [(ngModel)]="order.miscellaneous" name="sonstiges" autocomplete="off"></ion-textarea>
       </ion-item>
     </ion-card>
   </div>
